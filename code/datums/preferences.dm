@@ -30,6 +30,7 @@ datum/preferences
 	var/listen_looc = 1
 	var/default_wasd = 0 // do they want wasd on by default?
 	var/use_azerty = 0 // do they have an AZERTY keyboard?
+	var/show_advanced_options = 1
 
 	var/job_favorite = null
 	var/list/jobs_med_priority = list()
@@ -92,7 +93,7 @@ datum/preferences
 
 		src.preview_icon = new /icon('icons/mob/human.dmi', "body_[src.gender == MALE ? "m" : "f"]")
 
-		// Skin tone
+		// Skin toneg
 		if (AH.s_tone >= 0)
 			src.preview_icon.Blend(rgb(AH.s_tone, AH.s_tone, AH.s_tone), ICON_ADD)
 		else
@@ -216,6 +217,9 @@ datum/preferences
 
 		dat += "<hr>"
 
+		dat += "<b>Advanced Options <a href=\"byond://?src=\ref[user];preferences=1;show_advanced_options=1\">[(src.show_advanced_options ? "Show" : "Hidden")]</a></b></br>"
+		dat += "<div style=display:[(src.show_advanced_options ? "" : "none")];>"
+
 		if ((user && ismob(user)) && user.client && user.client.mentor_authed) // undefined variable /client/var/client
 			dat += "<b>Display Mentorhelps?</b> <a href=\"byond://?src=\ref[user];preferences=1;toggle_mentorhelp=1\">[(src.see_mentor_pms ? "Yes" : "No")]</a></b><br>"
 
@@ -230,6 +234,7 @@ datum/preferences
 		dat += "<b>Admin Music Volume: <a href =\"byond://?src=\ref[user];preferences=1;volume=1\">[src.admin_music_volume]</a></b><br>"
 		dat += "<b>Default to WASD Mode?: <a href =\"byond://?src=\ref[user];preferences=1;default_wasd=1\">[(src.default_wasd ? "Yes" : "No")]</a></b><br>"
 		dat += "<b>Use AZERTY Layout?: <a href =\"byond://?src=\ref[user];preferences=1;use_azerty=1\">[(src.use_azerty ? "Yes" : "No")]</a></b><br>"
+		dat += "</div>"
 
 		dat += "<hr>"
 		if (!IsGuestKey(user.key))
@@ -788,6 +793,9 @@ datum/preferences
 		if (link_tags["changelog"])
 			src.view_changelog = !(src.view_changelog)
 
+		if (link_tags["show_advanced_options"])
+			src.show_advanced_options = !(src.show_advanced_options)
+
 		if (link_tags["toggle_mentorhelp"])
 			if (user && user.client && user.client.mentor_authed)
 				src.see_mentor_pms = !(src.see_mentor_pms)
@@ -935,6 +943,7 @@ datum/preferences
 			age = 30
 			pin = null
 			src.ResetAllPrefsToLow(user)
+			show_advanced_options = 1
 			listen_ooc = 1
 			view_changelog = 1
 			view_score = 1
