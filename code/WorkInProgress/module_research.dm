@@ -390,6 +390,14 @@
 		research_requirements = list("analysis" = 8, "atmospherics" = 5, "devices" = 5)
 		item_path = /obj/item/device/analyzer
 
+	analyzer_a
+		name = "Advanced Atmospheric Analyzer"
+		desc = "An analysis tool for gases. This one is upgraded"
+		cost = 10
+		size = 1
+		research_requirements = list("analysis" = 16, "atmospherics" = 10, "devices" = 10)
+		item_path = /obj/item/device/analyzer
+
 	t_scanner
 		name = "T-Scanner"
 		desc = "An analysis tool for things below a floor."
