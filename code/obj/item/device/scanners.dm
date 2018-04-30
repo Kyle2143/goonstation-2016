@@ -260,8 +260,21 @@ Contains:
 	throw_speed = 4
 	throw_range = 20
 	mats = 3
+	var/distance_upgrade = 0
+	var/distance_scan = 0
+
 	module_research = list("analysis" = 2, "atmospherics" = 2, "devices" = 1)
 	module_research_type = /obj/item/device/analyzer
+
+	pixelaction(atom/target, params, mob/user, reach)
+		var/turf/T = get_turf(target)
+		if ((distance_upgrade == 1) && (get_dist(user, T)>1))
+			boutput(user, "Click: [get_dist(src, T)]")
+			usr.visible_message("<span style=\"color:blue\"><b>[user]</b> takes a distant atmospheric reading of [T].</span>")
+			boutput(user, scan_atmospheric(T))
+			src.add_fingerprint(user)
+
+			return
 
 	attack_self(mob/user as mob)
 		if (user.stat)
