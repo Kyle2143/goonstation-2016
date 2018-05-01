@@ -265,6 +265,7 @@ Contains:
 	module_research = list("analysis" = 2, "atmospherics" = 2, "devices" = 1)
 	module_research_type = /obj/item/device/analyzer
 
+	// Distance upgrade action code
 	pixelaction(atom/target, params, mob/user, reach)
 		var/turf/T = get_turf(target)
 		if ((distance_upgrade == 1) && (get_dist(user, T)>1))
