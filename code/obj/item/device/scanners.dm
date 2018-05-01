@@ -251,7 +251,7 @@ Contains:
 /obj/item/device/analyzer
 	desc = "A hand-held environmental scanner which reports current gas levels."
 	name = "atmospheric analyzer"
-	icon_state = "atmos"
+	icon_state = "atmos-no_up"
 	item_state = "analyzer"
 	w_class = 2
 	flags = FPRINT | TABLEPASS | CONDUCT | ONBELT
@@ -261,7 +261,6 @@ Contains:
 	throw_range = 20
 	mats = 3
 	var/distance_upgrade = 0
-	var/distance_scan = 0
 
 	module_research = list("analysis" = 2, "atmospherics" = 2, "devices" = 1)
 	module_research_type = /obj/item/device/analyzer
@@ -291,6 +290,23 @@ Contains:
 		boutput(user, scan_atmospheric(location)) // Moved to scanprocs.dm to cut down on code duplication (Convair880).
 		return
 
+	attackby(obj/item/W as obj, mob/user as mob)
+		if (istype(W, /obj/item/device/atmosanalyzer_upgrade))
+			if (src.distance_upgrade)
+				boutput(user, "<span style=\"color:red\">This analyzer already has a distance scan upgrade!</span>")
+				return
+			else
+				src.distance_upgrade = 1
+				src.icon_state = "atmos"
+				src.item_state = "atmosphericnalyzer"
+				boutput(user, "<span style=\"color:blue\">Distance scan upgrade installed.</span>")
+				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
+				user.u_equip(W)
+				qdel(W)
+				return
+		else
+			return ..()
+
 	afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
 		if (get_dist(A, user) > 1)
 			return
@@ -316,6 +332,17 @@ Contains:
 				spawn(0)
 					det.detonate()
 		return
+
+/obj/item/device/atmosanalyzer_upgrade
+	name = "atmospherics analyzer upgrade"
+	desc = "A small upgrade card that allows standard atmospherics analyzers to detect environmental information at a distance."
+	icon_state = "atmos_upgr" // add this
+	flags = FPRINT | TABLEPASS | CONDUCT
+	throwforce = 0
+	w_class = 1.0
+	throw_speed = 5
+	throw_range = 10
+	mats = 2
 
 ///////////////////////////////////////////////// Prisoner scanner ////////////////////////////////////
 
