@@ -140,22 +140,7 @@ Contains:
 			return
 
 	attackby(obj/item/W as obj, mob/user as mob)
-		if (istype(W, /obj/item/device/healthanalyzer_upgrade))
-			if (src.reagent_upgrade)
-				boutput(user, "<span style=\"color:red\">This analyzer already has a reagent scan upgrade!</span>")
-				return
-			else
-				src.reagent_upgrade = 1
-				src.reagent_scan = 1
-				src.icon_state = "health"
-				src.item_state = "healthanalyzer"
-				boutput(user, "<span style=\"color:blue\">Reagent scan upgrade installed.</span>")
-				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
-				user.u_equip(W)
-				qdel(W)
-				return
-		else
-			return ..()
+		addUpgrade(src, W, user, src.reagent_upgrade)
 
 	attack(mob/M as mob, mob/user as mob)
 		if ((user.bioHolder.HasEffect("clumsy") || user.get_brain_damage() >= 60) && prob(50))
@@ -174,6 +159,7 @@ Contains:
 		if (M.stat > 1)
 			user.unlock_medal("He's dead, Jim", 1)
 		return
+
 
 /obj/item/device/healthanalyzer/borg
 	icon_state = "health"
@@ -260,7 +246,7 @@ Contains:
 	throw_speed = 4
 	throw_range = 20
 	mats = 3
-	var/distance_upgrade = 0
+	var/analyzer_upgrade = 0
 
 	module_research = list("analysis" = 2, "atmospherics" = 2, "devices" = 1)
 	module_research_type = /obj/item/device/analyzer
@@ -268,7 +254,7 @@ Contains:
 	// Distance upgrade action code
 	pixelaction(atom/target, params, mob/user, reach)
 		var/turf/T = get_turf(target)
-		if ((distance_upgrade == 1) && (get_dist(user, T)>1))
+		if ((analyzer_upgrade == 1) && (get_dist(user, T)>1))
 			boutput(user, "Click: [get_dist(src, T)]")
 			usr.visible_message("<span style=\"color:blue\"><b>[user]</b> takes a distant atmospheric reading of [T].</span>")
 			boutput(user, scan_atmospheric(T))
@@ -292,21 +278,8 @@ Contains:
 		return
 
 	attackby(obj/item/W as obj, mob/user as mob)
-		if (istype(W, /obj/item/device/atmosanalyzer_upgrade))
-			if (src.distance_upgrade)
-				boutput(user, "<span style=\"color:red\">This analyzer already has a distance scan upgrade!</span>")
-				return
-			else
-				src.distance_upgrade = 1
-				src.icon_state = "atmos"
-				src.item_state = "atmosphericnalyzer"
-				boutput(user, "<span style=\"color:blue\">Distance scan upgrade installed.</span>")
-				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
-				user.u_equip(W)
-				qdel(W)
-				return
-		else
-			return ..()
+		addUpgrade(src, W, user, src.analyzer_upgrade)
+
 
 	afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
 		if (get_dist(A, user) > 1)
@@ -444,3 +417,35 @@ Contains:
 
 	add_fingerprint(user)
 	return
+
+// method to upgrade an analyzer if the correct upgrade cartridge is used on it
+/obj/item/device/proc/addUpgrade(obj/item/device/src as obj, obj/item/device/W as obj, mob/user as mob, upgraded as num, active as num, iconState as text, itemState as text)
+	if (istype(W, /obj/item/device/healthanalyzer_upgrade) || istype(W, /obj/item/device/atmosanalyzer_upgrade))
+		if (istype(src, /obj/item/device/healthanalyzer) && istype(W, /obj/item/device/healthanalyzer_upgrade))
+			if (upgraded)
+				boutput(user, "<span style=\"color:red\">This analyzer already has a reagent scan upgrade!</span>")
+				return
+			var/obj/item/device/healthanalyzer/a = src
+			a.reagent_scan = 1
+			a.reagent_upgrade = 1
+			a.icon_state = "health"
+			a.item_state = "healthanalyzer"
+
+		else if(istype(src, /obj/item/device/analyzer) && istype(W, /obj/item/device/atmosanalyzer_upgrade))
+			if (upgraded)
+				boutput(user, "<span style=\"color:red\">This analyzer already has a distance scan upgrade!</span>")
+				return
+			var/obj/item/device/analyzer/a = src
+			a.analyzer_upgrade = 1
+			a.icon_state = "atmos"
+			a.item_state = "atmosphericnalyzer"
+
+		else
+			boutput(user, "<span style=\"color:red\">That cartridge won't fit in there!</span>")
+			return
+		boutput(user, "<span style=\"color:blue\">Upgrade cartridge installed.</span>")
+		playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
+		user.u_equip(W)
+		qdel(W)
+		return
+	return ..()
