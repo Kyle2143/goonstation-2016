@@ -111,7 +111,7 @@ Contains:
 
 ///////////////////////////////////// Health analyzer ////////////////////////////////////////
 
-/obj/item/device/healthanalyzer
+/obj/item/device/analyzer/healthanalyzer
 	name = "health analyzer"
 	icon_state = "health-no_up"
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
@@ -128,7 +128,7 @@ Contains:
 	var/reagent_upgrade = 0
 	var/reagent_scan = 0
 	module_research = list("analysis" = 2, "medicine" = 2, "devices" = 1)
-	module_research_type = /obj/item/device/healthanalyzer
+	module_research_type = /obj/item/device/analyzer/healthanalyzer
 
 	attack_self(mob/user as mob)
 		if (!src.reagent_upgrade)
@@ -161,15 +161,15 @@ Contains:
 		return
 
 
-/obj/item/device/healthanalyzer/borg
+/obj/item/device/analyzer/healthanalyzer/borg
 	icon_state = "health"
 	reagent_upgrade = 1
 	reagent_scan = 1
 
-/obj/item/device/healthanalyzer/vr
+/obj/item/device/analyzer/healthanalyzer/vr
 	icon = 'icons/effects/VR.dmi'
 
-/obj/item/device/healthanalyzer_upgrade
+/obj/item/device/analyzer/healthanalyzer_upgrade
 	name = "health analyzer upgrade"
 	desc = "A small upgrade card that allows standard health analyzers to detect reagents present in the patient, and ProDoc Healthgoggles to scan patients' health from a distance."
 	icon_state = "health_upgr"
@@ -234,7 +234,7 @@ Contains:
 
 /////////////////////////////////////// Atmos analyzer /////////////////////////////////////
 
-/obj/item/device/analyzer
+/obj/item/device/analyzer/atmospheric
 	desc = "A hand-held environmental scanner which reports current gas levels."
 	name = "atmospheric analyzer"
 	icon_state = "atmos-no_up"
@@ -249,7 +249,7 @@ Contains:
 	var/analyzer_upgrade = 0
 
 	module_research = list("analysis" = 2, "atmospherics" = 2, "devices" = 1)
-	module_research_type = /obj/item/device/analyzer
+	module_research_type = /obj/item/device/analyzer/atmospheric
 
 	// Distance upgrade action code
 	pixelaction(atom/target, params, mob/user, reach)
@@ -307,7 +307,7 @@ Contains:
 					det.detonate()
 		return
 
-/obj/item/device/atmosanalyzer_upgrade
+/obj/item/device/analyzer/atmosanalyzer_upgrade
 	name = "atmospherics analyzer upgrade"
 	desc = "A small upgrade card that allows standard atmospherics analyzers to detect environmental information at a distance."
 	icon_state = "atmos_upgr" // add this
@@ -419,23 +419,23 @@ Contains:
 	return
 
 // method to upgrade an analyzer if the correct upgrade cartridge is used on it
-/obj/item/device/proc/addUpgrade(obj/item/device/src as obj, obj/item/device/W as obj, mob/user as mob, upgraded as num, active as num, iconState as text, itemState as text)
-	if (istype(W, /obj/item/device/healthanalyzer_upgrade) || istype(W, /obj/item/device/atmosanalyzer_upgrade))
-		if (istype(src, /obj/item/device/healthanalyzer) && istype(W, /obj/item/device/healthanalyzer_upgrade))
+/obj/item/device/analyzer/proc/addUpgrade(obj/item/device/src as obj, obj/item/device/W as obj, mob/user as mob, upgraded as num, active as num, iconState as text, itemState as text)
+	if (istype(W, /obj/item/device/analyzer/healthanalyzer_upgrade) || istype(W, /obj/item/device/analyzer/atmosanalyzer_upgrade))
+		if (istype(src, /obj/item/device/analyzer/healthanalyzer) && istype(W, /obj/item/device/analyzer/healthanalyzer_upgrade))
 			if (upgraded)
 				boutput(user, "<span style=\"color:red\">This analyzer already has a reagent scan upgrade!</span>")
 				return
-			var/obj/item/device/healthanalyzer/a = src
+			var/obj/item/device/analyzer/healthanalyzer/a = src
 			a.reagent_scan = 1
 			a.reagent_upgrade = 1
 			a.icon_state = "health"
 			a.item_state = "healthanalyzer"
 
-		else if(istype(src, /obj/item/device/analyzer) && istype(W, /obj/item/device/atmosanalyzer_upgrade))
+		else if(istype(src, /obj/item/device/analyzer/atmospheric) && istype(W, /obj/item/device/analyzer/atmosanalyzer_upgrade))
 			if (upgraded)
 				boutput(user, "<span style=\"color:red\">This analyzer already has a distance scan upgrade!</span>")
 				return
-			var/obj/item/device/analyzer/a = src
+			var/obj/item/device/analyzer/atmospheric/a = src
 			a.analyzer_upgrade = 1
 			a.icon_state = "atmos"
 			a.item_state = "atmosphericnalyzer"
