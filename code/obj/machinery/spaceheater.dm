@@ -3,13 +3,15 @@
 	density = 1
 	icon = 'icons/obj/atmospherics/atmos.dmi'
 	icon_state = "sheater0"
-	name = "space heater"
+	name = "space HVAC"
 	desc = "Made by Space Amish using traditional space techniques, this heater is guaranteed not to set the station on fire."
 	var/obj/item/cell/cell
 	var/on = 0
+	var/heating = 0
 	var/open = 0
 	var/set_temperature = 50		// in celcius, add T0C for kelvin
 	var/heating_power = 40000
+	var/cooling_power = -30000
 	mats = 8
 	flags = FPRINT
 
@@ -23,10 +25,15 @@
 		return
 
 	proc/update_icon()
+		if (on)
+			if(heating)
+				icon_state = "sheaterH"
+			else
+				icon_state = "sheaterC"
+		else
+			icon_state = "sheater0"
 		if(open)
 			icon_state = "sheater-open"
-		else
-			icon_state = "sheater[on]"
 		return
 
 	examine()
@@ -36,7 +43,7 @@
 		boutput(usr, "This is [bicon(src)] \an [src.name].")
 		boutput(usr, src.desc)
 
-		boutput(usr, "The heater is [on ? "on" : "off"] and the hatch is [open ? "open" : "closed"].")
+		boutput(usr, "The HVAC is [on ? "on" : "off"], [heating ? "heating" : "cooling"] and the hatch is [open ? "open" : "closed"].")
 		if(open)
 			boutput(usr, "The power cell is [cell ? "installed" : "missing"].")
 		else
@@ -120,7 +127,7 @@
 					var/value = text2num(href_list["val"])
 
 					// limit to 20-90 degC
-					set_temperature = dd_range(20, 90, set_temperature + value)
+					set_temperature = dd_range(-40, 90, set_temperature + value)
 
 				if("cellremove")
 					if(open && cell && !usr.equipped())
@@ -156,28 +163,33 @@
 
 				var/turf/simulated/L = loc
 				if(istype(L))
+					update_icon()
 					var/datum/gas_mixture/env = L.return_air()
 					if(env.temperature < (set_temperature+T0C))
+						heating = 0
+					else
+						heating = 1
 
-						var/transfer_moles = 0.25 * env.total_moles()
+					var/transfer_moles = 0.25 * env.total_moles()
 
-						var/datum/gas_mixture/removed = env.remove(transfer_moles)
+					var/datum/gas_mixture/removed = env.remove(transfer_moles)
 
-						//boutput(world, "got [transfer_moles] moles at [removed.temperature]")
+					//boutput(world, "got [transfer_moles] moles at [removed.temperature]")
+					if(removed)
+						var/heat_capacity = removed.heat_capacity()
+						//boutput(world, "heating ([heat_capacity])")
+						if(heating)
+							removed.temperature = (removed.temperature*heat_capacity + heating_power)/heat_capacity
+						else
+							removed.temperature = (removed.temperature*heat_capacity + cooling_power)/heat_capacity
 
-						if(removed)
+						cell.use(heating_power/20000)
 
-							var/heat_capacity = removed.heat_capacity()
-							//boutput(world, "heating ([heat_capacity])")
-							if(heat_capacity)
-								removed.temperature = (removed.temperature*heat_capacity + heating_power)/heat_capacity
-							cell.use(heating_power/20000)
+						//boutput(world, "now at [removed.temperature]")
 
-							//boutput(world, "now at [removed.temperature]")
+					env.merge(removed)
 
-						env.merge(removed)
-
-						//boutput(world, "turf now at [env.temperature]")
+					//boutput(world, "turf now at [env.temperature]")
 
 
 			else
