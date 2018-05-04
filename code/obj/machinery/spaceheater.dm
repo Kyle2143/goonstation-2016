@@ -163,12 +163,11 @@
 
 				var/turf/simulated/L = loc
 				if(istype(L))
-					update_icon()
 					var/datum/gas_mixture/env = L.return_air()
 					if(env.temperature < (set_temperature+T0C))
-						heating = 0
-					else
 						heating = 1
+					else
+						heating = 0
 
 					var/transfer_moles = 0.25 * env.total_moles()
 
@@ -188,6 +187,7 @@
 						//boutput(world, "now at [removed.temperature]")
 
 					env.merge(removed)
+					update_icon()
 
 					//boutput(world, "turf now at [env.temperature]")
 
