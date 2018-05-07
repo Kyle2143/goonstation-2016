@@ -854,22 +854,22 @@ BODY BAG
 
 /obj/item/crutch
 	name = "crutch"
-	desc = "An archaic tool used to help injured people to walk better."
+	desc = "An archaic tool used to allow injured people to walk better."
 	icon = 'icons/obj/surgery.dmi'
 	icon_state = "crutch"
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
 	item_state = "crutch"
 	flags = FPRINT | TABLEPASS | CONDUCT
-	hit_type = DAMAGE_CRUSH
-	hitsound = 'sound/effects/bloody_stab.ogg'
-	force = 1.5
-	w_class = 1.0
-	throwforce = 3.0
+	hit_type = DAMAGE_BLUNT
+	hitsound = 'sound/weapons/punch1.ogg'
+	force = 3.0
+	w_class = 3.0
+	throwforce = 7.0
 	throw_speed = 3
 	throw_range = 6
 	m_amt = 7000
 	g_amt = 3500
-	stamina_damage = 15
+	stamina_damage = 10
 	stamina_cost = 5
 	stamina_crit_chance = 30
 	module_research = list("tools" = 2, "medicine" = 3, "weapons" = 0.1)

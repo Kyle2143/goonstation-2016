@@ -2415,15 +2415,10 @@
 					tally -= 0.5
 			if (src.is_in_both_hands(/obj/item/crutch))
 				tally -= 7
-				src.visible_message("<span style=\"color:red\">[src] uses two crutches to walk faster with one leg!</span>")
-
-			else if (src.find_in_hands(/obj/item/crutch) == l_hand && !src.has_limb("l_leg"))
-				tally -= 3
-				src.visible_message("<span style=\"color:red\">[src] uses left crutch!</span>")
-
-			else if (src.find_in_hands(/obj/item/crutch) == r_hand && !src.has_limb("r_leg"))
-				tally -= 3
-				src.visible_message("<span style=\"color:red\">[src] uses right crutch!</span>")
+			else if (istype(src.l_hand,/obj/item/crutch) && !src.has_limb("l_leg"))
+				tally -= 4
+			else if (istype(src.r_hand,/obj/item/crutch) && !src.has_limb("r_leg"))
+				tally -= 4
 
 		if (2)
 			tally += 15
@@ -2433,8 +2428,7 @@
 			switch(missing_arms)
 				if (0)
 					if (src.is_in_both_hands(/obj/item/crutch))
-						tally += 15
-						src.visible_message("<span style=\"color:red\">[src] uses two crutches without any legs!</span>")
+						tally -= 12
 
 				if (1)
 					tally += 15 //can't pull yourself along too well
