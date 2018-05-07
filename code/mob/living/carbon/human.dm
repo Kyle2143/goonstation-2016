@@ -2413,12 +2413,29 @@
 					tally -= 2.0 //less effect if there's only one i guess
 				else
 					tally -= 0.5
+			if (src.is_in_both_hands(/obj/item/crutch))
+				tally -= 7
+				src.visible_message("<span style=\"color:red\">[src] uses two crutches to walk faster with one leg!</span>")
+
+			else if (src.find_in_hands(/obj/item/crutch) == l_hand && !src.has_limb("l_leg"))
+				tally -= 3
+				src.visible_message("<span style=\"color:red\">[src] uses left crutch!</span>")
+
+			else if (src.find_in_hands(/obj/item/crutch) == r_hand && !src.has_limb("r_leg"))
+				tally -= 3
+				src.visible_message("<span style=\"color:red\">[src] uses right crutch!</span>")
+
 		if (2)
 			tally += 15
 			var/missing_arms = 0
 			if (src.limbs && !src.limbs.l_arm) missing_arms++
 			if (src.limbs && !src.limbs.r_arm) missing_arms++
 			switch(missing_arms)
+				if (0)
+					if (src.is_in_both_hands(/obj/item/crutch))
+						tally += 15
+						src.visible_message("<span style=\"color:red\">[src] uses two crutches without any legs!</span>")
+
 				if (1)
 					tally += 15 //can't pull yourself along too well
 				if (2)
@@ -2866,6 +2883,11 @@
 
 /mob/living/carbon/human/is_in_hands(var/obj/O)
 	if (l_hand == O || r_hand == O)
+		return 1
+	return 0
+
+/mob/living/carbon/human/proc/is_in_both_hands(var/eqtype)
+	if (istype(l_hand, eqtype) && istype(r_hand, eqtype))
 		return 1
 	return 0
 
