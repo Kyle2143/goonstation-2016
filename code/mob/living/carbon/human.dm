@@ -2414,7 +2414,7 @@
 				else
 					tally -= 0.5
 			if (src.is_in_both_hands(/obj/item/crutch))
-				tally -= 7
+				tally -= 6
 			else if (istype(src.l_hand,/obj/item/crutch) && !src.has_limb("l_leg"))
 				tally -= 4
 			else if (istype(src.r_hand,/obj/item/crutch) && !src.has_limb("r_leg"))
