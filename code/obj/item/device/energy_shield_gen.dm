@@ -13,8 +13,10 @@
 	var/range = 1
 	var/secured = 0
 	var/broken_num = 0
+	var/orientation = 1  //shield extend direction 0 = north/south, 1 = east/west
+	var/power_level = 0 //0 for atmos shield, 1 for liquid, 2 for solid material
+	var/coveropen = 0
 	//Save and regenerate weakened parts.
-
 	// For whatever reason, disposing() is never called for this item. Ditto for the cloak generator (Convair880).
 	Del()
 		//DEBUG_MESSAGE("Del() was called for [src].")
@@ -29,6 +31,26 @@
 			src.turn_off()
 		..()
 		return
+
+	attack_hand(mob/user as mob)
+		if (src.coveropen && src.PCEL)
+			src.PCEL.set_loc(src.loc)
+			src.PCEL = null
+			boutput(user, "You remove the power cell.")
+		else
+			if (src.active)
+				src.meteorshield_off()
+				src.visible_message("<b>[user.name]</b> powers down the [src].")
+			else
+				if (PCEL)
+					if (PCEL.charge > 0)
+						src.meteorshield_on()
+						src.visible_message("<b>[user.name]</b> powers up the [src].")
+					else
+						boutput(user, "[src]'s battery light flickers briefly.")
+				else
+					boutput(user, "Nothing happens.")
+		build_icon()
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if(istype(W,/obj/item/wrench) && isturf(loc) && !istype(loc,/turf/space))
@@ -48,6 +70,18 @@
 		else
 			return ..()
 
+	verb/orientate()
+		set src in view(1)
+		if (!istype(usr,/mob/living)) return
+		if (!isturf(loc))
+			boutput(usr, "<span style=\"color:red\">You must place the generator on the ground to use it.</span>")
+			return
+		orientation = !orientation
+		boutput(usr, "<span style=\"color:blue\">orientation set to : [orientation]</span>")
+		if(active)
+			turn_off()
+			turn_on()
+
 	verb/increase_range()
 		set src in view(1)
 		if (!istype(usr,/mob/living)) return
@@ -66,7 +100,7 @@
 		if (!isturf(loc))
 			boutput(usr, "<span style=\"color:red\">You must place the generator on the ground to use it.</span>")
 			return
-		range = max(range-1,1)
+		range = max(range-1,0)
 		boutput(usr, "<span style=\"color:blue\">Range set to : [range]</span>")
 		if(active)
 			turn_off()
@@ -77,28 +111,42 @@
 			turn_off()
 
 	proc/turn_on()
-		var/xa
-		var/ya
+		var/xa= -range-1
+		var/ya= -range-1
 		var/piece
 		var/atom/A
+		if (range == 0)
+			var/obj/shieldwall/created = new /obj/shieldwall ( locate((src.x),(src.y),src.z) )
+			created.icon_state = "enshieldw"
+			tiles += created
+			created.health_max = 16 - (range*2)
+			created.health = 16 - (range*2)
+		else 
+			for (var/i = 0-range, i <= range, i++)
+				if (orientation)
+					A = locate((src.x+i),(src.y),src.z)
+					xa++
+					ya = 0
+				else
+					A = locate((src.x),(src.y+i), src.z)
+					ya++
+					xa = 0
 
-		for(xa=(-range), xa<((range*2)+(1-range)), xa++)
-			for(ya=(-range), ya<((range*2)+(1-range)), ya++)
-				if ( (xa != range && xa != -range) && (ya != range && ya != -range) )
-					continue
-				if(xa == -range && ya == range) piece = NORTHWEST
-				if(xa == range && ya == range) piece = NORTHEAST
-				if(xa == -range && ya == -range) piece = SOUTHWEST
-				if(xa == range && ya == -range) piece = SOUTHEAST
-				if( (xa != range && xa != -range) && ya == range) piece = NORTH
-				if( (xa != range && xa != -range) && ya == -range) piece = SOUTH
-				if( xa == range && (ya != range && ya != -range)) piece = EAST
-				if( xa == -range && (ya != range && ya != -range)) piece = WEST
-
-				A = locate((src.x + xa),(src.y + ya),src.z)
 				if (!A.density)
 					var/obj/shieldwall/created = new /obj/shieldwall ( locate((src.x + xa),(src.y + ya),src.z) )
-					created.dir = piece
+					if (xa == -range)
+						created.dir = SOUTHWEST
+					else if (xa == range)
+						created.dir = SOUTHEAST
+					else if (ya == -range)
+						created.dir = NORTHWEST
+					else if (ya == range)
+						created.dir = NORTHEAST
+					else if (orientation)
+						created.dir = NORTH
+					else if (!orientation)
+						created.dir = EAST
+
 					tiles += created
 					created.health_max = 16 - (range*2)
 					created.health = 16 - (range*2)
@@ -120,6 +168,7 @@
 					S.health = S.health_max
 					S.check()
 			breakables -= S
+		update_nearby_tiles()
 
 	proc/turn_off()
 		broken_num = 0
@@ -130,6 +179,14 @@
 		icon_state = "cloakgen_off"
 		src.anchored = 0
 		src.active = 0
+		update_nearby_tiles()
+
+	proc/update_nearby_tiles(need_rebuild)
+		var/turf/simulated/source = loc
+		if (istype(source))
+			return source.update_nearby_tiles(need_rebuild)
+
+		return 1
 
 	verb/toggle()
 		set src in view(1)
@@ -149,7 +206,7 @@
 	name = "shield"
 	desc = "An energy shield."
 	icon = 'icons/effects/effects.dmi'
-	icon_state = "shield1"
+	icon_state = "shieldw"
 	density = 1
 	opacity = 0
 	anchored = 1
@@ -161,6 +218,7 @@
 	CanPass(atom/A, turf/T)
 		if (broken) return 1
 		if (ismob(A)) return 1
+		if (isobj(A)) return 1
 		else return 0
 
 	ex_act(severity)
@@ -186,5 +244,5 @@
 				check()
 		else
 			broken = 0
-			icon_state = "shield1"
+			icon_state = "shieldw"
 			name = "energy shield"
