@@ -11,6 +11,7 @@
 	var/coveropen = 0
 	var/active = 0
 	var/range = 2
+	var/min_range = 1
 	var/max_range = 6
 	var/battery_level = 0
 	var/image/display_active = null
@@ -141,7 +142,7 @@
 			boutput(usr, "<span style=\"color:red\">You need to be closer to do that.</span>")
 			return
 
-		var/the_range = input("Enter a range from 1-[src.max_range]. Higher ranges use more power.","[src.name]",2) as null|num
+		var/the_range = input("Enter a range from [src.min_range]-[src.max_range]. Higher ranges use more power.","[src.name]",2) as null|num
 		if (!the_range)
 			return
 		if (get_dist(usr,src) > 1)
@@ -215,6 +216,13 @@
 			src.visible_message("<b>[src]</b> fails, and shuts down!")
 		playsound(src.loc, src.sound_off, 50, 1)
 		build_icon()
+
+	proc/update_nearby_tiles(need_rebuild)
+		var/turf/simulated/source = loc
+		if (istype(source))
+			return source.update_nearby_tiles(need_rebuild)
+
+		return 1
 
 /obj/forcefield/meteorshield
 	name = "Impact Forcefield"
