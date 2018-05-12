@@ -14,9 +14,8 @@
 	var/secured = 0
 	var/broken_num = 0
 	var/orientation = 1  //shield extend direction 0 = north/south, 1 = east/west
-	var/power_level = 0 //0 for atmos shield, 1 for liquid, 2 for solid material
-	var/coveropen = 0
 	//Save and regenerate weakened parts.
+
 	// For whatever reason, disposing() is never called for this item. Ditto for the cloak generator (Convair880).
 	Del()
 		//DEBUG_MESSAGE("Del() was called for [src].")
@@ -31,26 +30,6 @@
 			src.turn_off()
 		..()
 		return
-
-	attack_hand(mob/user as mob)
-		if (src.coveropen && src.PCEL)
-			src.PCEL.set_loc(src.loc)
-			src.PCEL = null
-			boutput(user, "You remove the power cell.")
-		else
-			if (src.active)
-				src.meteorshield_off()
-				src.visible_message("<b>[user.name]</b> powers down the [src].")
-			else
-				if (PCEL)
-					if (PCEL.charge > 0)
-						src.meteorshield_on()
-						src.visible_message("<b>[user.name]</b> powers up the [src].")
-					else
-						boutput(user, "[src]'s battery light flickers briefly.")
-				else
-					boutput(user, "Nothing happens.")
-		build_icon()
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if(istype(W,/obj/item/wrench) && isturf(loc) && !istype(loc,/turf/space))

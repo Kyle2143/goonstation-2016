@@ -14,6 +14,7 @@
 	var/min_range = 1
 	var/max_range = 6
 	var/battery_level = 0
+	var/power_level = 1	//unused in meteor, used in energy shield
 	var/image/display_active = null
 	var/image/display_battery = null
 	var/image/display_panel = null
@@ -22,12 +23,12 @@
 	var/sound/sound_battwarning = 'sound/machines/pod_alarm.ogg'
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
 	var/list/deployed_shields = list()
-
+	
 	New()
 		PCEL = new /obj/item/cell/supercell(src)
 		PCEL.charge = PCEL.maxcharge
 
-		src.display_active = image('icons/obj/meteor_shield.dmi', "")
+		src.display_active = image('icons/obj/meteor_shield.dmi', "on")
 		src.display_battery = image('icons/obj/meteor_shield.dmi', "")
 		src.display_panel = image('icons/obj/meteor_shield.dmi', "")
 		..()
@@ -64,7 +65,7 @@
 			if(!PCEL)
 				meteorshield_off(1)
 				return
-			PCEL.charge -= 5 * src.range
+			PCEL.charge -= 5 * src.range * (power_level * power_level)
 
 			var/charge_percentage = 0
 			var/current_battery_level = 0
@@ -148,7 +149,7 @@
 		if (get_dist(usr,src) > 1)
 			boutput(usr, "<span style=\"color:red\">You flail your arms at [src] from across the room like a complete muppet. Move closer, genius!</span>")
 			return
-		the_range = max(1,min(the_range,src.max_range))
+		the_range = max(src.min_range,min(the_range,src.max_range))
 		src.range = the_range
 		var/outcome_text = "You set the range to [src.range]."
 		if (src.active)
@@ -169,7 +170,7 @@
 			src.overlays += src.display_panel
 
 		if (src.active)
-			src.display_active.icon_state = "on"
+			//src.display_active.icon_state = "on"
 			src.overlays += src.display_active
 			if (istype(src.PCEL,/obj/item/cell))
 				var/charge_percentage = null
