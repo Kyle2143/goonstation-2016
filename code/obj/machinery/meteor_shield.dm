@@ -1,25 +1,8 @@
-/obj/machinery/shield_generator/meteorshield
+/obj/machinery/shieldgenerator/meteorshield
 	name = "meteor shield generator"
 	desc = "Generates a force field that stops meteors."
 	icon = 'icons/obj/meteor_shield.dmi'
 	icon_state = "shieldgen"
-	obj/item/cell/PCEL = null
-	coveropen = 0
-	active = 0
-	range = 2
-	min_range = 1
-	max_range = 6
-	battery_level = 0
-	power_level = 1	//unused in meteor, used in energy shield
-	image/display_active = null
-	image/display_battery = null
-	image/display_panel = null
-	sound/sound_on = 'sound/effects/shielddown.ogg'
-	sound/sound_off = 'sound/effects/shielddown2.ogg'
-	sound/sound_battwarning = 'sound/machines/pod_alarm.ogg'
-	sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
-	list/deployed_shields = list()
-
 
 	shield_on()
 		if (!PCEL)
@@ -39,15 +22,6 @@
 		playsound(src.loc, src.sound_on, 50, 1)
 		build_icon()
 
-	build_icon()
-		src.overlays = null
-
-		if (src.coveropen)
-			if (istype(src.PCEL,/obj/item/cell/))
-				src.display_panel.icon_state = "panel-batt"
-			else
-				src.display_panel.icon_state = "panel-nobatt"
-			src.overlays += src.display_panel
 
 /obj/forcefield/meteorshield
 	name = "Impact Forcefield"
@@ -55,11 +29,11 @@
 	icon = 'icons/obj/meteor_shield.dmi'
 	icon_state = "shield"
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
-	var/obj/machinery/deployer = null
+	var/obj/machinery/shieldgenerator/meteorshield/deployer = null
 
 	meteorhit(obj/O as obj)
-		if (istype(deployer, /obj/machinery/shield_generator/meteorshield))
-			var/obj/machinery/shield_generator/meteorshield/MS = deployer
+		if (istype(deployer, /obj/machinery/shieldgenerator/meteorshield))
+			var/obj/machinery/shieldgenerator/meteorshield/MS = deployer
 			if (MS.PCEL)
 				MS.PCEL.charge -= 10 * MS.range
 				playsound(src.loc, src.sound_shieldhit, 50, 1)
@@ -67,8 +41,8 @@
 				deployer = null
 				qdel(src)
 
-		else if (istype(deployer, /obj/machinery/shield_generator))
-			var/obj/machinery/shield_generator/SG = deployer
+		else if (istype(deployer, /obj/machinery/shieldgenerator))
+			var/obj/machinery/shieldgenerator/SG = deployer
 			if ((SG.stat & (NOPOWER|BROKEN)) || !SG.powered())
 				deployer = null
 				qdel(src)

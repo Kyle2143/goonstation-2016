@@ -18,8 +18,8 @@
 	var/image/display_panel = null
 	var/sound/sound_on = 'sound/effects/shielddown.ogg'
 	var/sound/sound_off = 'sound/effects/shielddown2.ogg'
-	var/sound/sound_battwarning = 'sound/machines/pod_alarm.ogg'
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
+	var/sound/sound_battwarning = 'sound/machines/pod_alarm.ogg'
 	var/list/deployed_shields = list()
 	
 	New()
@@ -145,9 +145,18 @@
 			shield_on()
 		boutput(usr, "<span style=\"color:blue\">[outcome_text]</span>")
 
-	proc/build_icon()
-		//scr.overlays set to null in child proc for different panels
-		// src.overlays = null
+	//@dir used to pick the sprite for if we want a directional sprite, or directionless sprite.
+	proc/build_icon(var/dir as text)
+		src.overlays = null
+
+		if (src.coveropen)
+			if (istype(src.PCEL,/obj/item/cell/))
+				src.display_panel.icon_state = "panel-batt[dir]"
+			else
+				src.display_panel.icon_state = "panel-nobatt[dir]"
+
+
+			src.overlays += src.display_panel
 
 		if (src.active)
 			//src.display_active.icon_state = "on"
@@ -158,32 +167,32 @@
 					charge_percentage = round((PCEL.charge/PCEL.maxcharge)*100)
 					switch(charge_percentage)
 						if (75 to 100)
-							src.display_battery.icon_state = "batt-3"
+							src.display_battery.icon_state = "batt-3[dir]"
 						if (35 to 74)
-							src.display_battery.icon_state = "batt-2"
+							src.display_battery.icon_state = "batt-2[dir]"
 						else
-							src.display_battery.icon_state = "batt-1"
+							src.display_battery.icon_state = "batt-1[dir]"
 				else
-					src.display_battery.icon_state = "batt-3"
+					src.display_battery.icon_state = "batt-3[dir]"
 				src.overlays += src.display_battery
 
+	//this method should be overridden. Currenlty implements a meteorshield on the generator's turf
 	proc/shield_on()
-		// if (!PCEL)
-		// 	return
-		// if (PCEL.charge < 0)
-		// 	return
+		if (!PCEL)
+			return
+		if (PCEL.charge < 0)
+			return
 
-		// for(var/turf/space/T in orange(src.range,src))
-		// 	if (get_dist(T,src) != src.range)
-		// 		continue
-		// 	var/obj/forcefield/meteorshield/S = new /obj/forcefield/meteorshield(T)
-		// 	S.deployer = src
-		// 	src.deployed_shields += S
+		var/turf/T = locate((src.x + xa),(src.y + ya),src.z)
+		var/obj/forcefield/meteorshield/S = new /obj/forcefield/meteorshield(T)
+		S.deployer = src
+		src.deployed_shields += S
 
-		// src.anchored = 1
-		// src.active = 1
-		// playsound(src.loc, src.sound_on, 50, 1)
-		// build_icon()
+		src.anchored = 1
+		src.active = 1
+		playsound(src.loc, src.sound_on, 50, 1)
+		build_icon()
+
 
 	proc/shield_off(var/failed = 0)
 		//TODO: Change this if you get the chance
@@ -205,33 +214,3 @@
 			return source.update_nearby_tiles(need_rebuild)
 
 		return 1
-
-/obj/forcefield/meteorshield
-	name = "Impact Forcefield"
-	desc = "A force field deployed to stop meteors and other high velocity masses."
-	icon = 'icons/obj/meteor_shield.dmi'
-	icon_state = "shield"
-	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
-	var/obj/machinery/deployer = null
-
-	meteorhit(obj/O as obj)
-		if (istype(deployer, /obj/machinery/meteorshield))
-			var/obj/machinery/meteorshield/MS = deployer
-			if (MS.PCEL)
-				MS.PCEL.charge -= 10 * MS.range
-				playsound(src.loc, src.sound_shieldhit, 50, 1)
-			else
-				deployer = null
-				qdel(src)
-
-		else if (istype(deployer, /obj/machinery/shield_generator))
-			var/obj/machinery/shield_generator/SG = deployer
-			if ((SG.stat & (NOPOWER|BROKEN)) || !SG.powered())
-				deployer = null
-				qdel(src)
-			SG.use_power(10)
-			playsound(src.loc, src.sound_shieldhit, 50, 1)
-
-		else
-			deployer = null
-			qdel(src)
