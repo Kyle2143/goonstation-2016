@@ -21,6 +21,7 @@
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
 	var/sound/sound_battwarning = 'sound/machines/pod_alarm.ogg'
 	var/list/deployed_shields = list()
+	var/direction = ""	//for building the icon, always north or directional
 	
 	New()
 		PCEL = new /obj/item/cell/supercell(src)
@@ -48,34 +49,62 @@
 
 	process()
 		if (src.active)
-			if(!PCEL)
-				shield_off(1)
-				return
-			PCEL.charge -= 5 * src.range * (power_level * power_level)
+			if(PCEL)
+				process_battery()
+			else
+				process_wired()
 
-			var/charge_percentage = 0
-			var/current_battery_level = 0
-			if (PCEL && PCEL.charge > 0 && PCEL.maxcharge > 0)
-				charge_percentage = round((PCEL.charge/PCEL.maxcharge)*100)
-				switch(charge_percentage)
-					if (75 to 100)
-						current_battery_level = 3
-					if (35 to 74)
-						current_battery_level = 2
-					else
-						current_battery_level = 1
+			
 
-			if (current_battery_level != src.battery_level)
-				src.battery_level = current_battery_level
-				src.build_icon()
-				if (src.battery_level == 1)
-					playsound(src.loc, src.sound_battwarning, 50, 1)
-					src.visible_message("<span style=\"color:red\"><b>[src] emits a low battery alarm!</b></span>")
+	proc/process_wired()
+		src.visible_message("<span style=\"color:red\"><b>[src] Hit processWired!</b></span>")
 
-			if (PCEL.charge < 0)
-				src.visible_message("<b>[src]</b> runs out of power and shuts down.")
-				src.shield_off()
-				return
+		if (powered()) //if connected to power grid and there is power
+			// src.visible_message("<span style=\"color:red\"><b>[src] Hit if powered!</b></span>")
+			src.power_usage = 5 * (src.range + 1) * (power_level * power_level) //TODO
+			// src.visible_message("<span style=\"color:red\"><b>[src]  machines_may_use_wired_power : [machines_may_use_wired_power]!  power_usage : [power_usage]</b></span>")
+			// src.visible_message("<span style=\"color:red\"><b>[src] get power wire : [get_power_wire()]!</b></span>")
+			// src.visible_message("<span style=\"color:red\"><b>[src] get direct powernet : [get_direct_powernet()]!</b></span>")
+
+			
+			use_power(src.power_usage)
+
+			src.battery_level = 3
+			src.build_icon()
+
+			return
+		else //not connected to grid: power down if active, do nothing otherwise
+			src.visible_message("<span style=\"color:red\"><b>[src] Hit unpowered!</b></span>")
+			src.shield_off()
+			src.power_usage = 0
+			return
+
+	proc/process_battery()
+		src.visible_message("<span style=\"color:red\"><b>[src] Hit process battery!</b></span>")
+		PCEL.charge -= 5 * src.range * (power_level * power_level)
+		var/charge_percentage = 0
+		var/current_battery_level = 0
+		if (PCEL && PCEL.charge > 0 && PCEL.maxcharge > 0)
+			charge_percentage = round((PCEL.charge/PCEL.maxcharge)*100)
+			switch(charge_percentage)
+				if (75 to 100)
+					current_battery_level = 3
+				if (35 to 74)
+					current_battery_level = 2
+				else
+					current_battery_level = 1
+
+		if (current_battery_level != src.battery_level)
+			src.battery_level = current_battery_level
+			src.build_icon()
+			if (src.battery_level == 1)
+				playsound(src.loc, src.sound_battwarning, 50, 1)
+				src.visible_message("<span style=\"color:red\"><b>[src] emits a low battery alarm!</b></span>")
+		
+		if (PCEL.charge < 0)
+			src.visible_message("<b>[src]</b> runs out of power and shuts down.")
+			src.shield_off()
+			return
 
 	examine()
 		..()
@@ -105,8 +134,12 @@
 						src.visible_message("<b>[user.name]</b> powers up the [src].")
 					else
 						boutput(user, "[src]'s battery light flickers briefly.")
-				else
-					boutput(user, "Nothing happens.")
+				else	//turn on power if connected to a power grid with power in it
+					if (powered())
+						src.shield_on()
+						src.visible_message("<b>[user.name]</b> powers up the [src].")
+					else
+						boutput(user, "[src]'s battery light flickers briefly.")
 		build_icon()
 
 	attackby(obj/item/W as obj, mob/user as mob)
@@ -133,7 +166,7 @@
 		set name = "Set Range"
 
 		if (!istype(usr,/mob/living/))
-			boutput(usr, "<span style=\"color:red\">Your ghostly arms phase right through [src] and you sadly contemplate the state of your life.</span>")
+			boutput(usr, "<span style=\"color:red\">Your ghostly arms phase right through [src] and you sadly contemplate the state of your existence.</span>")
 			boutput(usr, "<span style=\"color:red\">That's what happens when you try to be a smartass, you dead sack of crap.</span>")
 			return
 
@@ -157,21 +190,19 @@
 			shield_on()
 		boutput(usr, "<span style=\"color:blue\">[outcome_text]</span>")
 
-	//@dir used to pick the sprite for if we want a directional sprite, or directionless sprite.
-	proc/build_icon(var/dir as text)
+	proc/build_icon()
 		src.overlays = null
+		boutput(usr, "<span style=\"color:blue\">current direction:  [direction]</span>")
 
 		if (src.coveropen)
 			if (istype(src.PCEL,/obj/item/cell/))
-				src.display_panel.icon_state = "panel-batt[dir]"
+				src.display_panel.icon_state = "panel-batt[direction]"
 			else
-				src.display_panel.icon_state = "panel-nobatt[dir]"
-
+				src.display_panel.icon_state = "panel-nobatt[direction]"
 
 			src.overlays += src.display_panel
 
 		if (src.active)
-			//src.display_active.icon_state = "on"
 			src.overlays += src.display_active
 			if (istype(src.PCEL,/obj/item/cell))
 				var/charge_percentage = null
@@ -179,13 +210,13 @@
 					charge_percentage = round((PCEL.charge/PCEL.maxcharge)*100)
 					switch(charge_percentage)
 						if (75 to 100)
-							src.display_battery.icon_state = "batt-3[dir]"
+							src.display_battery.icon_state = "batt-3[direction]"
 						if (35 to 74)
-							src.display_battery.icon_state = "batt-2[dir]"
+							src.display_battery.icon_state = "batt-2[direction]"
 						else
-							src.display_battery.icon_state = "batt-1[dir]"
+							src.display_battery.icon_state = "batt-1[direction]"
 				else
-					src.display_battery.icon_state = "batt-3[dir]"
+					src.display_battery.icon_state = "batt-3[direction]"
 				src.overlays += src.display_battery
 
 	//this method should be overridden. Currenlty implements a meteorshield on the generator's turf
@@ -195,7 +226,7 @@
 		if (PCEL.charge < 0)
 			return
 
-		var/turf/T = locate((src.x + xa),(src.y + ya),src.z)
+		var/turf/T = locate((src.x),(src.y),src.z)
 		var/obj/forcefield/meteorshield/S = new /obj/forcefield/meteorshield(T)
 		S.deployer = src
 		src.deployed_shields += S
