@@ -6,10 +6,19 @@
 
 	shield_on()
 		if (!PCEL)
-			return
-		if (PCEL.charge < 0)
-			return
+			if (!powered()) //if NOT connected to power grid and there is power
+				src.power_usage = 0
+				return
+			else //no power cell, not connected to grid: power down if active, do nothing otherwise
+				src.power_usage = 30 * (src.range) 
+				generate_shield()
+				return
+		else
+			if (PCEL.charge > 0)
+				generate_shield()
+				return
 
+	proc/generate_shield()
 		for(var/turf/space/T in orange(src.range,src))
 			if (get_dist(T,src) != src.range)
 				continue
@@ -21,34 +30,3 @@
 		src.active = 1
 		playsound(src.loc, src.sound_on, 50, 1)
 		build_icon()
-
-
-/obj/forcefield/meteorshield
-	name = "Impact Forcefield"
-	desc = "A force field deployed to stop meteors and other high velocity masses."
-	icon = 'icons/obj/meteor_shield.dmi'
-	icon_state = "shield"
-	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
-	var/obj/machinery/shieldgenerator/meteorshield/deployer = null
-
-	meteorhit(obj/O as obj)
-		if (istype(deployer, /obj/machinery/shieldgenerator/meteorshield))
-			var/obj/machinery/shieldgenerator/meteorshield/MS = deployer
-			if (MS.PCEL)
-				MS.PCEL.charge -= 10 * MS.range
-				playsound(src.loc, src.sound_shieldhit, 50, 1)
-			else
-				deployer = null
-				qdel(src)
-
-		else if (istype(deployer, /obj/machinery/shieldgenerator))
-			var/obj/machinery/shieldgenerator/SG = deployer
-			if ((SG.stat & (NOPOWER|BROKEN)) || !SG.powered())
-				deployer = null
-				qdel(src)
-			SG.use_power(10)
-			playsound(src.loc, src.sound_shieldhit, 50, 1)
-
-		else
-			deployer = null
-			qdel(src)

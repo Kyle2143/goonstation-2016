@@ -8,8 +8,8 @@
 	power_level = 1 //1 for atmos shield, 2 for liquid, 3 for solid material
 	var/const/MAX_POWER_LEVEL = 3
 	var/const/MIN_POWER_LEVEL = 1
-	min_range = 0
-	max_range = 5
+	min_range = 1
+	max_range = 4
 	direction = "dir"
 	
 	New()
@@ -25,7 +25,7 @@
 				boutput(usr, "It has [PCEL.charge]/[PCEL.maxcharge] ([charge_percentage]%) battery power left.")
 			else
 				boutput(usr, "It seems to be missing a usable battery.")
-			boutput(usr, "The unit will consume [5 * src.range * (src.power_level * src.power_level)] power a second.")
+			boutput(usr, "The unit will consume [30 * src.range * (src.power_level * src.power_level)] power a second.")
 			boutput(usr, "The range setting is set to [src.range].")
 			boutput(usr, "The power setting is set to [src.power_level].")
 
@@ -38,7 +38,7 @@
 				src.power_usage = 0
 				return
 			else //no power cell, not connected to grid: power down if active, do nothing otherwise
-				src.power_usage = 5 * (src.range + 1) * (power_level * power_level)
+				src.power_usage = 30 * (src.range + 1) * (power_level * power_level)
 				generate_shield()
 				return
 		else
@@ -83,21 +83,6 @@
 			display_active.color = "#00FF00"
 		else
 			display_active.color = "#FA0000"
-		build_icon()
-
-
-
-	shield_off(var/failed = 0)
-		for(var/obj/forcefield/energyshield/S in src.deployed_shields)
-			src.deployed_shields -= S
-			S.deployer = null
-			qdel(S)
-
-		src.anchored = 0
-		src.active = 0
-		if (failed)
-			src.visible_message("<b>[src]</b> fails, and shuts down!")
-		playsound(src.loc, src.sound_off, 50, 1)
 		build_icon()
 
 	//Changes shield orientation based on direction the generator is facing
@@ -145,23 +130,34 @@
 
 
 	//This is needed since the generator can be drawn beneath the forcefield so you can't easily left-click it
+	//change to just call attack hand
 	verb/toggle()
+		set src in view(1)
+		attack_hand(usr)
+		// if (src.active)
+		// 	shield_off()
+		// 	src.visible_message("<b>[usr.name]</b> powers down the [src].")
+		// else
+		// 	if ((PCEL && PCEL.charge > 0) || (powered() && !PCEL))
+		// 		src.shield_on()
+		// 		src.visible_message("<b>[usr.name]</b> powers up the [src].")
+
+	verb/rotate()
+		// set src in view(1)
+		// if (src.active)
+		// 	boutput(usr, "<span style=\"color:red\">You can't rotate an active shield generator!</span>")
+		// 	return
+		// src.dir = turn(src.dir, -90)
+		// update_orientation()
+		// boutput(usr, "<span style=\"color:blue\">Orientation set to : [orientation ? "Horizontal" : "Vertical"]</span>")
 		set src in view(1)
 		if (src.active)
 			shield_off()
-			src.visible_message("<b>[usr.name]</b> powers down the [src].")
-		else
-			if ((PCEL && PCEL.charge > 0) || (powered() && !PCEL))
-				src.shield_on()
-				src.visible_message("<b>[usr.name]</b> powers up the [src].")
-
-	verb/rotate()
-		set src in view(1)
-		if (src.active)
-			boutput(usr, "<span style=\"color:red\">You can't rotate an active shield generator!</span>")
+			src.dir = turn(src.dir, -90)
+			update_orientation()
+			shield_on()
+			
 			return
-		src.dir = turn(src.dir, -90)
-		update_orientation()
 		boutput(usr, "<span style=\"color:blue\">Orientation set to : [orientation ? "Horizontal" : "Vertical"]</span>")
 
 	verb/set_power_level()
@@ -185,34 +181,3 @@
 		src.power_level = the_level
 		boutput(usr, "<span style=\"color:blue\">You set the power level to [src.power_level].</span>")
 
-/obj/forcefield/energyshield
-	name = "Impact Forcefield"
-	desc = "A force field."
-	icon = 'icons/obj/meteor_shield.dmi'
-	icon_state = "shieldw"
-
-	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
-	var/obj/machinery/shieldgenerator/deployer = null
-
-	CanPass(atom/A, turf/T)
-		if (deployer == null) return 0
-		if (deployer.power_level == 1 || deployer.power_level == 2)
-			if (ismob(A)) return 1
-			if (isobj(A)) return 1
-		else return 0
-
-	meteorhit(obj/O as obj)
-		if (istype(deployer, /obj/machinery/shieldgenerator/energy_shield))
-			var/obj/machinery/shieldgenerator/energy_shield/ES = deployer
-			//unless the power level is 3, which blocks solid objects, meteors should pass through unmolested
-			if (ES.power_level == 3)
-				if (ES.PCEL)	//Technically these shields can be used as emergency meteor shields, but they are very bad a blocking them
-					ES.PCEL.charge -= 10 * ES.range * (ES.power_level * ES.power_level)
-					playsound(src.loc, src.sound_shieldhit, 50, 1)
-				else
-					deployer = null
-					qdel(src)
-
-		else
-			deployer = null
-			qdel(src)

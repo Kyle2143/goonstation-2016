@@ -22,7 +22,10 @@
 	var/sound/sound_battwarning = 'sound/machines/pod_alarm.ogg'
 	var/list/deployed_shields = list()
 	var/direction = ""	//for building the icon, always north or directional
-	
+	var/connected = 0	//determine if gen is wrenched over a wire.
+	var/backup = 0		//if equip power went out while connected to wire, this should be true. Used to automatically turn gen back on if power is restored
+	var/first = 0		//tic if when the power is out. 
+
 	New()
 		PCEL = new /obj/item/cell/supercell(src)
 		PCEL.charge = PCEL.maxcharge
@@ -49,39 +52,45 @@
 
 	process()
 		if (src.active)
-			if(PCEL)
+			if(PCEL && !connected)
 				process_battery()
 			else
 				process_wired()
-
 			
+		if (backup)
+			src.active = !src.active
+
 
 	proc/process_wired()
-		src.visible_message("<span style=\"color:red\"><b>[src] Hit processWired!</b></span>")
+		//must be wrenched on top of a wire
+		if (!connected)
+			return
 
 		if (powered()) //if connected to power grid and there is power
-			// src.visible_message("<span style=\"color:red\"><b>[src] Hit if powered!</b></span>")
-			src.power_usage = 5 * (src.range + 1) * (power_level * power_level) //TODO
-			// src.visible_message("<span style=\"color:red\"><b>[src]  machines_may_use_wired_power : [machines_may_use_wired_power]!  power_usage : [power_usage]</b></span>")
-			// src.visible_message("<span style=\"color:red\"><b>[src] get power wire : [get_power_wire()]!</b></span>")
-			// src.visible_message("<span style=\"color:red\"><b>[src] get direct powernet : [get_direct_powernet()]!</b></span>")
-
-			
+			src.power_usage = 30 * (src.range + 1) * (power_level * power_level) //TODO
 			use_power(src.power_usage)
+			//automatically turn back on if gen was deactivated due to power outage
+			if (backup)
+				backup = !backup
+				src.shield_on()
 
 			src.battery_level = 3
 			src.build_icon()
 
 			return
-		else //not connected to grid: power down if active, do nothing otherwise
-			src.visible_message("<span style=\"color:red\"><b>[src] Hit unpowered!</b></span>")
-			src.shield_off()
-			src.power_usage = 0
+		else //connected grid has no power
+			// if 
+			if (!backup)
+				backup = !backup
+				first = 1
+			//this iff is for testing the auto turn back on
+			if (src.active && first)
+				first = 0
+				src.shield_off()
 			return
 
 	proc/process_battery()
-		src.visible_message("<span style=\"color:red\"><b>[src] Hit process battery!</b></span>")
-		PCEL.charge -= 5 * src.range * (power_level * power_level)
+		PCEL.charge -= 30 * src.range * (power_level * power_level)
 		var/charge_percentage = 0
 		var/current_battery_level = 0
 		if (PCEL && PCEL.charge > 0 && PCEL.maxcharge > 0)
@@ -99,10 +108,10 @@
 			src.build_icon()
 			if (src.battery_level == 1)
 				playsound(src.loc, src.sound_battwarning, 50, 1)
-				src.visible_message("<span style=\"color:red\"><b>[src] emits a low battery alarm!</b></span>")
+				src.visible_message("<span style=\"color:red\">The <b>[src.name] emits a low battery alarm!</b></span>")
 		
 		if (PCEL.charge < 0)
-			src.visible_message("<b>[src]</b> runs out of power and shuts down.")
+			src.visible_message("The <b>[src.name]</b> runs out of power and shuts down.")
 			src.shield_off()
 			return
 
@@ -123,35 +132,64 @@
 			src.PCEL.set_loc(src.loc)
 			src.PCEL = null
 			boutput(user, "You remove the power cell.")
+			if (src.active)
+				src.shield_off()
 		else
 			if (src.active)
 				src.shield_off()
-				src.visible_message("<b>[user.name]</b> powers down the [src].")
+				src.visible_message("<b>[user.name]</b> powers down the [src.name].")
 			else
 				if (PCEL)
 					if (PCEL.charge > 0)
 						src.shield_on()
-						src.visible_message("<b>[user.name]</b> powers up the [src].")
+						src.visible_message("<b>[user.name]</b> powers up the [src.name].")
 					else
-						boutput(user, "[src]'s battery light flickers briefly.")
+						boutput(user, "The [src.name]'s battery light flickers briefly.")
 				else	//turn on power if connected to a power grid with power in it
-					if (powered())
+					if (powered() && connected)
 						src.shield_on()
-						src.visible_message("<b>[user.name]</b> powers up the [src].")
+						src.visible_message("<b>[user.name]</b> powers up the [src.name].")
 					else
-						boutput(user, "[src]'s battery light flickers briefly.")
+						boutput(user, "The [src.name]'s battery light flickers briefly.")
 		build_icon()
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if (istype(W, /obj/item/screwdriver))
-			src.coveropen = !src.coveropen
-			src.visible_message("<b>[user.name]</b> [src.coveropen ? "opens" : "closes"] [src]'s cell cover.")
+			if (!active)
+				src.coveropen = !src.coveropen
+				src.visible_message("<b>[user.name]</b> [src.coveropen ? "opens" : "closes"] [src.name]'s cell cover.")
+			else
+				boutput(user, "You don't think you should mess around with the [src.name] while it's active.")
+				return
 
-		if (istype(W,/obj/item/cell/) && src.coveropen && !src.PCEL)
-			user.drop_item()
-			W.set_loc(src)
-			src.PCEL = W
-			boutput(user, "You insert the power cell.")
+		else if (istype(W, /obj/item/wrench))
+			if (PCEL)
+				boutput(user, "You can't think of a reason to attach the [src.name] to a wire when it already has a battery.")
+				return
+
+			//just checking if it's placed on any wire, like powersink
+			var/obj/cable/C = locate() in get_turf(src)
+			if (C) //if generator is on wire
+				src.connected = !src.connected
+				src.anchored = !src.anchored
+				src.backup = 0
+				src.visible_message("<b>[user.name]</b> [src.connected ? "connects" : "disconnects"] [src.name] [src.connected ? "to" : "from"] the wire.")
+				playsound(src.loc, "sound/items/Ratchet.ogg", 50, 1)
+			else
+				boutput(user, "There is no cable to connect to.")
+
+
+		else if (src.coveropen && !src.PCEL)
+			if (istype(W,/obj/item/cell/))
+				if (connected)
+					boutput(user, "You think it's a bad idea to attach a battery to the [src.name] while it's connected to a wire.")
+					return
+
+				user.drop_item()
+				W.set_loc(src)
+				src.PCEL = W
+				boutput(user, "You insert the power cell.")
+
 
 		else
 			..()
@@ -159,14 +197,14 @@
 		build_icon()
 
 	attack_ai(mob/user as mob)
-		return attack_hand(user)
+		return attack_hand(user)		
 
 	verb/set_range()
 		set src in view(1)
 		set name = "Set Range"
 
 		if (!istype(usr,/mob/living/))
-			boutput(usr, "<span style=\"color:red\">Your ghostly arms phase right through [src] and you sadly contemplate the state of your existence.</span>")
+			boutput(usr, "<span style=\"color:red\">Your ghostly arms phase right through the [src.name] and you sadly contemplate the state of your existence.</span>")
 			boutput(usr, "<span style=\"color:red\">That's what happens when you try to be a smartass, you dead sack of crap.</span>")
 			return
 
@@ -178,7 +216,7 @@
 		if (!the_range)
 			return
 		if (get_dist(usr,src) > 1)
-			boutput(usr, "<span style=\"color:red\">You flail your arms at [src] from across the room like a complete muppet. Move closer, genius!</span>")
+			boutput(usr, "<span style=\"color:red\">You flail your arms at [src.name] from across the room like a complete muppet. Move closer, genius!</span>")
 			return
 		the_range = max(src.min_range,min(the_range,src.max_range))
 		src.range = the_range
@@ -192,8 +230,6 @@
 
 	proc/build_icon()
 		src.overlays = null
-		boutput(usr, "<span style=\"color:blue\">current direction:  [direction]</span>")
-
 		if (src.coveropen)
 			if (istype(src.PCEL,/obj/item/cell/))
 				src.display_panel.icon_state = "panel-batt[direction]"
@@ -219,7 +255,7 @@
 					src.display_battery.icon_state = "batt-3[direction]"
 				src.overlays += src.display_battery
 
-	//this method should be overridden. Currenlty implements a meteorshield on the generator's turf
+	//this method should be overridden. Currenlty just draws single tile meteor shield
 	proc/shield_on()
 		if (!PCEL)
 			return
@@ -239,15 +275,17 @@
 
 	proc/shield_off(var/failed = 0)
 		//TODO: Change this if you get the chance
-		for(var/obj/forcefield/meteorshield/S in src.deployed_shields)
+		for(var/obj/forcefield/S in src.deployed_shields)
 			src.deployed_shields -= S
-			S.deployer = null
+			S:deployer = null	//There is no parent forcefield object and I'm not gonna be the one to make it so ":"
 			qdel(S)
 
-		src.anchored = 0
+		if (!connected)
+			src.anchored = 0
 		src.active = 0
+		update_nearby_tiles()
 		if (failed)
-			src.visible_message("<b>[src]</b> fails, and shuts down!")
+			src.visible_message("The <b>[src.name]</b> fails, and shuts down!")
 		playsound(src.loc, src.sound_off, 50, 1)
 		build_icon()
 
@@ -257,3 +295,67 @@
 			return source.update_nearby_tiles(need_rebuild)
 
 		return 1
+
+
+//Force field objects for various generators
+/obj/forcefield/meteorshield
+	name = "Impact Forcefield"
+	desc = "A force field deployed to stop meteors and other high velocity masses."
+	icon = 'icons/obj/meteor_shield.dmi'
+	icon_state = "shield"
+	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
+	var/obj/machinery/shieldgenerator/meteorshield/deployer = null
+
+	meteorhit(obj/O as obj)
+		if (istype(deployer, /obj/machinery/shieldgenerator/meteorshield))
+			var/obj/machinery/shieldgenerator/meteorshield/MS = deployer
+			if (MS.PCEL)
+				MS.PCEL.charge -= 60 * MS.range
+				playsound(src.loc, src.sound_shieldhit, 50, 1)
+			else
+				deployer = null
+				qdel(src)
+
+		else if (istype(deployer, /obj/machinery/shieldgenerator))
+			var/obj/machinery/shieldgenerator/SG = deployer
+			if ((SG.stat & (NOPOWER|BROKEN)) || !SG.powered())
+				deployer = null
+				qdel(src)
+			SG.use_power(10)
+			playsound(src.loc, src.sound_shieldhit, 50, 1)
+
+		else
+			deployer = null
+			qdel(src)
+
+/obj/forcefield/energyshield
+	name = "Forcefield"
+	desc = "A force field that can block various states of matter."
+	icon = 'icons/obj/meteor_shield.dmi'
+	icon_state = "shieldw"
+
+	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
+	var/obj/machinery/shieldgenerator/deployer = null
+
+	CanPass(atom/A, turf/T)
+		if (deployer == null) return 0
+		if (deployer.power_level == 1 || deployer.power_level == 2)
+			if (ismob(A)) return 1
+			if (isobj(A)) return 1
+		else return 0
+
+	meteorhit(obj/O as obj)
+		if (istype(deployer, /obj/machinery/shieldgenerator/energy_shield))
+			var/obj/machinery/shieldgenerator/energy_shield/ES = deployer
+			//unless the power level is 3, which blocks solid objects, meteors should pass through unmolested
+			if (ES.power_level == 3)
+				if (ES.PCEL)	//Technically these shields can be used as emergency meteor shields, but they are very bad a blocking them
+					ES.PCEL.charge -= 10 * ES.range * (ES.power_level * ES.power_level)
+					playsound(src.loc, src.sound_shieldhit, 50, 1)
+				else
+					deployer = null
+					qdel(src)
+
+		else
+			deployer = null
+			qdel(src)
