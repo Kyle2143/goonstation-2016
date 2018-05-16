@@ -80,7 +80,6 @@
 
 			return
 		else //connected grid has no power
-			// if 
 			if (!backup)
 				backup = !backup
 				first = 1
@@ -283,7 +282,10 @@
 		if (!connected)
 			src.anchored = 0
 		src.active = 0
-		update_nearby_tiles()
+		
+		//currently only the e-shield interacts with atmos
+		if (istype(src,/obj/machinery/shieldgenerator/energy_shield))
+			update_nearby_tiles()
 		if (failed)
 			src.visible_message("The <b>[src.name]</b> fails, and shuts down!")
 		playsound(src.loc, src.sound_off, 50, 1)
