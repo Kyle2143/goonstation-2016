@@ -24,7 +24,7 @@
 	var/direction = ""	//for building the icon, always north or directional
 	var/connected = 0	//determine if gen is wrenched over a wire.
 	var/backup = 0		//if equip power went out while connected to wire, this should be true. Used to automatically turn gen back on if power is restored
-	var/first = 0		//tic if when the power is out. 
+	var/first = 0		//tic when the power goes out. 
 
 	New()
 		PCEL = new /obj/item/cell/supercell(src)
@@ -67,8 +67,9 @@
 			return
 
 		if (powered()) //if connected to power grid and there is power
-			src.power_usage = 30 * (src.range + 1) * (power_level * power_level) //TODO
+			src.power_usage = 30 * (src.range + 1) * (power_level * power_level)
 			use_power(src.power_usage)
+
 			//automatically turn back on if gen was deactivated due to power outage
 			if (backup)
 				backup = !backup
@@ -274,7 +275,6 @@
 
 
 	proc/shield_off(var/failed = 0)
-		//TODO: Change this if you get the chance
 		for(var/obj/forcefield/S in src.deployed_shields)
 			src.deployed_shields -= S
 			S:deployer = null	//There is no parent forcefield object and I'm not gonna be the one to make it so ":"

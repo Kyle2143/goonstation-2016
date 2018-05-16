@@ -134,22 +134,7 @@
 	verb/toggle()
 		set src in view(1)
 		attack_hand(usr)
-		// if (src.active)
-		// 	shield_off()
-		// 	src.visible_message("<b>[usr.name]</b> powers down the [src].")
-		// else
-		// 	if ((PCEL && PCEL.charge > 0) || (powered() && !PCEL))
-		// 		src.shield_on()
-		// 		src.visible_message("<b>[usr.name]</b> powers up the [src].")
-
 	verb/rotate()
-		// set src in view(1)
-		// if (src.active)
-		// 	boutput(usr, "<span style=\"color:red\">You can't rotate an active shield generator!</span>")
-		// 	return
-		// src.dir = turn(src.dir, -90)
-		// update_orientation()
-		// boutput(usr, "<span style=\"color:blue\">Orientation set to : [orientation ? "Horizontal" : "Vertical"]</span>")
 		set src in view(1)
 		if (src.active)
 			shield_off()
