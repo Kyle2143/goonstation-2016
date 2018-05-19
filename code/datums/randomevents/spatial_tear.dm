@@ -1,16 +1,25 @@
-/datum/random_event/major/spatial_tear
+/datum/random_event/major/spatial_tear/spatial_tear
 	name = "Spatial Tear"
 	centcom_headline = "Spatial Anomaly"
 	centcom_message = "A severe spatial anomaly has been detected near the station. Personnel are advised to avoid any unusual phenomenae."
 	required_elapsed_round_time = 6000 // 10m
+	var/list/spatial_tears = new()
+
+	event_effect(var/source)
+		..()
+		var/datum/random_event/major/spatial_tear/induvidual_tear/tear = new(source)
+
+		spatial_tears.Add(tear)
+
+
+/datum/random_event/major/spatial_tear/induvidual_tear
 
 	//turfs North/East and South/West of corresponding tears stored for player teleportation
 	var/list/turfsSW = new()
 	var/list/turfsNE = new()
 	var/btype
 
-	event_effect(var/source)
-		..()
+	New(var/source)
 		var/barrier_duration = rand(600, 3000)
 		var/pickx = rand(40,175)
 		var/picky = rand(75,140)
@@ -36,12 +45,6 @@
 				turfsSW.Add(locate(B.x, B.y-1, 1))
 				turfsNE.Add(locate(B.x, B.y+1, 1))
 
-
-	
-// /datum/random_event/major/spatial_tear/induvidual_tear
-// 	var/list/spatial_tears = new()
-
-
 /obj/forcefield/event
 	name = "Spatial Tear"
 	desc = "A breach in the spatial fabric. Extremely difficult to pass."
@@ -51,34 +54,25 @@
 	opacity = 1
 	density = 0
 	layer = NOLIGHT_EFFECTS_LAYER_BASE
-	var/datum/random_event/major/spatial_tear/tear
+	var/datum/random_event/major/spatial_tear/induvidual_tear/tear
 
-	New(loc,duration, datum/random_event/major/spatial_tear/spatialTear)
+	New(loc,duration, datum/random_event/major/spatial_tear/induvidual_tear/spatialTear)
 		..()
 		tear = spatialTear
 		spawn(duration)
 			qdel(src)
-			if (src.tear.turfsSW != null && src.tear.turfsNE != null)
+			// if (src.tear.turfsSW != null && src.tear.turfsNE != null)
 				//Remove corresponding teleport turfs
-				// src.tear.turfsSW.Remove(src)
-				// src.tear.turfsNE.Remove(src)
-
-
-	// CanPass(atom/A, turf/T)
-	// 	if (A.x)
-	// 	if (deployer == null) return 0
-	// 	if (deployer.power_level == 1 || deployer.power_level == 2)
-	// 		if (ismob(A)) return 1
-	// 		if (isobj(A)) return 1
-	// 	else return 0
+				 if (src.tear != null)
+				 	src.tear = null
 
 	HasEntered(atom/A, turf/OldLoc)
 
 		if (istype(A, /mob/living/carbon/human)/* && !locate(/obj/atmos_field, OldLoc)*/) // NOPE!! stepping around in the field while you're already inside it is fine
 			var/mob/living/carbon/human/M = A
 			// var/list/L = getTurfList(OldLoc)
-			if (istype(tear, /datum/random_event/major/spatial_tear))
-				var/datum/random_event/major/spatial_tear/T = tear
+			if (istype(tear, /datum/random_event/major/spatial_tear/induvidual_tear))
+				var/datum/random_event/major/spatial_tear/induvidual_tear/T = tear
 
 				if (T == null)
 					//Something's broken
