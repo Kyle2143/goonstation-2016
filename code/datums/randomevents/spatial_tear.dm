@@ -18,9 +18,10 @@
 	var/list/turfsSW = new()
 	var/list/turfsNE = new()
 	var/btype
+	var/barrier_duration
 
 	New(var/source)
-		var/barrier_duration = rand(600, 3000)
+		barrier_duration = rand(600, 3000)
 		var/pickx = rand(40,175)
 		var/picky = rand(75,140)
 		btype = rand(1,2)
@@ -49,10 +50,37 @@
 			remove_bad_turfs(turfsSW)
 			remove_bad_turfs(turfsNE)
 
+		var/c = 0
+		while (c < 40)
+			var/spawnCritter = rand(1, /*barrier_duration*/40)
+
+			spawn(spawnCritter)
+				var/r = rand(0,1)
+				if (r)
+					if (src.turfsNE)
+						pick_critter_to_spawn(pick(src.turfsNE))
+				else
+					if (src.turfsSW)
+						pick_critter_to_spawn(pick(src.turfsSW))
+
+	/proc/pick_critter_to_spawn(turf/T)
+		var/critter_type
+		var/datum/adventure_submode/critter/adv = new()
+		critter_type = pick (adv.critters)
+		var/obj/critter/template = new critter_type()
+
+		// var/cname = input("What kind of critter?", "Critter type", "Skeleton") in adv.critters
+		// critter_amount = input("How many [cname]s to spawn?", "Critter count", 1) as num
+		// critter_type = adv.critters[cname]
+		// var/obj/critter/template = new critter_type()
+
+
+		return template
+
 	//loops through the list of all turfs and removes any that are dense or space
 	/proc/remove_bad_turfs(var/list/turfs)
 		for(var/turf/T in turfs)
-			if(istype(T,/turf/space) || (T.density)) continue
+			if(istype(T,/turf/space) || (T.density))
 				turfs.Remove(T)
 		
 		return turfs
@@ -80,20 +108,29 @@
 			if (src.tear != null)
 				src.tear = null
 
+		// var/spawnCritter = rand(1, duration)
+
+		// spawn(spawnCritter)
+		// 	if (tear.)
+
+	// /proc/spawn_critter()
+	// 	new /mob/living/critter()
+
+	//Critters can't pass through the tear, unfair I know.
+	CanPass(atom/movable/A, turf/target)
+		if (ishuman(A)) return 1
+		if (issilicon(A)) return 1
+
+		return 0
+
 	HasEntered(atom/A, turf/OldLoc)
 		if (istype(A, /mob/living))
 			var/mob/living/M = A
-
-			//Critters can't pass through the tear, unfair I know.
-			if (istype(A, /mob/living/critter))
-				return
-
 			if (istype(tear, /datum/random_event/major/spatial_tear/induvidual_tear))
 				var/datum/random_event/major/spatial_tear/induvidual_tear/T = tear
 				handle_teleport(T, M, OldLoc)
 				handle_damage(M)
-				//Considering making a human pick up a random item while passing through the tear. Like they got it in their travels inside.
-
+				//I'm considering making a human pick up a random item while passing through the tear. Like they got it in their travels inside. 05/18 - Kyle
 
 	//Handle assigning damage to various mobs that can pass through, currently only humans and cyborgs can pass
 	proc/handle_damage(mob/living/M)
@@ -107,7 +144,7 @@
 			var/tox = 0
 			//brute damage most likely to be inflicted. 
 			//these could change, but I wanted it to be like anything could happen while crossing the tear
-			var/damage_type = pick(
+			/*var/damage_type = */pick(
 				prob(100)
 					brute = damage,
 				prob(75)
@@ -115,7 +152,7 @@
 				prob(75)
 					tox = damage
 				)
-			H.TakeDamage(damage_zone, brute + damage_type, burn + damage_type, tox + damage_type, 0, 0)
+			H.TakeDamage(damage_zone, brute, burn, tox, 0, 0)
 
 		else if (istype(M, /mob/living/silicon))
 			var/mob/living/silicon/robot/S = M
