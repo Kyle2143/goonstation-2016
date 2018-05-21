@@ -52,6 +52,7 @@
 			remove_bad_turfs(turfsNE)
 
 		spawnCritters()
+
 	//loops through the list of all turfs and removes any that are dense or space
 	/proc/remove_bad_turfs(var/list/turfs)
 		for(var/turf/T in turfs)
@@ -60,9 +61,9 @@
 
 		return turfs
 
+	// selects a random amount of times to spawn critter
 	proc/spawnCritters()
-		var/amountSpawned = rand(2, 6)
-
+		var/amountSpawned = rand(4, 12)
 		while(amountSpawned > 0)
 			var/r = rand(0,1)
 			if (r && src.turfsNE && src.turfsNE.len > 0)
@@ -71,35 +72,36 @@
 				pick_critter_to_spawn(pick(src.turfsSW))
 			amountSpawned--
 
+	//
 	/proc/pick_critter_to_spawn(turf/T)
 		pick(
+			prob(10)
+				new /obj/critter/wendigo/king(T),
+			prob(20)
+				new /obj/critter/wendigo(T),
 			prob(30)
 				new /obj/critter/spider/spacerachnid(T),
+			prob(30)
 				new /obj/critter/spider/ice(T),
-				new /obj/critter/spider/ice/baby(T),
-				new /obj/critter/spider/ice/queen(T),
-			prob(20)
-				new /obj/critter/martian/psychic(T),
-				new /obj/critter/martian/sapper(T),
+			prob(40)
 				new /obj/critter/martian/soldier(T),
+			prob(40)
 				new /obj/critter/martian/warrior(T),
-			prob(40)
+			prob(50)
 				new /obj/critter/zombie(T),
-				new /obj/critter/zombie/scientist(T),
+			prob(50)
 				new /obj/critter/zombie/security(T),
-			prob(40)
-				new /obj/critter/wendigo(T),
-				new /obj/critter/wendigo/king(T),
+			prob(80)
 				new /obj/critter/bear(T),
 			prob(100)
 				new /obj/critter/floateye(T),
-				new /obj/critter/bat/buff(T),
-				new /obj/critter/domestic_bee(T),
+			prob(100)
 				new /obj/critter/spacebee(T),
 		)
 
 
-		//Can't get this to work, giving up, just doing the above
+		//originally wanted to pick from list of critters, but problems abound.
+		//leaving this here if someone more knowledgable than I wants to make it work
 		// var/datum/adventure_submode/critter/adv = new() // instantiating for statics grghhgh.
 		// var/type = pick(adv.critters)
 		// new type(T)
