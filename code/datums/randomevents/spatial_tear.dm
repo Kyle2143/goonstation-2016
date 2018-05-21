@@ -1,4 +1,5 @@
-/datum/random_event/major/spatial_tear
+//make new even, multiple tears, single tear. and change name of induvidual tear to tear
+/datum/random_event/major/spatial_tears
 	name = "Spatial Tear"
 	centcom_headline = "Spatial Anomaly"
 	centcom_message = "A severe spatial anomaly has been detected near the station. Personnel are advised to avoid any unusual phenomenae."
@@ -7,13 +8,13 @@
 
 	event_effect(var/source)
 		..()
-		var/datum/random_event/major/spatial_tear/induvidual_tear/tear = new(source)
+		var/datum/spatial_tears/induvidual_tear/tear = new(source)
 
 		spatial_tears.Add(tear)
 
-
-/datum/random_event/major/spatial_tear/induvidual_tear
-
+//Named so because I don't want this induvidual tear being triggered by events, 
+// and I didn't want to mess with the admin spawn and major events code. 
+/datum/spatial_tears/induvidual_tear
 	//turfs North/East and South/West of corresponding tears stored for player teleportation
 	var/list/turfsSW = new()
 	var/list/turfsNE = new()
@@ -25,7 +26,7 @@
 		var/pickx = rand(40,175)
 		var/picky = rand(75,140)
 		btype = rand(1,2)
-		var/count = btype == 1 ? world.maxy : world.maxx // could just set it to our current mapsize (300) but this should help in case that changes again in the future or we go with non-square maps for some reason??  :v
+		var/count = btype == 1 ? world.maxy : world.maxx
 		if (btype == 1)
 			// Vertical
 			while (count > 0)
@@ -50,43 +51,61 @@
 			remove_bad_turfs(turfsSW)
 			remove_bad_turfs(turfsNE)
 
-		var/c = 0
-		while (c < 40)
-			var/spawnCritter = rand(1, /*barrier_duration*/40)
-
-			spawn(spawnCritter)
-				var/r = rand(0,1)
-				if (r)
-					if (src.turfsNE)
-						pick_critter_to_spawn(pick(src.turfsNE))
-				else
-					if (src.turfsSW)
-						pick_critter_to_spawn(pick(src.turfsSW))
-
-	/proc/pick_critter_to_spawn(turf/T)
-		var/critter_type
-		var/datum/adventure_submode/critter/adv = new()
-		critter_type = pick (adv.critters)
-		var/obj/critter/template = new critter_type()
-
-		// var/cname = input("What kind of critter?", "Critter type", "Skeleton") in adv.critters
-		// critter_amount = input("How many [cname]s to spawn?", "Critter count", 1) as num
-		// critter_type = adv.critters[cname]
-		// var/obj/critter/template = new critter_type()
-
-
-		return template
-
+		spawnCritters()
 	//loops through the list of all turfs and removes any that are dense or space
 	/proc/remove_bad_turfs(var/list/turfs)
 		for(var/turf/T in turfs)
 			if(istype(T,/turf/space) || (T.density))
 				turfs.Remove(T)
-		
+
 		return turfs
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	proc/spawnCritters()
+		var/amountSpawned = rand(2, 6)
 
+		while(amountSpawned > 0)
+			var/r = rand(0,1)
+			if (r && src.turfsNE && src.turfsNE.len > 0)
+				pick_critter_to_spawn(pick(src.turfsNE))
+			else if (src.turfsSW && src.turfsSW.len > 0)
+				pick_critter_to_spawn(pick(src.turfsSW))
+			amountSpawned--
+
+	/proc/pick_critter_to_spawn(turf/T)
+		pick(
+			prob(30)
+				new /obj/critter/spider/spacerachnid(T),
+				new /obj/critter/spider/ice(T),
+				new /obj/critter/spider/ice/baby(T),
+				new /obj/critter/spider/ice/queen(T),
+			prob(20)
+				new /obj/critter/martian/psychic(T),
+				new /obj/critter/martian/sapper(T),
+				new /obj/critter/martian/soldier(T),
+				new /obj/critter/martian/warrior(T),
+			prob(40)
+				new /obj/critter/zombie(T),
+				new /obj/critter/zombie/scientist(T),
+				new /obj/critter/zombie/security(T),
+			prob(40)
+				new /obj/critter/wendigo(T),
+				new /obj/critter/wendigo/king(T),
+				new /obj/critter/bear(T),
+			prob(100)
+				new /obj/critter/floateye(T),
+				new /obj/critter/bat/buff(T),
+				new /obj/critter/domestic_bee(T),
+				new /obj/critter/spacebee(T),
+		)
+
+
+		//Can't get this to work, giving up, just doing the above
+		// var/datum/adventure_submode/critter/adv = new() // instantiating for statics grghhgh.
+		// var/type = pick(adv.critters)
+		// new type(T)
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /obj/forcefield/event
 	name = "Spatial Tear"
 	desc = "A breach in the spatial fabric. Extremely difficult to pass."
@@ -96,25 +115,15 @@
 	opacity = 1
 	density = 0
 	layer = NOLIGHT_EFFECTS_LAYER_BASE
-	var/datum/random_event/major/spatial_tear/induvidual_tear/tear
+	var/datum/spatial_tears/induvidual_tear/tear
 
-	New(loc,duration, datum/random_event/major/spatial_tear/induvidual_tear/spatialTear)
+	New(loc,duration, datum/spatial_tears/induvidual_tear/spatialTear)
 		..()
 		tear = spatialTear
 		spawn(duration)
 			qdel(src)
-			// if (src.tear.turfsSW != null && src.tear.turfsNE != null)
-				//Remove corresponding teleport turfs
 			if (src.tear != null)
 				src.tear = null
-
-		// var/spawnCritter = rand(1, duration)
-
-		// spawn(spawnCritter)
-		// 	if (tear.)
-
-	// /proc/spawn_critter()
-	// 	new /mob/living/critter()
 
 	//Critters can't pass through the tear, unfair I know.
 	CanPass(atom/movable/A, turf/target)
@@ -126,15 +135,14 @@
 	HasEntered(atom/A, turf/OldLoc)
 		if (istype(A, /mob/living))
 			var/mob/living/M = A
-			if (istype(tear, /datum/random_event/major/spatial_tear/induvidual_tear))
-				var/datum/random_event/major/spatial_tear/induvidual_tear/T = tear
+			if (istype(tear, /datum/spatial_tears/induvidual_tear))
+				var/datum/spatial_tears/induvidual_tear/T = tear
 				handle_teleport(T, M, OldLoc)
 				handle_damage(M)
-				//I'm considering making a human pick up a random item while passing through the tear. Like they got it in their travels inside. 05/18 - Kyle
 
 	//Handle assigning damage to various mobs that can pass through, currently only humans and cyborgs can pass
 	proc/handle_damage(mob/living/M)
-		var/damage = rand(10, 30)
+		var/damage = rand(5, 20)
 		if (istype(M, /mob/living/carbon/human))
 			var/mob/living/carbon/human/H = M
 			H.remove_stamina(50)
@@ -142,9 +150,7 @@
 			var/brute = 0
 			var/burn = 0
 			var/tox = 0
-			//brute damage most likely to be inflicted. 
-			//these could change, but I wanted it to be like anything could happen while crossing the tear
-			/*var/damage_type = */pick(
+			pick(
 				prob(100)
 					brute = damage,
 				prob(75)
@@ -156,13 +162,14 @@
 
 		else if (istype(M, /mob/living/silicon))
 			var/mob/living/silicon/robot/S = M
-			//stolen from robot.dm
+			//stolen from robot.dm not sure how else to damage silicons. I guess the other silicons like the AI get a free pass
+			//Honestly at first I was considering making silicons take no damage, so I don't know if we even want this
 			for (var/obj/item/parts/robot_parts/RP in S.contents)
 				if (RP.ropart_take_damage(damage,damage) == 1) S.compborg_lose_limb(RP)
 
 
 	//Detemines which way to teleport the mob to
-	proc/handle_teleport(datum/random_event/major/spatial_tear/induvidual_tear/T, var/mob/living/M, var/turf/OldLoc)
+	proc/handle_teleport(datum/spatial_tears/induvidual_tear/T, var/mob/living/M, var/turf/OldLoc)
 		if (T == null)
 			//Something's broken. Are there asset statements or error logs to print this error to?
 			return
@@ -181,10 +188,9 @@
 			else
 				teleport(M, T.turfsSW)
 
-
 	//Selects a random turf from the list and teleports the Human to that turf.
 	proc/teleport(mob/living/M as mob, var/list/L)
-		
+		//stolen sound from wizard Blink ability.
 		playsound(M.loc, "sound/effects/mag_teleport.ogg", 25, 1, -1)
 
 		var/turf/picked = null
@@ -193,6 +199,4 @@
 		if(!isturf(picked))
 			boutput(M, "<span style=\"color:red\">You can't pass through, there must be nowhere to go.</span>")
 			return
-		
-		// animate_blink(M)
 		M.set_loc(picked)
