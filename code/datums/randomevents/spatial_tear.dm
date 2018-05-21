@@ -1,4 +1,18 @@
 //make new even, multiple tears, single tear. and change name of induvidual tear to tear
+/datum/random_event/major/spatial_tears
+	name = "Multiple Spatial Tears"
+	centcom_headline = "Spatial Anomaly"
+	centcom_message = "A severe spatial anomaly has been detected near the station. Personnel are advised to avoid any unusual phenomenae."
+	required_elapsed_round_time = 6000 // 10m
+	var/list/tears = new()
+
+	event_effect(var/source)
+		..()
+		var/r = rand(3, 7)
+		for (var/i = 0 to r)
+			var/datum/spatial_tears/tear/tear = new(source)
+			tears.Add(tear)
+
 /datum/random_event/major/spatial_tear
 	name = "Spatial Tear"
 	centcom_headline = "Spatial Anomaly"
