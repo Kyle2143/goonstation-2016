@@ -2,7 +2,7 @@
 /datum/random_event/major/spatial_tears
 	name = "Multiple Spatial Tears"
 	centcom_headline = "Spatial Anomaly"
-	centcom_message = "A severe spatial anomaly has been detected near the station. Personnel are advised to avoid any unusual phenomenae."
+	centcom_message = "A very severe spatial anomaly has been detected near the station. Personnel are advised to avoid any unusual phenomenae."
 	required_elapsed_round_time = 6000 // 10m
 	var/list/tears = new()
 
