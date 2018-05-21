@@ -8,13 +8,13 @@
 
 	event_effect(var/source)
 		..()
-		var/datum/spatial_tears/induvidual_tear/tear = new(source)
+		var/datum/spatial_tears/tear/tear = new(source)
 
 		spatial_tears.Add(tear)
 
 //Named so because I don't want this induvidual tear being triggered by events, 
 // and I didn't want to mess with the admin spawn and major events code. 
-/datum/spatial_tears/induvidual_tear
+/datum/spatial_tears/tear
 	//turfs North/East and South/West of corresponding tears stored for player teleportation
 	var/list/turfsSW = new()
 	var/list/turfsNE = new()
@@ -117,9 +117,9 @@
 	opacity = 1
 	density = 0
 	layer = NOLIGHT_EFFECTS_LAYER_BASE
-	var/datum/spatial_tears/induvidual_tear/tear
+	var/datum/spatial_tears/tear/tear
 
-	New(loc,duration, datum/spatial_tears/induvidual_tear/spatialTear)
+	New(loc,duration, datum/spatial_tears/tear/spatialTear)
 		..()
 		tear = spatialTear
 		spawn(duration)
@@ -137,8 +137,8 @@
 	HasEntered(atom/A, turf/OldLoc)
 		if (istype(A, /mob/living))
 			var/mob/living/M = A
-			if (istype(tear, /datum/spatial_tears/induvidual_tear))
-				var/datum/spatial_tears/induvidual_tear/T = tear
+			if (istype(tear, /datum/spatial_tears/tear))
+				var/datum/spatial_tears/tear/T = tear
 				handle_teleport(T, M, OldLoc)
 				handle_damage(M)
 
@@ -171,7 +171,7 @@
 
 
 	//Detemines which way to teleport the mob to
-	proc/handle_teleport(datum/spatial_tears/induvidual_tear/T, var/mob/living/M, var/turf/OldLoc)
+	proc/handle_teleport(datum/spatial_tears/tear/T, var/mob/living/M, var/turf/OldLoc)
 		if (T == null)
 			//Something's broken. Are there asset statements or error logs to print this error to?
 			return
