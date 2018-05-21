@@ -153,8 +153,8 @@
 			var/mob/living/M = A
 			if (istype(tear, /datum/spatial_tears/tear))
 				var/datum/spatial_tears/tear/T = tear
-				handle_teleport(T, M, OldLoc)
 				handle_damage(M)
+				handle_teleport(T, M, OldLoc)
 
 	//Handle assigning damage to various mobs that can pass through, currently only humans and cyborgs can pass
 	proc/handle_damage(mob/living/M)
