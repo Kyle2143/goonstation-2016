@@ -1,16 +1,16 @@
 //make new even, multiple tears, single tear. and change name of induvidual tear to tear
-/datum/random_event/major/spatial_tears
+/datum/random_event/major/spatial_tear
 	name = "Spatial Tear"
 	centcom_headline = "Spatial Anomaly"
 	centcom_message = "A severe spatial anomaly has been detected near the station. Personnel are advised to avoid any unusual phenomenae."
 	required_elapsed_round_time = 6000 // 10m
-	var/list/spatial_tears = new()
+	var/list/tears = new()
 
 	event_effect(var/source)
 		..()
 		var/datum/spatial_tears/tear/tear = new(source)
 
-		spatial_tears.Add(tear)
+		tears.Add(tear)
 
 //Named so because I don't want this induvidual tear being triggered by events, 
 // and I didn't want to mess with the admin spawn and major events code. 
