@@ -89,8 +89,6 @@
 	//
 	/proc/pick_critter_to_spawn(turf/T)
 		pick(
-			prob(10)
-				new /obj/critter/wendigo/king(T),
 			prob(20)
 				new /obj/critter/wendigo(T),
 			prob(30)
@@ -102,9 +100,7 @@
 			prob(40)
 				new /obj/critter/martian/warrior(T),
 			prob(50)
-				new /obj/critter/zombie(T),
-			prob(50)
-				new /obj/critter/zombie/security(T),
+				new /obj/critter/magiczombie(T), //Skeleton
 			prob(80)
 				new /obj/critter/bear(T),
 			prob(100)
