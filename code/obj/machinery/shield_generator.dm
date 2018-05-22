@@ -341,6 +341,26 @@
 
 	CanPass(atom/A, turf/T)
 		if (deployer == null) return 0
+
+		var/level = deployer.power_level
+
+		switch(level)
+			//power level one, atmos shield. Only atmos is blocked by this forcefield
+			if(1)
+				if (ismob(A)) return 1
+				if (isobj(A)) return 1
+				if (isliquid(A)) return 1			//change this to the proc to check if it's liquid/////////////
+
+			//power level 2, liquid shield. Only liquids are blocked by this forcefield
+			if(2)
+				if (ismob(A)) return 1
+				if (isobj(A)) return 1
+				if (isliquid(A)) return 0			//change this to the proc to check if it's liquid//////////////////
+
+			//power level 3, solid shield. Nothing can pass by this shield
+			if(3)
+				return 0
+
 		if (deployer.power_level == 1 || deployer.power_level == 2)
 			if (ismob(A)) return 1
 			if (isobj(A)) return 1
