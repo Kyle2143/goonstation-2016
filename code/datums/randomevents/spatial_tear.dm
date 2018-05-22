@@ -1,4 +1,4 @@
-//make new even, multiple tears, single tear. and change name of induvidual tear to tear
+//makes multiple Spatial Tears
 /datum/random_event/major/spatial_tears
 	name = "Multiple Spatial Tears"
 	centcom_headline = "Spatial Anomaly"
@@ -13,6 +13,7 @@
 			var/datum/spatial_tears/tear/tear = new(source)
 			tears.Add(tear)
 
+//makes a single spatial tear
 /datum/random_event/major/spatial_tear
 	name = "Spatial Tear"
 	centcom_headline = "Spatial Anomaly"
@@ -68,7 +69,7 @@
 		spawnCritters()
 
 	//loops through the list of all turfs and removes any that are dense or space
-	/proc/remove_bad_turfs(var/list/turfs)
+	proc/remove_bad_turfs(var/list/turfs)
 		for(var/turf/T in turfs)
 			if(istype(T,/turf/space) || (T.density))
 				turfs.Remove(T)
@@ -86,8 +87,7 @@
 				pick_critter_to_spawn(pick(src.turfsSW))
 			amountSpawned--
 
-	//
-	/proc/pick_critter_to_spawn(turf/T)
+	proc/pick_critter_to_spawn(turf/T)
 		pick(
 			prob(20)
 				new /obj/critter/wendigo(T),
@@ -109,13 +109,11 @@
 				new /obj/critter/spacebee(T),
 		)
 
-
 		//originally wanted to pick from list of critters, but problems abound.
 		//leaving this here if someone more knowledgable than I wants to make it work
 		// var/datum/adventure_submode/critter/adv = new() // instantiating for statics grghhgh.
 		// var/type = pick(adv.critters)
 		// new type(T)
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /obj/forcefield/event
