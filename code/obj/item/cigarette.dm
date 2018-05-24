@@ -357,6 +357,7 @@
 		return ..()
 	return
 
+//Basically the same as above. This is useful so you can get cigs from packs when you only have one arm
 /obj/item/cigpacket/attack_self(var/mob/user as mob)
 	if (src.cigcount == 0)
 		user.show_text("You're out of cigs, shit! How you gonna get through the rest of the day?", "red")
