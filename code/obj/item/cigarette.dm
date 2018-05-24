@@ -374,7 +374,7 @@
 			W.set_loc(get_turf(user))
 			user.show_text("You knock a cig out of [src] onto the ground. What a pro.", "red")
 
-		src.update_icon()
+	src.update_icon()
 
 /obj/item/cigbutt
 	name = "cigarette butt"
