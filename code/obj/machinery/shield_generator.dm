@@ -339,6 +339,25 @@
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
 	var/obj/machinery/shieldgenerator/deployer = null
 
+	New(Loc, var/obj/machinery/shieldgenerator/deployer)
+		..()
+		src.deployer = deployer
+		if (deployer != null && deployer.power_level == 1)
+			src.name = "Atmospheric Forcefield"
+			src.desc = "A force field that prevents gas from passing through it."
+			src.icon_state = "shieldw" //change colour or something for different power levels
+			src.color = "#3333FF"
+		else if (deployer.power_level == 2)
+			src.name = "Atmospheric/Liquid Forcefield"
+			src.desc = "A force field that prevents gas and liquids from passing through it."
+			src.icon_state = "shieldw" //change colour or something for different power levels
+			src.color = "#33FF33"
+		else
+			src.name = "Energy Forcefield"
+			src.desc = "A force field that prevents matter from passing through it."
+			src.icon_state = "shieldw" //change colour or something for different power levels
+			src.color = "#FF3333"
+
 	CanPass(atom/A, turf/T)
 		if (deployer == null) return 0
 
@@ -349,13 +368,13 @@
 			if(1)
 				if (ismob(A)) return 1
 				if (isobj(A)) return 1
-				if (isliquid(A)) return 1			//change this to the proc to check if it's liquid/////////////
+				// if (isliquid(A)) return 1			//change this to the proc to check if it's liquid/////////////
 
 			//power level 2, liquid shield. Only liquids are blocked by this forcefield
 			if(2)
 				if (ismob(A)) return 1
 				if (isobj(A)) return 1
-				if (isliquid(A)) return 0			//change this to the proc to check if it's liquid//////////////////
+				// if (isliquid(A)) return 0			//change this to the proc to check if it's liquid//////////////////
 
 			//power level 3, solid shield. Nothing can pass by this shield
 			if(3)

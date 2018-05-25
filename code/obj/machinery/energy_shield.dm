@@ -54,9 +54,8 @@
 		var/ya= -range-1
 		var/atom/A
 		if (range == 0)
-			var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((src.x),(src.y),src.z) )
+			var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((src.x),(src.y),src.z), src )
 			S.icon_state = "enshieldw"
-			S.deployer = src
 			src.deployed_shields += S
 		else
 			for (var/i = 0-range, i <= range, i++)
@@ -94,7 +93,7 @@
 
 	//this is so long because I wanted the tiles to look like one seamless object. Otherwise it could just be a single line 
 	proc/createForcefieldObject(var/xa as num, var/ya as num)
-		var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((src.x + xa),(src.y + ya),src.z) )
+		var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x + xa),(src.y + ya),src.z), src )
 		if (xa == -range)
 			S.dir = SOUTHWEST
 		else if (xa == range)
@@ -108,23 +107,7 @@
 		else if (!orientation)
 			S.dir = EAST
 
-		S.deployer = src
 		src.deployed_shields += S
-		if (src.power_level == 1)
-			S.name = "Atmospheric Forcefield"
-			S.desc = "A force field that prevents gas from passing through it."
-			S.icon_state = "shieldw" //change colour or something for different power levels
-			S.color = "#3333FF"
-		else if (src.power_level == 2)
-			S.name = "Atmospheric/Liquid Forcefield"
-			S.desc = "A force field that prevents gas and liquids from passing through it."
-			S.icon_state = "shieldw" //change colour or something for different power levels
-			S.color = "#33FF33"
-		else
-			S.name = "Energy Forcefield"
-			S.desc = "A force field that prevents matter from passing through it."
-			S.icon_state = "shieldw" //change colour or something for different power levels
-			S.color = "#FF3333"
 
 		return S
 
