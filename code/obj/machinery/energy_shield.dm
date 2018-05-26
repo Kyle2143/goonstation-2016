@@ -74,7 +74,7 @@
 		src.anchored = 1
 		src.active = 1
 
-		update_nearby_tiles()
+		// update_nearby_tiles()
 		playsound(src.loc, src.sound_on, 50, 1)
 		if (src.power_level == 1)
 			display_active.color = "#0000FA"

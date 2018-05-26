@@ -284,19 +284,19 @@
 		src.active = 0
 		
 		//currently only the e-shield interacts with atmos
-		if (istype(src,/obj/machinery/shieldgenerator/energy_shield))
-			update_nearby_tiles()
+		// if (istype(src,/obj/machinery/shieldgenerator/energy_shield))
+		// 	update_nearby_tiles()
 		if (failed)
 			src.visible_message("The <b>[src.name]</b> fails, and shuts down!")
 		playsound(src.loc, src.sound_off, 50, 1)
 		build_icon()
 
-	proc/update_nearby_tiles(need_rebuild)
-		var/turf/simulated/source = loc
-		if (istype(source))
-			return source.update_nearby_tiles(need_rebuild)
+	// proc/update_nearby_tiles(need_rebuild)
+	// 	var/turf/simulated/source = loc
+	// 	if (istype(source))
+	// 		return source.update_nearby_tiles(need_rebuild)
 
-		return 1
+	// 	return 1
 
 
 //Force field objects for various generators
@@ -342,6 +342,7 @@
 	New(Loc, var/obj/machinery/shieldgenerator/deployer)
 		..()
 		src.deployer = deployer
+		update_nearby_tiles
 		if (deployer != null && deployer.power_level == 1)
 			src.name = "Atmospheric Forcefield"
 			src.desc = "A force field that prevents gas from passing through it."
@@ -357,6 +358,16 @@
 			src.desc = "A force field that prevents matter from passing through it."
 			src.icon_state = "shieldw" //change colour or something for different power levels
 			src.color = "#FF3333"
+
+	disposing()
+		update_nearby_tiles			
+
+	proc/update_nearby_tiles(need_rebuild)
+		var/turf/simulated/source = loc
+		if (istype(source))
+			return source.update_nearby_tiles(need_rebuild)
+
+		return 1
 
 	CanPass(atom/A, turf/T)
 		if (deployer == null) return 0
