@@ -291,14 +291,6 @@
 		playsound(src.loc, src.sound_off, 50, 1)
 		build_icon()
 
-	// proc/update_nearby_tiles(need_rebuild)
-	// 	var/turf/simulated/source = loc
-	// 	if (istype(source))
-	// 		return source.update_nearby_tiles(need_rebuild)
-
-	// 	return 1
-
-
 //Force field objects for various generators
 /obj/forcefield/meteorshield
 	name = "Impact Forcefield"
@@ -342,7 +334,7 @@
 	New(Loc, var/obj/machinery/shieldgenerator/deployer)
 		..()
 		src.deployer = deployer
-		update_nearby_tiles
+		update_nearby_tiles()
 		if (deployer != null && deployer.power_level == 1)
 			src.name = "Atmospheric Forcefield"
 			src.desc = "A force field that prevents gas from passing through it."
@@ -360,7 +352,20 @@
 			src.color = "#FF3333"
 
 	disposing()
-		update_nearby_tiles			
+		update_nearby_tiles()
+
+		// spawn(10)
+		// 	var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x),(src.y),src.z), deployer )
+		// 	deployer.deployed_shields += S
+	Del()
+		update_nearby_tiles()
+
+		// spawn(10)
+		// 	var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x),(src.y),src.z), deployer )
+		// 	deployer.deployed_shields += S
+
+
+
 
 	proc/update_nearby_tiles(need_rebuild)
 		var/turf/simulated/source = loc
