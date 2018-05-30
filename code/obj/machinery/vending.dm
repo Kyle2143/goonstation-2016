@@ -113,6 +113,7 @@
 	proc/create_products()
 		return
 
+
 /obj/machinery/vending/coffee
 	name = "coffee machine"
 	desc = "A Robust Coffee vending machine."
@@ -1025,6 +1026,22 @@
 		return
 	else if (istype(W, /obj/item/device/multitool))
 		return src.attack_hand(user)
+
+	if (istype(W, /obj/item/vending/restock_cartridge))
+		//check if cartridge type matches the vending machine
+		if (istype(src, text2path("/obj/machinery/vending/[W:vendingType]")))
+			//remove all producs, reinitialize array and then create the products like new
+			src.product_list = new() 
+			src.create_products()
+			src.generate_HTML(1)
+
+			boutput(user, "<span style=\"color:blue\">You restocked the items in [src].</span>")
+			playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
+			user.u_equip(W)
+			qdel(W)
+			return
+		else
+			boutput(user, "<span style=\"color:red\">[W] is not compatible with [src].</span>")
 
 	else
 		..()
