@@ -1,13 +1,13 @@
 /obj/item/vending/restock_cartridge
 	name = "All-Purpose restock cartridge"
 	icon = 'icons/obj/vending.dmi'
-	icon_state = "comp-panel"
+	icon_state = "restock-cartridge"
 	desc = "A cartridge that somehow is capable of restocking any type of vending machine"
 	throwforce = 1
 	w_class = 1.0
 	throw_speed = 5
 	throw_range = 10
-	var/vendingType = "all"
+	var/vendingType = "all" //vending machine path name ending for cartridge compatability check. I wanted to use reflection, but this was easier
 
 
 /obj/item/vending/restock_cartridge/coffee
