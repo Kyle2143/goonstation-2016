@@ -113,7 +113,6 @@
 	proc/create_products()
 		return
 
-
 /obj/machinery/vending/coffee
 	name = "coffee machine"
 	desc = "A Robust Coffee vending machine."
