@@ -1028,7 +1028,10 @@
 
 	if (istype(W, /obj/item/vending/restock_cartridge))
 		//check if cartridge type matches the vending machine
-		if (istype(src, text2path("/obj/machinery/vending/[W:vendingType]")))
+		var/obj/item/vending/restock_cartridge/Q = W
+		if (istype(src, text2path("/obj/machinery/vending/[Q.vendingType]")))
+
+		// if (istype(src, text2path("/obj/machinery/vending/[W:vendingType]")))
 			//remove all producs, reinitialize array and then create the products like new
 			src.product_list = new() 
 			src.create_products()
