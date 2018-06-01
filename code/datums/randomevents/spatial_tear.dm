@@ -152,7 +152,7 @@
 
 	//Handle assigning damage to various mobs that can pass through, currently only humans and cyborgs can pass
 	proc/handle_damage(mob/living/M)
-		var/damage = rand(5, 20)
+		var/damage = rand(10, 40)
 		if (istype(M, /mob/living/carbon/human))
 			var/mob/living/carbon/human/H = M
 			H.remove_stamina(50)
@@ -162,11 +162,11 @@
 			var/tox = 0
 			pick(
 				prob(100)
-					brute = damage,
+					brute = do_brute_and_sever(H, damage),
 				prob(75)
 					burn = damage,
 				prob(75)
-					tox = damage
+					tox = damage,
 				)
 			H.TakeDamage(damage_zone, brute, burn, tox, 0, 0)
 
@@ -177,6 +177,31 @@
 			for (var/obj/item/parts/robot_parts/RP in S.contents)
 				if (RP.ropart_take_damage(damage,damage) == 1) S.compborg_lose_limb(RP)
 
+	//limb loss stolen from bigfart.dm
+	//I couldn't find any proc for a mob that sever's a limb that you provide, if such a thing exists then this should be removed since copying code is bad,
+	//but this works for severing a limb for now and adding a proc to human.dm for removing a limb is beyond the scope of changing spatial tears.
+	proc/do_brute_and_sever(mob/living/carbon/human/H, var/damage)
+		var/list/possible_limbs = list()
+		var/static/limbloss_prob = 50
+
+		if (H.limbs.l_arm)
+			possible_limbs += H.limbs.l_arm
+		if (H.limbs.r_arm)
+			possible_limbs += H.limbs.r_arm
+		if (H.limbs.l_leg)
+			possible_limbs += H.limbs.l_leg
+		if (H.limbs.r_leg)
+			possible_limbs += H.limbs.r_leg
+
+		if (possible_limbs.len)
+
+			//loop through, only sever one limb though, don't want to go too crazy
+			for (var/obj/item/parts/P in possible_limbs)
+				if (prob(limbloss_prob))
+					H.show_text("Your [P] was severed while trying to cross the Spatial Tear!", "red")
+					P.sever()
+					break;
+		return damage
 
 	//Detemines which way to teleport the mob to
 	proc/handle_teleport(datum/spatial_tears/tear/T, var/mob/living/M, var/turf/OldLoc)
