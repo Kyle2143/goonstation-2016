@@ -102,14 +102,12 @@
 			temp_text = "<FONT color=blue>[air_contents.temperature]</FONT>"
 		if(src.beaker)
 			beaker_text = "<B>Beaker:</B> <A href='?src=\ref[src];eject=1'>Eject</A>"
+			beaker_text += "<BR>Beaker Contents:[scan_reagents(src.beaker)]"
 		else
 			beaker_text = "<B>Beaker:</B> <FONT color=red>No beaker loaded</FONT>"
 		var/dat = {"<B>Cryo cell control system</B><BR>
 			<B>Current cell temperature:</B> [temp_text]K<BR>
-			<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>
-			[beaker_text]<BR><BR>
-			<B>Current occupant:</B> [src.occupant ? "<BR>Name: [src.occupant]<BR>Health: [health_text]<BR>Oxygen deprivation: [src.occupant.get_oxygen_deprivation()]<BR>Brute damage: [src.occupant.get_brute_damage()]<BR>Fire damage: [src.occupant.get_burn_damage()]<BR>Toxin damage: [src.occupant.get_toxin_damage()]<BR>Body temperature: [src.occupant.bodytemperature]" : "<FONT color=red>None</FONT>"]<BR>
-		"}
+			<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>			[beaker_text]<BR><BR>			<B>Current occupant:</B> [src.occupant ? "<BR>Name: [src.occupant]<BR>Health: [health_text]<BR>			Oxygen deprivation: [src.occupant.get_oxygen_deprivation()]<BR>			Brute damage: [src.occupant.get_brute_damage()]<BR>			Fire damage: [src.occupant.get_burn_damage()]<BR>Toxin damage: [src.occupant.get_toxin_damage()]<BR>			Body temperature: [src.occupant.bodytemperature]" : "<FONT color=red>None</FONT>"]<BR>			Brain damage: [src.occupant.get_brain_damage()]<BR>			Eye damage: [src.occupant.get_eye_damage()]<BR>			Reagents: [scan_reagents(src.occupant)]		"}
 
 		user << browse(dat, "window=cryo")
 		onclose(user, "cryo")
