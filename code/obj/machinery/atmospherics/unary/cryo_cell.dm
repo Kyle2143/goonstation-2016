@@ -12,9 +12,11 @@
 	var/mob/occupant = null
 	var/beaker = null
 	var/next_trans = 0
-	var/show_beaker_contents = 1
+	var/show_beaker_contents = 0
 	var/current_heat_capacity = 50
 	var/pipe_direction = 1
+	var/reagent_scan_enabled = 0
+	var/reagent_scan_active = 0
 
 	north
 		dir = NORTH
@@ -84,7 +86,6 @@
 
 	attack_hand(mob/user as mob)
 		user.machine = src
-		var/beaker_text = ""
 		var/health_text = ""
 		var/temp_text = ""
 		if(src.occupant)
@@ -100,44 +101,47 @@
 			temp_text = "<FONT color=black>[air_contents.temperature]</FONT>"
 		else
 			temp_text = "<FONT color=blue>[air_contents.temperature]</FONT>"
-		if(src.beaker)
-			beaker_text = "<B>Beaker:</B> <A href='?src=\ref[src];eject=1'>Eject</A>"
-			if (show_beaker_contents)
-				beaker_text += "<BR>Beaker Contents:<BR>[scan_reagents(src.beaker)]"
-		else
-			beaker_text = "<B>Beaker:</B> <FONT color=red>No beaker loaded</FONT>"
-		var/dat = {"<B>Cryo cell control system</B><BR>
-			<B>Current cell temperature:</B> [temp_text]K<BR>
-			<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>						[beaker_text]<BR><BR>			<B>Current occupant:</B> [src.occupant ? "<BR>Name: [src.occupant]<BR>Health: [health_text]<BR>									Oxygen deprivation: [src.occupant.get_oxygen_deprivation()]<BR>			Brute damage: [src.occupant.get_brute_damage()]<BR>											Fire damage: [src.occupant.get_burn_damage()]<BR>Toxin damage: [src.occupant.get_toxin_damage()]<BR>													Body temperature: [src.occupant.bodytemperature]" : "<FONT color=red>None</FONT>"]<BR>															Brain damage: [obfuscate_brain_damage(src.occupant.get_brain_damage())] [src.occupant.get_brain_damage()]<BR>"}
+		// var/dat = {"<B>Cryo cell control system</B><BR>
+		// 	<B>Current cell temperature:</B> [temp_text]K<BR>
+		// 	<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>	
+		// 	[beaker_text]<BR><BR>			
+		// 	<B>Current occupant:</B> [src.occupant ? "<BR>Name: [src.occupant]<BR>Health: [health_text]<BR>	
+		// 		Oxygen deprivation: [src.occupant.get_oxygen_deprivation()]<BR>		
+		// 			Brute damage: [src.occupant.get_brute_damage()]<BR>	
+		// 			Fire damage: [src.occupant.get_burn_damage()]<BR>Toxin damage: [src.occupant.get_toxin_damage()]<BR>
+		// 			Body temperature: [src.occupant.bodytemperature]" : "<FONT color=red>None</FONT>"]<BR>
+		// 			"}
+		var/dat = "<B>Cryo cell control system</B><BR>"
+		dat += "<B>Current cell temperature:</B> [temp_text]K<BR>"
+		dat += "<B>Cryo status:</B> [src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>"
+		dat += "[handle_beaker_text()]<BR><BR>"
+		dat += "[handle_reagent_scan()]<BR>"
+		dat += "[scan_health(src.occupant, reagent_scan_active, 1)]"
 
+		update_medical_record(src.occupant)
 
-		dat += "<A href='?src=\ref[src];reagent_scan=1'>Occupant Reagent Scan</A><BR>"
 
 		user << browse(dat, "window=cryo")
 		onclose(user, "cryo")
 
+	proc/handle_beaker_text()
+		var/beaker_text = ""
+		if(src.beaker)
+			beaker_text = "<B>Beaker:</B> <A href='?src=\ref[src];eject=1'>Eject</A><BR>"
+			beaker_text += "<B>Beaker Contents:</B> <A href='?src=\ref[src];show_beaker_contents=1'>[show_beaker_contents ? "Hide" : "Show"]</A> "
+			if (show_beaker_contents)
+				beaker_text += "<BR>[scan_reagents(src.beaker)]"
+		else
+			beaker_text = "<B>Beaker:</B> <FONT color=red>No beaker loaded</FONT>"
 
-	proc/obfuscate_brain_damage(var/damage)
-		if (damage < 0)
-			return "Subject has a mathematically impossible amount of brain damage! What could this mean?!"
-		if (damage == 0)
-			return "The subject's brain is in perfect health!"
-		if (damage > 0)
-			return "Subject has very mild brain damage!"
-		if (damage > 10)
-			return "Subject has mild brain damage!"
-		if (damage > 40)
-			return "Subject has moderate brain damage!"
-		if (damage > 80)
-			return "Subject has severe brain damage!"
-		if (damage > 90)
-			return "Subject has extreme brain damage!"
-		if (damage > 100)
-			return "Subject has an inconcievable amount of brain damage!"
+		return beaker_text
 
-	proc/scan_occupant_reagents()
+	proc/handle_reagent_scan()
+		if (!reagent_scan_enabled)
+			return ""
+		else
+			return "Reagent Scan : [ reagent_scan_active ? "<A href='?src=\ref[src];reagent_scan_active=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];reagent_scan_active=1'>On</A>"]"
 
-		return
 
 	proc/scan_occupant_detailed_health()
 
@@ -152,12 +156,10 @@
 			if(href_list["eject"])
 				beaker:set_loc(src.loc)
 				beaker = null
-			if(href_list["reagent_scan"])
-				var/s = scan_reagents(src.occupant)
-
-				usr << browse(s, "window=cryo-scan")
-
-				
+			if(href_list["show_beaker_contents"])
+				show_beaker_contents = !show_beaker_contents
+			if (href_list["reagent_scan_active"])
+				reagent_scan_active = !reagent_scan_active
 
 			src.updateUsrDialog()
 			src.add_fingerprint(usr)
@@ -207,11 +209,19 @@
 				return
 			var/transferred = G.reagents.trans_to(src.beaker, 5)
 			src.visible_message("<span style=\"color:red\"><B>[user] injects [transferred] into [src]!</B></span>")
-			// using ":" here since that is how it is originally done in cryo_cell
 			src.beaker:on_reagent_change()
 			return
-
-
+		else if (istype(G, /obj/item/device/healthanalyzer_upgrade))
+			if (!reagent_scan_enabled)
+				boutput(user, "<span style=\"color:red\">This Cryo Cell already has a reagent scan upgrade!</span>")
+				return
+			else
+				reagent_scan_enabled = 1
+				boutput(user, "<span style=\"color:blue\">Reagent scan upgrade installed.</span>")
+				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
+				user.u_equip(G)
+				qdel(G)
+				return
 
 		src.updateUsrDialog()
 		return
