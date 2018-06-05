@@ -17,6 +17,8 @@
 	var/pipe_direction = 1
 	var/reagent_scan_enabled = 0
 	var/reagent_scan_active = 0
+	var/obj/item/robodefibrilator/defib
+
 
 	north
 		dir = NORTH
@@ -115,7 +117,8 @@
 		dat += "<B>Current cell temperature:</B> [temp_text]K<BR>"
 		dat += "<B>Cryo status:</B> [src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>"
 		dat += "[handle_beaker_text()]<BR><BR>"
-		dat += "[handle_reagent_scan()]<BR>"
+		dat += "[handle_beaker_reagent_scan()]<BR>"
+		dat += "<B>Defibrillate Occupant : <A href='?src=\ref[src];defib=1'>ZAP!!!</A> <BR>"
 		dat += "[scan_health(src.occupant, reagent_scan_active, 1)]"
 
 		update_medical_record(src.occupant)
@@ -123,6 +126,9 @@
 
 		user << browse(dat, "window=cryo")
 		onclose(user, "cryo")
+
+	proc/handle_defib_zap()
+
 
 	proc/handle_beaker_text()
 		var/beaker_text = ""
@@ -136,7 +142,7 @@
 
 		return beaker_text
 
-	proc/handle_reagent_scan()
+	proc/handle_beaker_reagent_scan()
 		if (!reagent_scan_enabled)
 			return ""
 		else
@@ -160,6 +166,8 @@
 				show_beaker_contents = !show_beaker_contents
 			if (href_list["reagent_scan_active"])
 				reagent_scan_active = !reagent_scan_active
+			if (href_list["defib"])
+				src.defib.attack(src.occupant, usr)
 
 			src.updateUsrDialog()
 			src.add_fingerprint(usr)
@@ -169,10 +177,6 @@
 		if(istype(G, /obj/item/reagent_containers/glass))
 			if(src.beaker)
 				user.show_text("A beaker is already loaded into the machine.", "red")
-				//new able to transfer reagents into beaker inside
-				// var/transferred = src.reagents.trans_to(target, 5)
-				// boutput(user, "<span style=\"color:blue\">You fill the blood slide with [transferred] units of the solution.</span>")
-
 				return
 
 			src.beaker = G
@@ -212,7 +216,7 @@
 			src.beaker:on_reagent_change()
 			return
 		else if (istype(G, /obj/item/device/healthanalyzer_upgrade))
-			if (!reagent_scan_enabled)
+			if (reagent_scan_enabled)
 				boutput(user, "<span style=\"color:red\">This Cryo Cell already has a reagent scan upgrade!</span>")
 				return
 			else
@@ -222,6 +226,15 @@
 				user.u_equip(G)
 				qdel(G)
 				return
+		else if (istype(G, /obj/item/robodefibrilator))
+			if (src.defib)
+				boutput(user, "<span style=\"color:red\">[src] already has a Defibrillator installed.</span>")
+			else
+				var/obj/item/robodefibrilator/D = G
+				src.defib = D
+				boutput(user, "<span style=\"color:blue\">Defibrillator installed into [src].</span>")
+				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
+				user.u_equip(G)
 
 		src.updateUsrDialog()
 		return
