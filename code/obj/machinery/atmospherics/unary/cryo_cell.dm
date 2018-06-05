@@ -88,37 +88,20 @@
 
 	attack_hand(mob/user as mob)
 		user.machine = src
-		var/health_text = ""
 		var/temp_text = ""
-		if(src.occupant)
-			if(src.occupant.stat == 2)
-				health_text = "<FONT color=red>Dead</FONT>"
-			else if(src.occupant.health < 0)
-				health_text = "<FONT color=red>[src.occupant.health]</FONT>"
-			else
-				health_text = "[src.occupant.health]"
 		if(air_contents.temperature > T0C)
 			temp_text = "<FONT color=red>[air_contents.temperature]</FONT>"
 		else if(air_contents.temperature > 225)
 			temp_text = "<FONT color=black>[air_contents.temperature]</FONT>"
 		else
 			temp_text = "<FONT color=blue>[air_contents.temperature]</FONT>"
-		// var/dat = {"<B>Cryo cell control system</B><BR>
-		// 	<B>Current cell temperature:</B> [temp_text]K<BR>
-		// 	<B>Cryo status:</B> [ src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>	
-		// 	[beaker_text]<BR><BR>			
-		// 	<B>Current occupant:</B> [src.occupant ? "<BR>Name: [src.occupant]<BR>Health: [health_text]<BR>	
-		// 		Oxygen deprivation: [src.occupant.get_oxygen_deprivation()]<BR>		
-		// 			Brute damage: [src.occupant.get_brute_damage()]<BR>	
-		// 			Fire damage: [src.occupant.get_burn_damage()]<BR>Toxin damage: [src.occupant.get_toxin_damage()]<BR>
-		// 			Body temperature: [src.occupant.bodytemperature]" : "<FONT color=red>None</FONT>"]<BR>
-		// 			"}
+
 		var/dat = "<B>Cryo cell control system</B><BR>"
 		dat += "<B>Current cell temperature:</B> [temp_text]K<BR>"
 		dat += "<B>Cryo status:</B> [src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>"
-		dat += "[handle_beaker_text()]<BR><BR>"
-		dat += "[handle_beaker_reagent_scan()]<BR>"
-		dat += "<B>Defibrillate Occupant : <A href='?src=\ref[src];defib=1'>ZAP!!!</A> <BR>"
+		dat += "[draw_beaker_text()]<BR><BR>"
+		dat += "[draw_beaker_reagent_scan()]<BR>"
+		dat += "[draw_defib_zap()]"
 		dat += "[scan_health(src.occupant, reagent_scan_active, 1)]"
 
 		update_medical_record(src.occupant)
@@ -127,10 +110,16 @@
 		user << browse(dat, "window=cryo")
 		onclose(user, "cryo")
 
-	proc/handle_defib_zap()
+	proc/draw_defib_zap()
+		if (!src.defib)
+			return ""
+		else 
+			if (src.occupant)
+				return "<B>Defibrillate Occupant : <A href='?src=\ref[src];defib=1'>ZAP!!!</A></B> <BR>"
+			else 
+				return "<B>Defibrillate Occupant : No occupant!</B> <BR>"
 
-
-	proc/handle_beaker_text()
+	proc/draw_beaker_text()
 		var/beaker_text = ""
 		if(src.beaker)
 			beaker_text = "<B>Beaker:</B> <A href='?src=\ref[src];eject=1'>Eject</A><BR>"
@@ -142,17 +131,11 @@
 
 		return beaker_text
 
-	proc/handle_beaker_reagent_scan()
+	proc/draw_beaker_reagent_scan()
 		if (!reagent_scan_enabled)
 			return ""
 		else
 			return "Reagent Scan : [ reagent_scan_active ? "<A href='?src=\ref[src];reagent_scan_active=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];reagent_scan_active=1'>On</A>"]"
-
-
-	proc/scan_occupant_detailed_health()
-
-
-		return
 
 	Topic(href, href_list)
 		if (( usr.machine==src && ((get_dist(src, usr) <= 1) && istype(src.loc, /turf))) || (istype(usr, /mob/living/silicon/ai)))
