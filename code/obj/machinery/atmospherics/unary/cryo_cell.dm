@@ -99,7 +99,8 @@
 		var/dat = "<B>Cryo cell control system</B><BR>"
 		dat += "<B>Current cell temperature:</B> [temp_text]K<BR>"
 		dat += "<B>Cryo status:</B> [src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>"
-		dat += "[draw_beaker_text()]<BR><BR>"
+		dat += "[draw_beaker_text()]<BR>"
+		dat += "--------------------------------<BR>"
 		dat += "[draw_beaker_reagent_scan()]<BR>"
 		dat += "[draw_defib_zap()]"
 		dat += "[scan_health(src.occupant, reagent_scan_active, 1)]"
@@ -218,6 +219,15 @@
 				boutput(user, "<span style=\"color:blue\">Defibrillator installed into [src].</span>")
 				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
 				user.u_equip(G)
+		else if (istype(G, /obj/item/wrench))
+			if (!src.defib)
+				boutput(user, "<span style=\"color:red\">[src] does not have a Defibrillator installed.</span>")
+			else
+				src.defib.set_loc(src.loc)
+				src.defib = null
+				src.visible_message("<span style=\"color:red\">[user] removes the Defibrillator from [src].</span>")
+				playsound(src.loc ,"sound/items/Ratchet.ogg", 50, 1)
+
 
 		src.updateUsrDialog()
 		return
