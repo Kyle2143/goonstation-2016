@@ -329,6 +329,12 @@
 		if(!src.node)
 			boutput(usr, "The cell is not corrrectly connected to its pipe network!")
 			return
+
+		if (usr.a_intent == INTENT_HELP)
+			if (ishuman(usr))
+				var/mob/living/carbon/human/H = usr
+				usr.drop_from_slot(H.wear_suit, H.loc)
+				usr.drop_from_slot(H.head, H.loc)
 		usr.pulling = null
 		usr.set_loc(src)
 		src.occupant = usr
