@@ -277,6 +277,61 @@
 		..()
 		update_icon()
 
+////////////////////////////////////////Phaser Type 1 //stolen name from weakest Star Trek Federation phaser type
+/obj/item/gun/energy/phaser_type_1
+	name = "Type 1 Phaser"
+	icon_state = "energy"
+	desc = "A standard issue Nanotrasen"
+	item_state = "gun"
+	force = 5.0
+	module_research = list("weapons" = 1, "energy" = 2, "miniaturization" = 1, "tools" = 2)	//no idea what this is, just used some low values and thing that fit
+	contraband = 0
+
+	New()
+		cell = new/obj/item/ammo/power_cell/self_charging/phaser_type_1
+		// cell = new/obj/item/ammo/power_cell/med_power
+		current_projectile = new/datum/projectile/phaser/type_1/stun
+
+		projectiles = list(current_projectile,new/datum/projectile/phaser/type_1/damage, new/datum/projectile/phaser/type_1/power, new/datum/projectile/phaser/type_1/utility)
+		..()
+	update_icon()
+		if(cell)
+			// var/ratio = min(1, src.cell.charge / src.cell.max_charge)
+			// ratio = round(ratio, 0.25) * 100
+			if(current_projectile.type == /datum/projectile/phaser/type_1/stun)
+				src.icon_state = "energy"
+			if(current_projectile.type == /datum/projectile/phaser/type_1/damage)
+				src.icon_state = "energy"
+			if(current_projectile.type == /datum/projectile/phaser/type_1/power)
+				src.icon_state = "energy"
+			if(current_projectile.type == /datum/projectile/phaser/type_1/utility)
+				src.icon_state = "energy"
+	
+	shoot(var/target,var/start,var/mob/user)
+		if (current_projectile.type == /datum/projectile/phaser/type_1/power)
+			user.show_message("<span style=\"color:red\"><B>[user] prepares to fire [src] on POWER setting at [target]!</B></span>", 1, "<span style=\"color:red\">You hear a gunshot</span>", 2)
+			//charging power sound add
+			//appropriated from syringe
+			if (!do_after(user, 30))
+				if (user && ismob(user))
+					user.show_text("You were interrupted!", "red")
+				return
+
+			user.show_message("<span style=\"color:red\"><B>[user] fires [src] at [target]!</B></span>", 1, "<span style=\"color:red\">You hear a gunshot</span>", 2)
+
+			..()
+			return
+		..()
+	
+	shoot_point_blank(var/target,var/start,var/mob/user)
+		// if (current_projectile.type == /datum/projectile/phaser/type_1/power)
+
+
+
+	attack_self()
+		..()
+		update_icon()
+
 ////////////////////////////////////VUVUV
 /obj/item/gun/energy/vuvuzela_gun
 	name = "amplified vuvuzela"

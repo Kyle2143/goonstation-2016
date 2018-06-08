@@ -666,6 +666,18 @@
 	cycle = 0
 	recharge_rate = 5.0
 
+/obj/item/ammo/power_cell/self_charging/phaser_type_1
+	name = "Power Cell - Phaser_Type_1 Charger"
+	desc = "A self-contained radioisotope power cell that slowly recharges an internal capacitor. Holds 100PU."
+	icon = 'icons/obj/ammo.dmi'
+	icon_state = "recharger_cell"
+	m_amt = 18000
+	g_amt = 38000
+	charge = 90.0
+	max_charge = 90.0
+	cycle = 0
+	recharge_rate = 5.0
+
 /obj/item/ammo/power_cell/self_charging/big
 	name = "Power Cell - Fusion"
 	desc = "A self-contained cold fusion power cell that quickly recharges an internal capacitor. Holds 400PU."
