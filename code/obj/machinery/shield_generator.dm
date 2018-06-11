@@ -354,17 +354,6 @@
 	disposing()
 		update_nearby_tiles()
 
-		// spawn(10)
-		// 	var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x),(src.y),src.z), deployer )
-		// 	deployer.deployed_shields += S
-	Del()
-		update_nearby_tiles()
-
-		// spawn(10)
-		// 	var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x),(src.y),src.z), deployer )
-		// 	deployer.deployed_shields += S
-
-
 
 
 	proc/update_nearby_tiles(need_rebuild)
