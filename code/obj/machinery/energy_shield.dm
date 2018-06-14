@@ -54,7 +54,7 @@
 		var/ya= -range-1
 		var/atom/A
 		if (range == 0)
-			var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((src.x),(src.y),src.z), src )
+			var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((src.x),(src.y),src.z), src , 1 )
 			S.icon_state = "enshieldw"
 			src.deployed_shields += S
 		else
@@ -93,7 +93,7 @@
 
 	//this is so long because I wanted the tiles to look like one seamless object. Otherwise it could just be a single line 
 	proc/createForcefieldObject(var/xa as num, var/ya as num)
-		var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x + xa),(src.y + ya),src.z), src )
+		var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield (locate((src.x + xa),(src.y + ya),src.z), src, 1 ) //1 update tiles
 		if (xa == -range)
 			S.dir = SOUTHWEST
 		else if (xa == range)

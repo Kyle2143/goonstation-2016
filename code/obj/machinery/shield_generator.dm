@@ -331,10 +331,14 @@
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
 	var/obj/machinery/shieldgenerator/deployer = null
 
-	New(Loc, var/obj/machinery/shieldgenerator/deployer)
+	New(Loc, var/obj/machinery/shieldgenerator/deployer, var/update_tiles)
 		..()
+		src.update_tiles = update_tiles
 		src.deployer = deployer
-		update_nearby_tiles()
+
+		if (update_tiles)
+			update_nearby_tiles()
+		
 		if (deployer != null && deployer.power_level == 1)
 			src.name = "Atmospheric Forcefield"
 			src.desc = "A force field that prevents gas from passing through it."
@@ -352,7 +356,8 @@
 			src.color = "#FF3333"
 
 	disposing()
-		update_nearby_tiles()
+		if(update_tiles)
+			update_nearby_tiles()
 
 
 
