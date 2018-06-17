@@ -7,6 +7,8 @@
 	var/timer = 0
 	anchored = 1.0
 	layer = EFFECTS_LAYER_UNDER_1
+	var/obj/machinery/shieldgenerator/energy_shield/wall/shield_emitter
+
 
 	// Please keep synchronizied with these lists for easy map changes:
 	// /obj/machinery/r_door_control (door_control.dm)
@@ -281,22 +283,55 @@
 	if (!src.id)
 		return
 
+	var/obj/machinery/shieldgenerator/energy_shield_poddoor/ES
+	for (var/obj/machinery/shieldgenerator/energy_shield_poddoor/E)
+		if (E.id == src.id)
+			ES = E
+			continue
+
+	//Are we opening or closing pod doors?
+	var/open
 	for (var/obj/machinery/door/poddoor/M)
 		if (M.id == src.id)
 			if (M.density)
 				spawn(0)
 					M.open()
+					open = 1
+					if (ES)
+						ES.add_xy_to_list(M.x, M.y)
 					if (src.timer)
 						spawn(src.timer)
 							M.close()
+							open = 0
+							
 					return
 			else
 				spawn(0)
 					M.close()
+					open = 0
 					if (src.timer)
+						if (ES)
+							ES.add_xy_to_list(M.x, M.y)
 						spawn(src.timer)
 							M.open()
+							open = 1
+							
 					return
+	//hacky, make it take extra time to start up so it has enough time to add all the things to the list
+
+	if (ES)
+		if (open)
+			ES.shield_on()
+			spawn (src.timer+1)
+				if (src.timer)
+					ES.shield_on()
+
+
+		else
+			ES.shield_off()
+			spawn (src.timer+1)
+				if (src.timer)
+					ES.shield_off()
 
 	for (var/obj/machinery/door/airlock/M)
 		if (M.id == src.id)
