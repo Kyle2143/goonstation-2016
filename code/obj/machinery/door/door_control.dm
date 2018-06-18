@@ -322,16 +322,20 @@
 	if (ES)
 		if (open)
 			ES.shield_on()
+			src.visible_message("<span style=\"color:red\">hit shield on 1!</b></span>")
 			spawn (src.timer+1)
 				if (src.timer)
 					ES.shield_on()
+					src.visible_message("<span style=\"color:red\">hit shield on 2!</b></span>")
 
 
 		else
 			ES.shield_off()
+			src.visible_message("<span style=\"color:red\">hit shield off 1 !</b></span>")
 			spawn (src.timer+1)
 				if (src.timer)
 					ES.shield_off()
+					src.visible_message("<span style=\"color:red\">hit shield off 2 !</b></span>")
 
 	for (var/obj/machinery/door/airlock/M)
 		if (M.id == src.id)
