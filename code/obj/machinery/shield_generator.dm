@@ -330,7 +330,8 @@
 
 	var/sound/sound_shieldhit = 'sound/effects/shieldhit2.ogg'
 	var/obj/machinery/shieldgenerator/deployer = null
-
+	var/update_tiles
+	
 	New(Loc, var/obj/machinery/shieldgenerator/deployer, var/update_tiles)
 		..()
 		src.update_tiles = update_tiles
