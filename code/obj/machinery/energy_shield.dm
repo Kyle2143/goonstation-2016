@@ -6,8 +6,8 @@
 	density = 0
 	var/orientation = 1  //shield extend direction 0 = north/south, 1 = east/west
 	power_level = 1 //1 for atmos shield, 2 for liquid, 3 for solid material
-	var/const/MAX_POWER_LEVEL = 3
-	var/const/MIN_POWER_LEVEL = 1
+	MAX_POWER_LEVEL = 3
+	MIN_POWER_LEVEL = 1
 	min_range = 1
 	max_range = 4
 	direction = "dir"
@@ -127,25 +127,3 @@
 			
 			return
 		boutput(usr, "<span style=\"color:blue\">Orientation set to : [orientation ? "Horizontal" : "Vertical"]</span>")
-
-	verb/set_power_level()
-		set src in view(1)
-		set name = "Set Power Level"
-
-		if (active)
-			boutput(usr, "<span style=\"color:red\">You can't change the power level while the generator is active.</span>")
-			return
-
-		if (get_dist(usr,src) > 1)
-			boutput(usr, "<span style=\"color:red\">You need to be closer to do that.</span>")
-			return
-		var/the_level = input("Enter a power level from [src.MIN_POWER_LEVEL]-[src.MAX_POWER_LEVEL]. Higher ranges use more power.","[src.name]",1) as null|num
-		if (!the_level)
-			return
-		if (get_dist(usr,src) > 1)
-			boutput(usr, "<span style=\"color:red\">You flail your arms at [src] from across the room like a complete muppet. Move closer, genius!</span>")
-			return
-		the_level = max(MIN_POWER_LEVEL,min(the_level,MAX_POWER_LEVEL))
-		src.power_level = the_level
-		boutput(usr, "<span style=\"color:blue\">You set the power level to [src.power_level].</span>")
-

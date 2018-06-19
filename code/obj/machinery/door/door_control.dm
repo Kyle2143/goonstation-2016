@@ -283,59 +283,36 @@
 	if (!src.id)
 		return
 
+	//stuff for energy shield generation
+	var/list/obj/machinery/door/poddoor/doors = new/list()
 	var/obj/machinery/shieldgenerator/energy_shield_poddoor/ES
 	for (var/obj/machinery/shieldgenerator/energy_shield_poddoor/E)
 		if (E.id == src.id)
 			ES = E
-			continue
+			continue	//should only ever be one, but if there's more, who cares...
 
-	//Are we opening or closing pod doors?
-	var/open
 	for (var/obj/machinery/door/poddoor/M)
 		if (M.id == src.id)
-			if (M.density)
-				spawn(0)
-					M.open()
-					open = 1
-					if (ES)
-						ES.add_xy_to_list(M.x, M.y)
-					if (src.timer)
-						spawn(src.timer)
-							M.close()
-							open = 0
-							
-					return
+			doors += M
+			//if there is a shield generator, we don't need to autoclose doors, but change if back if there is no generator
+			if (ES)
+				M.autoclose = 0
 			else
-				spawn(0)
+				M.autoclose = 1
+			spawn(0)
+				if (M.density)
+					M.open()
+				else
 					M.close()
-					open = 0
-					if (src.timer)
-						if (ES)
-							ES.add_xy_to_list(M.x, M.y)
-						spawn(src.timer)
-							M.open()
-							open = 1
-							
-					return
-	//hacky, make it take extra time to start up so it has enough time to add all the things to the list
-
+					
+	//stuff for energy shield generation
 	if (ES)
-		if (open)
+		if (doors.len > 0)
+			ES.doors = doors
 			ES.shield_on()
-			src.visible_message("<span style=\"color:red\">hit shield on 1!</b></span>")
-			spawn (src.timer+1)
-				if (src.timer)
-					ES.shield_on()
-					src.visible_message("<span style=\"color:red\">hit shield on 2!</b></span>")
-
-
 		else
 			ES.shield_off()
-			src.visible_message("<span style=\"color:red\">hit shield off 1 !</b></span>")
-			spawn (src.timer+1)
-				if (src.timer)
-					ES.shield_off()
-					src.visible_message("<span style=\"color:red\">hit shield off 2 !</b></span>")
+		
 
 	for (var/obj/machinery/door/airlock/M)
 		if (M.id == src.id)
@@ -747,18 +724,45 @@
 			return
 		use_power(5)
 
+		//stuff for energy shield generation
+		var/list/obj/machinery/door/poddoor/doors = new/list()
+		var/obj/machinery/shieldgenerator/energy_shield_poddoor/ES
+		for (var/obj/machinery/shieldgenerator/energy_shield_poddoor/E)
+			if (E.id == src.id)
+				ES = E
+				continue	//should only ever be one, but if there's more, who cares...
+
 		for(var/obj/machinery/door/poddoor/M)
 			if (M.id == src.id)
-				if (M.density)
-					spawn( 0 )
+				doors += M
+				//if there is a shield generator, we don't need to autoclose doors, but change if back if there is no generator
+				if (ES)
+					M.autoclose = 0
+				else
+					M.autoclose = 1
+
+				spawn( 0 )
+					if (M.density)
+						// spawn( 0 )
 						M.open()
 						src.open = 1
 						return
-				else
-					spawn( 0 )
+					else
+						// spawn( 0 )
 						M.close()
+						src.visible_message("<span style=\"color:red\">remote closing1</b></span>")
+
 						src.open = 0
 						return
+
+		//stuff for energy shield generation				
+		if (ES)
+			if (doors.len > 0)
+				ES.doors = doors
+				ES.shield_on()
+			else
+				ES.shield_off()
+
 
 	receive_signal(datum/signal/signal)
 		if(..())
@@ -784,6 +788,8 @@
 						else
 							spawn( 0 )
 								M.close()
+								src.visible_message("<span style=\"color:red\">remote closing2</b></span>")
+
 								return
 			return
 		////////reset pass
@@ -847,4 +853,5 @@
 					else
 						spawn( 0 )
 							M.close()
+							src.visible_message("<span style=\"color:red\">remote closing3</b></span>")
 							return

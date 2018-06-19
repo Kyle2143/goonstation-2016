@@ -25,6 +25,8 @@
 	var/connected = 0	//determine if gen is wrenched over a wire.
 	var/backup = 0		//if equip power went out while connected to wire, this should be true. Used to automatically turn gen back on if power is restored
 	var/first = 0		//tic when the power goes out. 
+	var/MAX_POWER_LEVEL = 1
+	var/MIN_POWER_LEVEL = 1
 
 	New()
 		PCEL = new /obj/item/cell/supercell(src)
@@ -227,6 +229,28 @@
 			sleep(5)
 			shield_on()
 		boutput(usr, "<span style=\"color:blue\">[outcome_text]</span>")
+
+	verb/set_power_level()
+		set src in view(1)
+		set name = "Set Power Level"
+
+		if (active)
+			boutput(usr, "<span style=\"color:red\">You can't change the power level while the generator is active.</span>")
+			return
+
+		if (get_dist(usr,src) > 1)
+			boutput(usr, "<span style=\"color:red\">You need to be closer to do that.</span>")
+			return
+		var/the_level = input("Enter a power level from [src.MIN_POWER_LEVEL]-[src.MAX_POWER_LEVEL]. Higher ranges use more power.","[src.name]",1) as null|num
+		if (!the_level)
+			return
+		if (get_dist(usr,src) > 1)
+			boutput(usr, "<span style=\"color:red\">You flail your arms at [src] from across the room like a complete muppet. Move closer, genius!</span>")
+			return
+		the_level = max(MIN_POWER_LEVEL,min(the_level,MAX_POWER_LEVEL))
+		src.power_level = the_level
+		boutput(usr, "<span style=\"color:blue\">You set the power level to [src.power_level].</span>")
+
 
 	proc/build_icon()
 		src.overlays = null

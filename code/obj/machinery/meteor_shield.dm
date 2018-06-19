@@ -3,6 +3,8 @@
 	desc = "Generates a force field that stops meteors."
 	icon = 'icons/obj/meteor_shield.dmi'
 	icon_state = "shieldgen"
+	MAX_POWER_LEVEL = 1
+	MIN_POWER_LEVEL = 1
 
 	shield_on()
 		if (!PCEL)
@@ -30,3 +32,7 @@
 		src.active = 1
 		playsound(src.loc, src.sound_on, 50, 1)
 		build_icon()
+
+	//can't change the power level on meteor shields
+	set_power_level()
+		return
