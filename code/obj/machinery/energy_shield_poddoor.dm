@@ -22,7 +22,7 @@
 
 	examine()
 		if(usr.client)
-			boutput(usr, "The unit will consume [30 * src.range * (src.power_level * src.power_level)] power a second.")
+			boutput(usr, "The unit will consume [30 * (src.power_level * src.power_level)] power per forcefield generated per second.")
 			boutput(usr, "The unit is emitting [src.range] force fields.")
 
 	//need to override to keep this type of generator anchored
@@ -33,19 +33,16 @@
 		range = 0
 		anchored = 1
 		if (failed)
-			src.visible_message("The <b>[src.name]</b> fails, and shuts down!")
 		playsound(src.loc, src.sound_off, 50, 1)
 
 
 	shield_on()
 		range = max(src.deployed_shields.len, 0) //just in cases
 		if (!powered()) //if NOT connected to power grid and there is power
-			src.visible_message("<span style=\"color:red\">hit unpowered!</b></span>")
 			src.power_usage = 0
 			shield_off()
 			
 		else //no power cell, not connected to grid: power down if active, do nothing otherwise
-			src.visible_message("<span style=\"color:red\">hit powered!</b></span>")
 			src.power_usage = 30 * (src.range) * (power_level * power_level)
 			generate_shield()
 			
@@ -53,42 +50,46 @@
 
 	//Manual off switch
 	attack_hand(mob/user as mob)
+		boutput(usr, "You punch [src]\'s manual off switch.")
+
 		if (src.active)
 			src.shield_off()
 		return
-
-
-	// proc/delete_shield_at_location()
-
 		
 	//Code for placing the shields and adding them to the generator's shield list
 	proc/generate_shield()
-		src.visible_message("<span style=\"color:red\">doors = [doors]</b></span>")
-
 		if (doors)
-			for (var/obj/machinery/door/poddoor/D in doors)
-				src.visible_message("<span style=\"color:red\">current door = [D]!    density = [D.density]!    location = [D.loc] </b></span>")
+			DOOR_LOOP:
+				for (var/obj/machinery/door/poddoor/D in doors)
 
-				//OK, I know what you're thinking, it should be !D.density, except no because door.open() has a spawn that makes it take a while to
-				//change the density. And unless I'm going to throw more sleeps/spawns around I'd have to do this.
-				if (D.density || D.operating)
-					var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((D.x),(D.y),D.z), src , 1 )
-					display_active.color = "#0000FA"
-					src.deployed_shields += S
-				else	//loop through forcefields to find field at current turf and delete it
-					for (var/obj/forcefield/energyshield/S in deployed_shields)
-						src.visible_message("<span style=\"color:red\">EEEE</b></span>")
+					//OK, I know what you're thinking, it should be !D.density, except no because door.open() has a spawn that makes it take a while to
+					//change the density. And unless I'm going to throw more sleeps/spawns around I'd have to do this.
+					if (D.density || D.operating)
 
-						if (D.loc == S.loc)
-							src.visible_message("<span style=\"color:red\">Removed shield!!!!!!!!!!!!!</b></span>")
-							src.deployed_shields -= S
-							S:deployer = null
-							qdel(S)
+						//Search the turf of the current door, if it has a energyshield already on it, don't draw another, just in case. 
+						//A bit inefficient, but more efficient than drawing another shield accidentally.
+						for (var/obj/forcefield/energyshield/E in D.loc.contents)
+							continue DOOR_LOOP
 
-							src.deployed_shields.Remove(S)
-							doors -= D
-							range--
-							continue
+						var/obj/forcefield/energyshield/S = new /obj/forcefield/energyshield ( locate((D.x),(D.y),D.z), src , 1 )
+						display_active.color = "#0000FA"
+						src.deployed_shields += S
+
+
+					else	//loop through forcefields to find field at current turf and delete it
+							//this is required because switches just flip open values. open = !open, instead of explicitely giving an "open" or "close" command. 
+							//so some doors can be open while others in the same area can be closed
+						for (var/obj/forcefield/energyshield/S in deployed_shields)
+
+							if (D.loc == S.loc)
+								src.deployed_shields -= S
+								S:deployer = null
+								qdel(S)
+
+								src.deployed_shields.Remove(S)
+								doors -= D
+								range--
+								continue
 
 
 		if (src.deployed_shields.len)
