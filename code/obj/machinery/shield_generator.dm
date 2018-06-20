@@ -368,7 +368,7 @@
 			src.name = "Atmospheric Forcefield"
 			src.desc = "A force field that prevents gas from passing through it."
 			src.icon_state = "shieldw" //change colour or something for different power levels
-			src.color = "#3333FF"
+			src.color = "#0000FA"
 		else if (deployer.power_level == 2)
 			src.name = "Atmospheric/Liquid Forcefield"
 			src.desc = "A force field that prevents gas and liquids from passing through it."
