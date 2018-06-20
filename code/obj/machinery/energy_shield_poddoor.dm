@@ -38,8 +38,9 @@
 		anchored = 1
 		if (failed)
 			src.visible_message("The <b>[src.name]</b> fails, and shuts down!")
-
-		playsound(src.loc, src.sound_off, 50, 1)
+			playsound(src.loc,'sound/voice/Oh_Man_Oh_God_Oh_Man.ogg', 50, 1)
+		else
+			playsound(src.loc, src.sound_off, 50, 1)
 
 
 	shield_on()
