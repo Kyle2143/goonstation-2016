@@ -31,7 +31,6 @@ datum/preferences
 	var/default_wasd = 0 // do they want wasd on by default?
 	var/use_azerty = 0 // do they have an AZERTY keyboard?
 	var/spessman_direction = SOUTH
-	var/clockwise = 1
 
 	var/job_favorite = null
 	var/list/jobs_med_priority = list()
@@ -211,9 +210,9 @@ datum/preferences
 			dat += "<center><b>Preview</b>:<br>"
 			dat += "<img style=\"-ms-interpolation-mode:nearest-neighbor;\" src=previewicon.png height=64 width=64><br>"
 
-			dat += "<a href=\"byond://?src=\ref[user];preferences=1;rotate_counter_clockwise=1\">&#x27f2</a>"
+			dat += "<a href=\"byond://?src=\ref[user];preferences=1;rotate_counter_clockwise=1\">&#x27f2;</a>"
 			dat += " || "
-			dat += "<a href=\"byond://?src=\ref[user];preferences=1;rotate_clockwise=1\">&#x27f3</a>"
+			dat += "<a href=\"byond://?src=\ref[user];preferences=1;rotate_clockwise=1\">&#x27f3;</a>"
 			dat += "</center>"
 
 		else
