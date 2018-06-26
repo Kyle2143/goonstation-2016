@@ -894,10 +894,10 @@ datum/preferences
 				src.be_random_look = 1
 
 		if (link_tags["rotate_counter_clockwise"])
-			rotate_spessman(spessman_direction, 0)
+			src.spessman_direction = turn(spessman_direction, 90)
 
 		if (link_tags["rotate_clockwise"])
-			rotate_spessman(spessman_direction, 1)
+			src.spessman_direction = turn(spessman_direction, -90)
 
 		/* Wire: a little thing i'll finish up eventually
 		if (link_tags["set_will"])
@@ -975,37 +975,6 @@ datum/preferences
 			blType = "A+"
 
 		src.ShowChoices(user)
-
-	//takes the current direction the sprite is facing and the rotation type and changes the src.spessman_direction to what it should be after applying the rotation
-	proc/rotate_spessman(var/cur_direction, var/clockwise)
-		var/new_dir
-		switch(cur_direction)
-			if (NORTH)
-				if (clockwise)
-					new_dir = EAST
-				else
-					new_dir = WEST
-
-			if (EAST)
-				if (clockwise)
-					new_dir = SOUTH
-				else
-					new_dir = NORTH
-
-			if (SOUTH)
-				if (clockwise)
-					new_dir = WEST
-				else
-					new_dir = EAST
-
-			if (WEST)
-				if (clockwise)
-					new_dir = NORTH
-				else
-					new_dir = SOUTH
-
-		if (new_dir)
-			src.spessman_direction = new_dir
 
 	proc/copy_to(mob/character,var/mob/user,ignore_randomizer = 0)
 		sanitize_null_values()
