@@ -20,7 +20,6 @@ datum/preferences
 
 	var/be_random_name = 0
 	var/be_random_look = 0
-	var/spessman_direction = SOUTH
 	var/random_blood = 0
 	var/view_changelog = 1
 	var/view_score = 1
@@ -31,6 +30,8 @@ datum/preferences
 	var/listen_looc = 1
 	var/default_wasd = 0 // do they want wasd on by default?
 	var/use_azerty = 0 // do they have an AZERTY keyboard?
+	var/spessman_direction = SOUTH
+	var/clockwise = 1
 
 	var/job_favorite = null
 	var/list/jobs_med_priority = list()
@@ -176,10 +177,6 @@ datum/preferences
 		dat += "(&reg; = <a href=\"byond://?src=\ref[user];preferences=1;b_random_look=1\">[src.be_random_look ? "Yes" : "No"]</a>)"
 		dat += "<br>"
 
-		dat += "<b>Rotate guy? </b>"			
-		dat += "(&reg; = <a href=\"byond://?src=\ref[user];preferences=1;spessman_direction=input\">[src.spessman_direction] Choose direction</a>)"
-		dat += "<br>"
-
 		dat += "<b>Gender:</b> <a href=\"byond://?src=\ref[user];preferences=1;gender=input\"><b>[src.gender == MALE ? "Male" : "Female"]</b></a><br>"
 		dat += "<b>Age:</b> <a href='byond://?src=\ref[user];preferences=1;age=input'>[src.age]</a><br>"
 		dat += "<b>Blood Type:</b> <a href='byond://?src=\ref[user];preferences=1;blType=input'>[src.random_blood ? "Random" : src.blType]</a><br>"
@@ -212,7 +209,12 @@ datum/preferences
 
 			dat += "</td><td>"
 			dat += "<center><b>Preview</b>:<br>"
-			dat += "<img style=\"-ms-interpolation-mode:nearest-neighbor;\" src=previewicon.png height=64 width=64></center>"
+			dat += "<img style=\"-ms-interpolation-mode:nearest-neighbor;\" src=previewicon.png height=64 width=64><br>"
+
+			dat += "<a href=\"byond://?src=\ref[user];preferences=1;rotate_counter_clockwise=1\">&#x27f2</a>"
+			dat += " || "
+			dat += "<a href=\"byond://?src=\ref[user];preferences=1;rotate_clockwise=1\">&#x27f3</a>"
+			dat += "</center>"
 
 		else
 			dat += "<span color=red>ERROR:<br>PREFERENCE APPEARENCE HOLDER IS NULL<br>Please alert a coder!</span>"
@@ -892,15 +894,11 @@ datum/preferences
 			else
 				src.be_random_look = 1
 
-		if (link_tags["spessman_direction"])
-			var/list/directions = new/list(4)
-			directions[1] = NORTH
-			directions[2] = SOUTH
-			directions[3] = EAST
-			directions[4] = WEST
-			var/new_dir = input(user, "Please select direction to face.", "Character Generation") in directions
-			if (new_dir)
-				src.spessman_direction = new_dir
+		if (link_tags["rotate_counter_clockwise"])
+			rotate_spessman(spessman_direction, 0)
+
+		if (link_tags["rotate_clockwise"])
+			rotate_spessman(spessman_direction, 1)
 
 		/* Wire: a little thing i'll finish up eventually
 		if (link_tags["set_will"])
@@ -978,6 +976,37 @@ datum/preferences
 			blType = "A+"
 
 		src.ShowChoices(user)
+
+	//takes the current direction the sprite is facing and the rotation type and changes the src.spessman_direction to what it should be after applying the rotation
+	proc/rotate_spessman(var/cur_direction, var/clockwise)
+		var/new_dir
+		switch(cur_direction)
+			if (NORTH)
+				if (clockwise)
+					new_dir = EAST
+				else
+					new_dir = WEST
+
+			if (EAST)
+				if (clockwise)
+					new_dir = SOUTH
+				else
+					new_dir = NORTH
+
+			if (SOUTH)
+				if (clockwise)
+					new_dir = WEST
+				else
+					new_dir = EAST
+
+			if (WEST)
+				if (clockwise)
+					new_dir = NORTH
+				else
+					new_dir = SOUTH
+
+		if (new_dir)
+			src.spessman_direction = new_dir
 
 	proc/copy_to(mob/character,var/mob/user,ignore_randomizer = 0)
 		sanitize_null_values()
