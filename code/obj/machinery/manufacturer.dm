@@ -288,19 +288,32 @@
 			dat += "<small>"
 			if (src.category != "Downloaded")
 				for(var/datum/manufacture/A in src.available)
+					var/list/mats_used = material_check(A)
+
 					if (istext(src.search) && !findtext(A.name, src.search, 1, null))
 						continue
 					else if (istext(src.category) && src.category != A.category)
 						continue
-					dat += "<BR><A href='?src=\ref[src];disp=\ref[A]'><b><u>[A.name]</u></b></A> "
+					
+					if (isnull(mats_used))
+						dat += "<BR><font color = 'red'>><b><u>[A.name]</u></b></font> "		//change this name to red if can't be made
+						// dat += "<BR><font color = 'red'><A href='?src=\ref[src];disp=\ref[A]'><b><u>[A.name]</u></b></A></font> "		//change this name to red if can't be made
+					else
+						dat += "<BR><A href='?src=\ref[src];disp=\ref[A]'><b><u>[A.name]</u></b></A> "		//change this name to red if can't be made
+
 					if (istext(A.category))
 						dat += "([A.category])"
 					dat += "<br>"
+
 					var/list_count = 1
 					for (var/X in A.item_paths)
 						if (list_count != 1) dat += ", "
-						dat += "[A.item_amounts[list_count]] [A.item_names[list_count]]"
+						if(X in mats_used)
+							dat += "[A.item_amounts[list_count]] [A.item_names[list_count]]"		//change this line to red if mising <font color = "red">
+						else
+							dat += "<font color = 'red'>[A.item_amounts[list_count]] [A.item_names[list_count]]</font>"		//change this line to red if mising <font color = "red">					
 						list_count++
+
 					if (A.time == 0 || src.speed == 0)
 						dat += "<br><b>Time:</b> ERROR<br>"
 					else
