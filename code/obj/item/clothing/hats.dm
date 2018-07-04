@@ -421,6 +421,7 @@
 				user.say("Hocus Pocus!")
 				user.visible_message("<span style=\"color:red\">[user] pulls a rabbit from [src] and it \"hops\" onto the floor!</span>")
 				new /obj/item/photo/rabbit(get_turf(src))
+				playsound(user.loc, "sound/effects/mag_teleport.ogg", 25, 1, -1)
 
 				//create dumb rabbit critter/sprite for comedy
 				spawn (600)
@@ -430,7 +431,7 @@
 		
 /obj/item/photo/rabbit
 	name = "photo of a rabbit"
-	desc = "You can see a rabbit on the photo.  Looks like an older model. ?"
+	desc = "You can see a rabbit on the photo. You feel let down?"
 	icon_state = "photo-rabbit"
 
 /obj/item/clothing/head/wizard/red
