@@ -412,10 +412,12 @@
 			. = 0
 
 	attack_hand(mob/user as mob)
-		if (src.contents.len > 0)
-			..()
 
-		else if (iswizard(user) && user.find_in_hand(src))
+		//if it has something in it, do normal stuff
+		if (src.contents.len > 0 || !user.find_in_hand(src))
+			..()
+			
+		else if (iswizard(user))
 			if (ready)
 				ready = 0
 				user.say("Hocus Pocus!")
@@ -428,7 +430,8 @@
 					ready = 1
 			else
 				boutput(user, "<span style=\"color:red\">You don't feel powerful enough to conjure a rabbit from your hat just yet.</span>")
-		
+		else
+			..()
 /obj/item/photo/rabbit
 	name = "photo of a rabbit"
 	desc = "You can see a rabbit on the photo. You feel let down?"
