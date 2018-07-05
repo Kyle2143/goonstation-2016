@@ -2943,10 +2943,11 @@
 				if (M.zone_sel.selecting == "head" && src.head && (istype(src.head, /obj/item/clothing/head/helmet/HoS) || istype(src.head, /obj/item/clothing/head/hosberet)))
 					var/obj/item/clothing/head/hat = src.head
 					if (hat && hat.contents.len > 0)
-						var/obj/O = pick(hat.contents)
-						M.visible_message("<span style=\"color:red\">[O] falls out of [M]\'s [src]!</span>")
-						O.set_loc(get_turf(src))
-						hat.contents -= O
+						spawn(2)
+							var/obj/O = pick(hat.contents)
+							M.visible_message("<span style=\"color:red\">[O] falls out of [src]\'s [hat]!</span>")
+							O.set_loc(get_turf(src))
+							hat.contents -= O
 						
 			M.melee_attack(src)
 
