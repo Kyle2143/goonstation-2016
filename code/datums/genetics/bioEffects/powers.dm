@@ -15,7 +15,7 @@
 	var/power = 0
 	var/ability_path = /datum/targetable/geneticsAbility/cryokinesis
 	var/datum/targetable/geneticsAbility/ability = /datum/targetable/geneticsAbility/cryokinesis
-
+	
 	New()
 		..()
 		check_ability_owner()
@@ -95,7 +95,7 @@
 	msgGain = "You feel like you can teleport."
 	msgLose = "You feel like you can't teleport anymore."
 	effectType = effectTypePower
-	cooldown = 600
+	cooldown = 10
 	probability = 5
 	blockCount = 3
 	blockGaps = 2
@@ -110,9 +110,10 @@
 	desc = "Allows the subject teleport to a previously visited location."
 	icon_state = "apparition"
 	targeted = 0
-	target_anything = 1
+	target_anything = 0
 	var/first_cast = 1		//first cast sets the teleport location
-	var/turf/list/destinations = list(3)
+	// var/turf/list/destinations = list()
+	var/turf/destination
 
 
 	cast(atom/target)
@@ -122,36 +123,64 @@
 
 		//first time its used it will set the place to return to
 		if (first_cast)
-			destinations += get_turf(owner)
+			// destinations += get_turf(owner)
+			destination = get_turf(owner)
 			first_cast = 0
-			boutput(usr, "/blue You decide that [destinations[1]] is one of the locations you want to apparate to.")
+			boutput(usr, "You decide that [destination.name] is one of the locations you want to apparate to.")
 			return
 
-		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> concentrates for a moment!</span>")
-		spawn(10)
-			playsound(target.loc, "sound/effects/bamf.ogg", 50, 0)
-			owner.set_loc(get_turf(destinations[1]))
+		owner.say("Disapparate!")
 
-		// target.visible_message("<span style=\"color:red\"><b>[owner]</b> points at [target]!</span>")
-		// playsound(target.loc, "sound/effects/bamf.ogg", 50, 0)
-		// particleMaster.SpawnSystem(new /datum/particleSystem/tele_wand(get_turf(target),"8x8snowflake","#88FFFF"))
+		if (do_after(owner, 30))
+			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
 
+			var/turf/list/possible_destinations = list()
+			for (var/turf/T in orange(2, get_turf(destination)))
+				if (T.density == 0)
+					possible_destinations += T
 
-		//does grabbing someone add them to contents?
+			var/turf/T = pick(possible_destinations)
+			owner.set_loc(T)
 
-		// if (linked_power.power)
+			//ability to teleport more than one person
+			if (linked_power.power)
+				//loop to determine possible locations for others to end up within one tile of the where the caster will end up
+				var/turf/list/other_destinations = list()
+				for (var/turf/adj in orange(1, T))
+					if (adj.density == 0)
+						other_destinations += adj
+				//loop through mobs grabbed by caster and place them 
+				for (var/obj/item/grab/G in owner.contents)
+					G.affecting.set_loc(pick(other_destinations))
 
-		// for (var/mob/living/L in T.contents)
-		// 	if (L == owner && linked_power.safety)
-		// 		continue
-		// 	boutput(L, "<span style=\"color:blue\">You are struck by a burst of ice cold air!</span>")
-		// 	if(L.burning)
-		// 		L.set_burning(0)
-		// 	L.bodytemperature = 100
-		// 	if (linked_power.power)
-		// 		new /obj/icecube(get_turf(L), L)
+			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
+			
+			//no chance to splinch if synchronized
+			if (!linked_power.safety && prob(10))
+				splinch(owner)
 
 		return
+	
+	// /mob/living/carbon/human/list_ejectables() looked pretty similar to what I wanted, but I wasn't sure about those probability stuff going in so I made this
+	//drop a non-vital organ or a limb //shamelessly stolen from Harry Potter as is this whole ability
+	proc/splinch(var/mob/M as mob)
+		if (istype(M, /mob/living/carbon/human))
+			var/mob/living/carbon/human/H = M
+
+			if (prob(50) && H.organHolder)
+				var/organ_to_drop = pick("left_eye", "right_eye", "left_lung", "right_lung", "butt") //add more organs when they actually do something
+				H.organHolder.drop_organ(organ_to_drop)
+			else
+				var/limb_to_drop = pick("l_arm", "r_arm", "l_leg", "l_leg")
+				H.sever_limb(limb_to_drop)
+
+	verb/forget_destination()
+		first_cast = 1
+		destination = null
+		// destinations = list()
+		boutput(usr, "/blue You decide that [destination.name] not where you want to apparate to.")
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
