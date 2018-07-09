@@ -88,6 +88,75 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/datum/bioEffect/power/apparition
+	name = "Apparition"
+	desc = "Allows the subject teleport to a previously visited location."
+	id = "apparition"
+	msgGain = "You feel like you can teleport."
+	msgLose = "You feel like you can't teleport anymore."
+	effectType = effectTypePower
+	cooldown = 600
+	probability = 5
+	blockCount = 3
+	blockGaps = 2
+	stability_loss = 10
+	using = 0
+	safety = 0
+	power = 0
+	ability_path = /datum/targetable/geneticsAbility/apparition
+
+/datum/targetable/geneticsAbility/apparition
+	name = "Apparition"
+	desc = "Allows the subject teleport to a previously visited location."
+	icon_state = "apparition"
+	targeted = 0
+	target_anything = 1
+	var/first_cast = 1		//first cast sets the teleport location
+	var/turf/list/destinations = list(3)
+
+
+	cast(atom/target)
+		if (..())
+			return 1
+
+
+		//first time its used it will set the place to return to
+		if (first_cast)
+			destinations += get_turf(owner)
+			first_cast = 0
+			boutput(usr, "/blue You decide that [destinations[1]] is one of the locations you want to apparate to.")
+			return
+
+		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> concentrates for a moment!</span>")
+		spawn(10)
+			playsound(target.loc, "sound/effects/bamf.ogg", 50, 0)
+			owner.set_loc(get_turf(destinations[1]))
+
+		// target.visible_message("<span style=\"color:red\"><b>[owner]</b> points at [target]!</span>")
+		// playsound(target.loc, "sound/effects/bamf.ogg", 50, 0)
+		// particleMaster.SpawnSystem(new /datum/particleSystem/tele_wand(get_turf(target),"8x8snowflake","#88FFFF"))
+
+
+		//does grabbing someone add them to contents?
+
+		// if (linked_power.power)
+
+		// for (var/mob/living/L in T.contents)
+		// 	if (L == owner && linked_power.safety)
+		// 		continue
+		// 	boutput(L, "<span style=\"color:blue\">You are struck by a burst of ice cold air!</span>")
+		// 	if(L.burning)
+		// 		L.set_burning(0)
+		// 	L.bodytemperature = 100
+		// 	if (linked_power.power)
+		// 		new /obj/icecube(get_turf(L), L)
+
+		return
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /datum/bioEffect/power/mattereater
 	name = "Matter Eater"
 	desc = "Allows the subject to eat just about anything without harm."
