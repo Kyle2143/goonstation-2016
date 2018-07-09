@@ -135,7 +135,7 @@
 			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
 
-			var/turf/list/possible_destinations = list()
+			var/turf/list/possible_destinations = new/list()
 			for (var/turf/T in orange(2, get_turf(destination)))
 				if (T.density == 0)
 					possible_destinations += T
@@ -146,7 +146,7 @@
 			//ability to teleport more than one person
 			if (linked_power.power)
 				//loop to determine possible locations for others to end up within one tile of the where the caster will end up
-				var/turf/list/other_destinations = list()
+				var/turf/list/other_destinations = new/list()
 				for (var/turf/adj in orange(1, T))
 					if (adj.density == 0)
 						other_destinations += adj
