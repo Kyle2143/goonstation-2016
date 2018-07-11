@@ -410,6 +410,7 @@
 			if ("appendix")
 				if (!src.butt)
 					return 0
+
 				var/obj/item/organ/appendix/myappendix = src.appendix
 				myappendix.set_loc(location)
 				src.appendix = null
@@ -629,6 +630,103 @@
 				src.butt = newButt
 				newButt.set_loc(src.donor)
 				organ_list["butt"] = newButt
+				success = 1
+
+			if ("left_kidney")
+				if (src.left_kidney)
+					if (force)
+						qdel(src.left_kidney)
+					else
+						return 0
+				var/obj/item/organ/kidney/left/newleft_kidney = I
+				newleft_kidney.op_stage = op_stage
+				src.left_kidney = newleft_kidney
+				newleft_kidney.set_loc(src.donor)
+				organ_list["left_kidney"] = newleft_kidney
+				success = 1
+			if ("right_kidney")
+				if (src.right_kidney)
+					if (force)
+						qdel(src.right_kidney)
+					else
+						return 0
+				var/obj/item/organ/kidney/right/newright_kidney = I
+				newright_kidney.op_stage = op_stage
+				src.right_kidney = newright_kidney
+				newright_kidney.set_loc(src.donor)
+				organ_list["right_kidney"] = newright_kidney
+				success = 1
+			if ("liver")
+				if (src.liver)
+					if (force)
+						qdel(src.liver)
+					else
+						return 0
+				var/obj/item/organ/liver/newliver = I
+				newliver.op_stage = op_stage
+				src.liver = newliver
+				newliver.set_loc(src.donor)
+				organ_list["liver"] = newliver
+				success = 1
+			if ("stomach")
+				if (src.stomach)
+					if (force)
+						qdel(src.stomach)
+					else
+						return 0
+				var/obj/item/organ/stomach/newstomach = I
+				newstomach.op_stage = op_stage
+				src.stomach = newstomach
+				newstomach.set_loc(src.donor)
+				organ_list["stomach"] = newstomach
+				success = 1
+			if ("intestines")
+				if (src.intestines)
+					if (force)
+						qdel(src.intestines)
+					else
+						return 0
+				var/obj/item/organ/intestines/newintestines = I
+				newintestines.op_stage = op_stage
+				src.intestines = newintestines
+				newintestines.set_loc(src.donor)
+				organ_list["intestines"] = newintestines
+				success = 1
+			if ("spleen")
+				if (src.spleen)
+					if (force)
+						qdel(src.spleen)
+					else
+						return 0
+				var/obj/item/organ/spleen/newspleen = I
+				newspleen.op_stage = op_stage
+				src.spleen = newspleen
+				newspleen.set_loc(src.donor)
+				organ_list["spleen"] = newspleen
+				success = 1
+			if ("pancreas")
+				if (src.pancreas)
+					if (force)
+						qdel(src.pancreas)
+					else
+						return 0
+				var/obj/item/organ/pancreas/newpancreas = I
+				newpancreas.op_stage = op_stage
+				src.pancreas = newpancreas
+				newpancreas.set_loc(src.donor)
+				organ_list["pancreas"] = newpancreas
+				success = 1
+			if ("appendix")
+				if (src.appendix)
+					if (force)
+						qdel(src.appendix)
+					else
+						return 0
+				var/obj/item/organ/appendix/newappendix = I
+				newappendix.op_stage = op_stage
+				src.appendix = newappendix
+				newappendix.set_loc(src.donor)
+				organ_list["appendix"] = newappendix
 				success = 1
 
 		if (success)
