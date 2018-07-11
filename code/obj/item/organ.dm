@@ -14,8 +14,19 @@
 	var/obj/item/organ/lung/left_lung = null
 	var/obj/item/organ/lung/right_lung = null
 	var/obj/item/clothing/head/butt/butt = null
+	var/obj/item/organ/kidney/left_kidney = null
+	var/obj/item/organ/kidney/right_kidney = null
+	var/obj/item/organ/liver = null
+	var/obj/item/organ/stomach = null
+	var/obj/item/organ/intestines = null
+	var/obj/item/organ/spleen = null
+	var/obj/item/organ/pancreas = null
+	var/obj/item/organ/appendix = null
 
-	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt")
+
+/obj/item/organ/appendix
+
+	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
 
 	New(var/mob/living/carbon/human/H)
 		..()
@@ -46,6 +57,24 @@
 			right_lung.donor = null
 		if (butt)
 			butt.donor = null
+
+		if (left_kidney)
+			left_kidney.donor = null
+		if (right_kidney)
+			right_kidney.donor = null
+		if (liver)
+			liver.donor = null
+		if (stomach)
+			stomach.donor = null
+		if (intestines)
+			intestines.donor = null
+		if (spleen)
+			spleen.donor = null
+		if (pancreas)
+			pancreas.donor = null
+		if (appendix)
+			appendix.donor = null
+
 		donor = null
 		..()
 
@@ -114,6 +143,47 @@
 			src.butt = new /obj/item/clothing/head/butt(src.donor)
 			src.butt.donor = src.donor
 			organ_list["butt"] = butt
+
+		if (!src.left_kidney)
+			src.left_kidney = new /obj/item/organ/kidney/left
+			src.left_kidney.donor = src.donor
+			organ_list["left_kidney"] = left_kidney
+			left_kidney.donor = null
+		if (!src.right_kidney)
+			src.right_kidney = new /obj/item/organ/kidney/right
+			src.right_kidney.donor = src.donor
+			organ_list["right_kidney"] = right_kidney
+			right_kidney.donor = null
+		if (!src.liver)
+			src.liver = new /obj/item/organ/liver
+			src.liver.donor = src.donor
+			organ_list["liver"] = liver
+			liver.donor = null
+		if (!src.stomach)
+			src.stomach = new /obj/item/organ/stomach
+			src.stomach.donor = src.donor
+			organ_list["stomach"] = stomach
+			stomach.donor = null
+		if (!src.intestines)
+			src.intestines = new /obj/item/organ/intestines
+			src.intestines.donor = src.donor
+			organ_list["intestines"] = intestines
+			intestines.donor = null
+		if (!src.spleen)
+			src.spleen = new /obj/item/organ/spleen
+			src.spleen.donor = src.donor
+			organ_list["spleen"] = spleen
+			spleen.donor = null
+		if (!src.pancreas)
+			src.pancreas = new /obj/item/organ/pancreas
+			src.pancreas.donor = src.donor
+			organ_list["pancreas"] = pancreas
+			pancreas.donor = null
+		if (!src.appendix)
+			src.appendix = new /obj/item/organ/appendix
+			src.appendix.donor = src.donor
+			organ_list["appendix"] = appendix
+			appendix.donor = null
 
 	proc/drop_organ(var/type, var/location)
 		if (!src.donor || !type)
