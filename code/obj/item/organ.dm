@@ -358,6 +358,64 @@
 				src.butt = null
 				return myButt
 
+			if ("left_kidney")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/kidney/left/myleft_kidney = src.left_kidney
+				myleft_kidney.set_loc(location)
+				src.left_kidney = null
+				return myleft_kidney
+			if ("right_kidney")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/kidney/right/myright_kidney = src.right_kidney
+				myright_kidney.set_loc(location)
+				src.right_kidney = null
+				return myright_kidney
+			if ("liver")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/liver/myliver = src.liver
+				myliver.set_loc(location)
+				src.liver = null
+				return myliver
+			if ("stomach")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/stomach/mystomach = src.stomach
+				mystomach.set_loc(location)
+				src.stomach = null
+				return mystomach
+			if ("intestines")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/intestines/myintestines = src.intestines
+				myintestines.set_loc(location)
+				src.intestines = null
+				return myintestines
+			if ("spleen")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/spleen/myspleen = src.spleen
+				myspleen.set_loc(location)
+				src.spleen = null
+				return myspleen
+			if ("pancreas")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/pancreas/mypancreas = src.pancreas
+				mypancreas.set_loc(location)
+				src.pancreas = null
+				return mypancreas
+			if ("appendix")
+				if (!src.butt)
+					return 0
+				var/obj/item/organ/appendix/myappendix = src.appendix
+				myappendix.set_loc(location)
+				src.appendix = null
+				return myappendix
+
+
 	proc/receive_organ(var/obj/item/I, var/type, var/op_stage = 0.0, var/force = 0)
 		if (!src.donor || !I || !type)
 			return 0
