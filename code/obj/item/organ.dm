@@ -24,9 +24,23 @@
 	var/obj/item/organ/appendix = null
 
 
-/obj/item/organ/appendix
-
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
+
+	proc/get_kidney_amt()
+		var/count = 0
+		if (!organ_list && organ_list[["left_kidney"]])
+			count++
+		if (!organ_list && organ_list[["right_kidney"]])
+			count++
+		return count
+
+	proc/get_lung_amt()
+		var/count = 0
+		if (!organ_list && organ_list[["left_lung"]])
+			count++
+		if (!organ_list && organ_list[["right_lung"]])
+			count++
+		return count
 
 	New(var/mob/living/carbon/human/H)
 		..()
@@ -783,6 +797,7 @@
 	var/body_side = null // L_ORGAN/1 for left, R_ORGAN/2 for right
 	var/datum/bone/bones = null
 	rand_pos = 1
+	var/health = 100 //organs can take damage now, hurray
 
 	New()
 		..()
@@ -1887,44 +1902,53 @@
 
 /obj/item/organ/liver
 	name = "liver"
+	organ_name = "liver"
 	desc = "Ew, this thing is just the wurst."
 	icon_state = "liver"
 
 /obj/item/organ/kidney
 	name = "kidneys"
+	organ_name = "kidney_t"
 	desc = "Bean shaped, but not actually beans. You can still eat them, though!"
 	icon_state = "kidneys"
 
 /obj/item/organ/kidney/left
 	name = "left kidney"
+	organ_name = "kidney_L"
 	icon_state = "kidney_L"
 	body_side = L_ORGAN
 
 /obj/item/organ/kidney/right
 	name = "right kidney"
+	organ_name = "kidney_R"
 	icon_state = "kidney_R"
 	body_side = R_ORGAN
 
 /obj/item/organ/stomach
 	name = "stomach"
+	organ_name = "stomach"
 	desc = "A little meat sack containing acid for the digestion of food. Like most things that come out of living creatures, you can probably eat it."
 	icon_state = "stomach"
 
 /obj/item/organ/intestines
 	name = "intestines"
+	organ_name = "intestines"
 	desc = "Did you know that if you laid your guts out in a straight line, they'd be about 9 meters long? Also, you'd probably be dying, so it's not something you should do. Probably."
 	icon_state = "intestines"
 
 /obj/item/organ/spleen
 	name = "spleen"
+	organ_name = "spleen"
 	icon_state = "spleen"
 
 /obj/item/organ/pancreas
 	name = "pancreas"
+	organ_name = "pancreas"
 	icon_state = "pancreas"
 
 /obj/item/organ/appendix
 	name = "appendix"
+	organ_name = "appendix"
 	icon_state = "appendix"
 
 #undef L_ORGAN
