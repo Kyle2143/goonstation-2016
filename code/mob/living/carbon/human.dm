@@ -6478,19 +6478,17 @@
 /mob/living/carbon/human/proc/take_liver_kidney_damage(var/amount)
 	amount = amount/10
 	take_organ_damage(amount, "liver")
-	if (src.organHolder)
-		if (prob(40))
-			take_organ_damage(amount, "left_kidney")
-		if (prob(40))
-			take_organ_damage(amount, "right_kidney")
+	if (prob(40))
+		take_organ_damage(amount, "left_kidney")
+	if (prob(40))
+		take_organ_damage(amount, "right_kidney")
 
 /mob/living/carbon/human/proc/take_lung_damage(var/amount)
 	amount = amount/20
-	if (src.organHolder)
-		if (prob(40))
-			take_organ_damage(amount, "left_lung")
-		if (prob(40))
-			take_organ_damage(amount, "right_lung")
+	if (prob(40))
+		take_organ_damage(amount, "left_lung")
+	if (prob(40))
+		take_organ_damage(amount, "right_lung")
 
 //damage organs specifically choose name from strings in organ_list var in obj/item/organ in orgam.dm --kyle
 //only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
