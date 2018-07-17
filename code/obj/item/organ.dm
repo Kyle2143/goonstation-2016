@@ -1905,6 +1905,15 @@
 	organ_name = "liver"
 	desc = "Ew, this thing is just the wurst."
 	icon_state = "liver"
+	
+	// on_mob_life(var/mob/M)
+	// 	if(!M) M = holder.my_atom
+	// 	if(holder.has_reagent("ethanol")) holder.remove_reagent("ethanol", 8)
+	// 	if (M.get_toxin_damage() <= 25)
+	// 		M.take_toxin_damage(-2)
+	// 		M.updatehealth()
+	// 	..(M)
+	// 	return
 
 /obj/item/organ/kidney
 	name = "kidneys"

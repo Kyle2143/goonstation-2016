@@ -173,7 +173,9 @@ datum
 			do_overdose(var/severity, var/mob/M)
 				var/mob/living/carbon/human/H = M
 				if (!istype(H) || !H.bioHolder.HasEffect("resist_alcohol"))
+					H.take_organ_damage(rand(1,2), "liver")
 					..()
+
 
 		hydrogen
 			name = "hydrogen"
@@ -489,6 +491,10 @@ datum
 						M.weakened += 4 * severity
 
 					if (prob(8))
+						var/mob/living/carbon/human/H = M
+						if (!istype(H))
+							H.take_organ_damage(rand(1,2), "pancreas")
+
 						M.take_toxin_damage(severity)
 						M.updatehealth()
 

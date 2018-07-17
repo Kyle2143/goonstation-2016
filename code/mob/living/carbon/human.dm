@@ -6471,36 +6471,31 @@
 	if (src.bioHolder && src.bioHolder.HasEffect("resist_toxic"))
 		return
 
-	take_liver_kidney_damage(src.toxloss)
+	damage_organs(src.toxloss/10, 40, list("left_kidney", "right_kidney")
+	take_organ_damage(src.toxloss/20, "liver")
+
 	src.toxloss = max(0,src.toxloss + amount)
 	return
 
-/mob/living/carbon/human/proc/take_liver_kidney_damage(var/amount)
-	amount = amount/10
-	take_organ_damage(amount, "liver")
-	if (prob(40))
-		take_organ_damage(amount, "left_kidney")
-	if (prob(40))
-		take_organ_damage(amount, "right_kidney")
 
-/mob/living/carbon/human/proc/take_lung_damage(var/amount)
-	amount = amount/20
-	if (prob(40))
-		take_organ_damage(amount, "left_lung")
-	if (prob(40))
-		take_organ_damage(amount, "right_lung")
+//amount, damge to be done to organs
+//probability, num 0-100 for whether or not to damage an organ found
+//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
+/mob/living/carbon/human/proc/damage_organs(var/amount, var/probability, var/list/organs)
+	for (var/organ in organs)
+		if(prob(probability))
+			take_organ_damage(amount, organ)
 
 //damage organs specifically choose name from strings in organ_list var in obj/item/organ in orgam.dm --kyle
 //only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
 //return 1 on success, 0 on failure
 /mob/living/carbon/human/proc/take_organ_damage(var/amount as num, var/organ as text)
+	if (src.organholder && src.organholder.organ_list)
+		if (src.organholder.organ_list[text])
 
-	if (src.organholder)
-		if (src.organholder.organ_list)
-			if (src.organholder.organ_list[text])
-				var/obj/item/organ/O = src.organholder.organ_list[text]
-				if (istype(O,/obj/item/organ))
-					O.health = max(0, O.health - amount)
-					return 1
+			var/obj/item/organ/O = src.organholder.organ_list[text]
+			if (istype(O,/obj/item/organ))
+				O.health = max(0, O.health - amount)
+				return 1
 
 	return 0

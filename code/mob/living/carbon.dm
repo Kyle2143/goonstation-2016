@@ -290,6 +290,7 @@
 		src.reagents.clear_reagents()
 	..()
 
+//Kind of want to remove this and just move it into the new take_organ_damage proc
 /mob/living/carbon/take_brain_damage(var/amount)
 	if (..())
 		return
@@ -310,6 +311,13 @@
 
 	if (src.bioHolder && src.bioHolder.HasEffect("resist_toxic"))
 		return
+
+
+	if (istype(src, /mob/living/carbon/human))
+		mob/living/carbon/human\H = src
+		
+		if (H.organholder && H.organ)
+
 
 	src.toxloss = max(0,src.toxloss + amount)
 	return
