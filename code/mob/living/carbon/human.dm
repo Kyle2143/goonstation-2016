@@ -6465,13 +6465,13 @@
 		src.sims.updateHudIcons(new_style)
 	return
 
-/mob/living/carbon/human/proc/take_toxin_damage(var/amount)
+/mob/living/carbon/human/take_toxin_damage(var/amount)
 	if (..())
 		return
 	if (src.bioHolder && src.bioHolder.HasEffect("resist_toxic"))
 		return
 
-	damage_organs(src.toxloss/10, 40, list("left_kidney", "right_kidney")
+	damage_organs(src.toxloss/10, 40, list("left_kidney", "right_kidney"))
 	take_organ_damage(src.toxloss/20, "liver")
 
 	src.toxloss = max(0,src.toxloss + amount)
@@ -6486,14 +6486,14 @@
 		if(prob(probability))
 			take_organ_damage(amount, organ)
 
-//damage organs specifically choose name from strings in organ_list var in obj/item/organ in orgam.dm --kyle
+//damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
 //only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
 //return 1 on success, 0 on failure
-/mob/living/carbon/human/proc/take_organ_damage(var/amount as num, var/organ as text)
-	if (src.organholder && src.organholder.organ_list)
-		if (src.organholder.organ_list[text])
+/mob/living/carbon/human/proc/take_organ_damage(var/amount, var/organ)
+	if (src.organHolder && src.organHolder.organ_list)
+		if (src.organHolder.organ_list[organ])
 
-			var/obj/item/organ/O = src.organholder.organ_list[text]
+			var/obj/item/organ/O = src.organHolder.organ_list[organ]
 			if (istype(O,/obj/item/organ))
 				O.health = max(0, O.health - amount)
 				return 1

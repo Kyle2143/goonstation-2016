@@ -28,17 +28,17 @@
 
 	proc/get_kidney_amt()
 		var/count = 0
-		if (!organ_list && organ_list[["left_kidney"]])
+		if (!organ_list && organ_list["left_kidney"])
 			count++
-		if (!organ_list && organ_list[["right_kidney"]])
+		if (!organ_list && organ_list["right_kidney"])
 			count++
 		return count
 
 	proc/get_lung_amt()
 		var/count = 0
-		if (!organ_list && organ_list[["left_lung"]])
+		if (!organ_list && organ_list["left_lung"])
 			count++
-		if (!organ_list && organ_list[["right_lung"]])
+		if (!organ_list && organ_list["right_lung"])
 			count++
 		return count
 
@@ -797,7 +797,7 @@
 	var/body_side = null // L_ORGAN/1 for left, R_ORGAN/2 for right
 	var/datum/bone/bones = null
 	rand_pos = 1
-	var/health = 100 //organs can take damage now, hurray
+	health = 100 //organs can take damage now, hurray
 
 	New()
 		..()
