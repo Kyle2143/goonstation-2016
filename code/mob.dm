@@ -743,31 +743,31 @@
 		if (src.organHolder)
 			if (istype(W, /obj/item/organ/chest) && src.organHolder.chest == W)
 				continue
-			else if (istype(W, /obj/item/organ/head) && src.organHolder.head == W)
+			if (istype(W, /obj/item/organ/head) && src.organHolder.head == W)
 				continue
-			else if (istype(W, /obj/item/skull) && src.organHolder.skull == W)
+			if (istype(W, /obj/item/skull) && src.organHolder.skull == W)
 				continue
-			else if (istype(W, /obj/item/organ/brain) && src.organHolder.brain == W)
+			if (istype(W, /obj/item/organ/brain) && src.organHolder.brain == W)
 				continue
-			else if (istype(W, /obj/item/organ/eye) && (src.organHolder.left_eye == W || src.organHolder.right_eye == W))
+			if (istype(W, /obj/item/organ/eye) && (src.organHolder.left_eye == W || src.organHolder.right_eye == W))
 				continue
-			else if (istype(W, /obj/item/organ/heart) && src.organHolder.heart == W)
+			if (istype(W, /obj/item/organ/heart) && src.organHolder.heart == W)
 				continue
-			else if (istype(W, /obj/item/organ/lung) && (src.organHolder.left_lung == W || src.organHolder.right_lung == W))
+			if (istype(W, /obj/item/organ/lung) && (src.organHolder.left_lung == W || src.organHolder.right_lung == W))
 				continue
-			else if (istype(W, /obj/item/clothing/head/butt) && src.organHolder.butt == W)
+			if (istype(W, /obj/item/clothing/head/butt) && src.organHolder.butt == W)
 				continue
-			else if (istype(W, /obj/item/organ/kidney) && (src.organHolder.left_kidney == W || src.organHolder.right_kidney == W))
+			if (istype(W, /obj/item/organ/kidney) && (src.organHolder.left_kidney == W || src.organHolder.right_kidney == W))
 				continue
-			else if (istype(W, /obj/item/organ/stomach) && src.organHolder.stomach == W)
+			if (istype(W, /obj/item/organ/stomach) && src.organHolder.stomach == W)
 				continue
-			else if (istype(W, /obj/item/organ/intestines) && src.organHolder.intestines == W)
+			if (istype(W, /obj/item/organ/intestines) && src.organHolder.intestines == W)
 				continue
-			else if (istype(W, /obj/item/organ/spleen) && src.organHolder.spleen == W)
+			if (istype(W, /obj/item/organ/spleen) && src.organHolder.spleen == W)
 				continue
-			else if (istype(W, /obj/item/organ/pancreas) && src.organHolder.pancreas == W)
+			if (istype(W, /obj/item/organ/pancreas) && src.organHolder.pancreas == W)
 				continue
-			else if (istype(W, /obj/item/organ/appendix) && src.organHolder.appendix == W)
+			if (istype(W, /obj/item/organ/appendix) && src.organHolder.appendix == W)
 				continue
 
 		src.u_equip(W)
