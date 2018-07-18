@@ -331,6 +331,73 @@ var/list/default_limb_paths = list("l_arm" = /obj/item/parts/human_parts/arm/lef
 				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=butt'>\[X\]</a></td>
 				[(see_vars) ? "[organs.butt ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.butt]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
 			</tr>
+			---------------------------------
+			<tr>
+				<td>Left Kidney</td>
+				<td>[organs.left_kidney ? organs.left_kidney : "None"]</td>
+				<td>[organs.left_kidney ? organs.left_kidney.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=left_kidney'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=left_kidney'>\[X\]</a></td>
+				[(see_vars) ? "[organs.left_kidney ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.left_kidney]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Right Kidney</td>
+				<td>[organs.right_kidney ? organs.right_kidney : "None"]</td>
+				<td>[organs.right_kidney ? organs.right_kidney.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=right_kidney'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=right_kidney'>\[X\]</a></td>
+				[(see_vars) ? "[organs.right_kidney ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.right_kidney]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Liver</td>
+				<td>[organs.liver ? organs.liver : "None"]</td>
+				<td>[organs.liver ? organs.liver.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=liver'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=liver'>\[X\]</a></td>
+				[(see_vars) ? "[organs.liver ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.liver]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Stomach</td>
+				<td>[organs.stomach ? organs.stomach : "None"]</td>
+				<td>[organs.stomach ? organs.stomach.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=stomach'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=stomach'>\[X\]</a></td>
+				[(see_vars) ? "[organs.stomach ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.stomach]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Intestines</td>
+				<td>[organs.intestines ? organs.intestines : "None"]</td>
+				<td>[organs.intestines ? organs.intestines.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=intestines'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=intestines'>\[X\]</a></td>
+				[(see_vars) ? "[organs.intestines ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.intestines]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Spleen</td>
+				<td>[organs.spleen ? organs.spleen : "None"]</td>
+				<td>[organs.spleen ? organs.spleen.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=spleen'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=spleen'>\[X\]</a></td>
+				[(see_vars) ? "[organs.spleen ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.spleen]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Pancreas</td>
+				<td>[organs.pancreas ? organs.pancreas : "None"]</td>
+				<td>[organs.pancreas ? organs.pancreas.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=pancreas'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=pancreas'>\[X\]</a></td>
+				[(see_vars) ? "[organs.pancreas ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.pancreas]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+			<tr>
+				<td>Appendix</td>
+				<td>[organs.appendix ? organs.appendix : "None"]</td>
+				<td>[organs.appendix ? organs.appendix.type : "None"]</td>
+				<td><a href='byond://?src=\ref[src];action=drop_organ;target=\ref[organs];part=appendix'>\[X\]</a></td>
+				<td><a href='byond://?src=\ref[src];action=replace_organ;target=\ref[organs];part=appendix'>\[X\]</a></td>
+				[(see_vars) ? "[organs.appendix ? "<td><a href='byond://?src=\ref[src];action=view_vars;target=\ref[organs.appendix]'>\[X\]</a></td>" : "<td>None</td>"]" : null]
+			</tr>
+
+			------------------------------------
 			<tr>
 				<td>All Organs</td>
 				<td><i>N/A</i></td>
