@@ -56,6 +56,7 @@
 	var/reagent_data = null
 	var/pathogen_data = null
 	var/disease_data = null
+	var/organ_data = null
 
 	if (ishuman(M))
 		var/mob/living/carbon/human/H = M
@@ -128,8 +129,17 @@
 					brain_data = "<span style='color:red'>Significant brain damage detected. Subject may have had a concussion.</span>"
 			else
 				brain_data = "<span style='color:red'>Subject has no brain.</span>"
+
+			organ_data = "<span style='color:red'>Scans indicate organ damage in:</span><br> "
+			for (var/obj/item/organ/organ in H.organHolder.organ_list)
+				if (!istype(organ, /obj/item/organ/head) && !istype(organ, /obj/item/organ/brain) && !istype(organ, /obj/item/organ/chest))
+					if (organ.health < 100)
+						organ_data += "[organ.organ_name] has [organ.health] / 100"
+			if (H.organHolder.organ_list["left_lung"])
+
+
 		else
-			brain_data = "<span style='color:red'>Subject has no brain.</span>"
+			brain_data = "<span style='color:red'>Subject has no organs.</span>"
 
 		if (H.organHolder && !H.organHolder.heart)
 			heart_data = "<span style='color:red'>Subject has no heart.</span>"
@@ -169,6 +179,7 @@
 	[rad_data ? "<br>[rad_data]" : null]\
 	[blood_data ? "<br>[blood_data]" : null]\
 	[brain_data ? "<br>[brain_data]" : null]\
+	[organ_data ? "<br>[organ_data]" : null]\
 	[heart_data ? "<br>[heart_data]" : null]\
 	[reagent_data ? "<br>[reagent_data]" : null]\
 	[pathogen_data ? "<br>[pathogen_data]" : null]\
