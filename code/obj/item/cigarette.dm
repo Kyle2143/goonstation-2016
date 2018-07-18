@@ -161,6 +161,7 @@
 						else
 							src.reagents.trans_to(M, 1)
 							src.reagents.reaction(M, INGEST)
+							H.damage_organs(2, 40, list("left_lung", "right_lung"))
 					else
 						src.reagents.trans_to(M, 1)
 						src.reagents.reaction(M, INGEST)

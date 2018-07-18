@@ -6496,6 +6496,8 @@
 			var/obj/item/organ/O = src.organHolder.organ_list[organ]
 			if (istype(O,/obj/item/organ))
 				O.health = max(0, O.health - amount)
+				src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
+
 				return 1
 
 	return 0
