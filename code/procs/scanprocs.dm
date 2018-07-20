@@ -130,13 +130,25 @@
 			else
 				brain_data = "<span style='color:red'>Subject has no brain.</span>"
 
-			organ_data = "<span style='color:red'>Scans indicate organ damage in:</span><br> "
-			for (var/obj/item/organ/organ in H.organHolder.organ_list)
-				if (!istype(organ, /obj/item/organ/head) && !istype(organ, /obj/item/organ/brain) && !istype(organ, /obj/item/organ/chest))
-					if (organ.health < 100)
-						organ_data += "[organ.organ_name] has [organ.health] / 100"
-			if (H.organHolder.organ_list["left_lung"])
 
+			if (verbose_reagent_info && !isvampire(H)) // Added a pair of vampire checks here (Convair880).
+				var/organ_data1 = ""
+				var/found = 0
+				
+				for (var/O in H.organHolder.organ_list)
+					var/obj/item/organ/organ = H.organHolder.organ_list[O]
+					if (organ == null)
+						continue
+
+					if (istype(organ, /obj/item/organ/head) || istype(organ, /obj/item/organ/brain) || istype(organ, /obj/item/organ/chest) || istype(organ, /obj/item/skull) || istype(organ, /obj/item/clothing/head/butt))
+						continue
+					if (organ.health < 100)
+						if (!found)
+							found = 1
+						organ_data1 += "<span style='color:red'>[organ.name] has [organ.health] / 100</span><br>"
+				if (found)
+					organ_data = "<span style='color:red'>Scans indicate organ damage in:</span><br>"
+					organ_data += organ_data1
 
 		else
 			brain_data = "<span style='color:red'>Subject has no organs.</span>"
