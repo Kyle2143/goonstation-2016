@@ -3945,6 +3945,7 @@
 
 		canmove = 1
 
+	//Kyle, add lung damage and handling cyber lungs maybe
 	proc/handle_breath(datum/gas_mixture/breath)
 		if (src.nodamage) return
 
@@ -6471,8 +6472,10 @@
 	if (src.bioHolder && src.bioHolder.HasEffect("resist_toxic"))
 		return
 
-	damage_organs(src.toxloss/10, 40, list("left_kidney", "right_kidney"))
-	take_organ_damage(src.toxloss/20, "liver")
+	//this proc is called for damage and healing, only damage organs when healing. New organ healing drugs will explicitely heal organs
+	if (amount > 1)
+		damage_organs(src.toxloss/20, 40, list("left_kidney", "right_kidney"))
+		prob_damage_organ(src.toxloss/40, 60, "liver")
 
 	src.toxloss = max(0,src.toxloss + amount)
 	return
@@ -6483,6 +6486,10 @@
 //organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
 /mob/living/carbon/human/proc/damage_organs(var/amount, var/probability, var/list/organs)
 	for (var/organ in organs)
+		prob_damage_organs(amount, probability, organ)
+
+//helper method for damage_organs, but does have some use on its own
+/mob/living/carbon/human/proc/prob_damage_organ(var/amount, var/probability, var/organ)
 		if(prob(probability))
 			take_organ_damage(amount, organ)
 
@@ -6495,7 +6502,7 @@
 
 			var/obj/item/organ/O = src.organHolder.organ_list[organ]
 			if (istype(O,/obj/item/organ))
-				O.health = max(0, O.health - amount)
+				O.health = min(100, O.health - amount)		//this health damage counts down from 100, crazy right?
 				src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
 
 				return 1

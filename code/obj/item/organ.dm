@@ -165,7 +165,7 @@
 			left_kidney.donor = null
 		if (!src.right_kidney)
 			src.right_kidney = new /obj/item/organ/kidney/right
-			src.right_kidney.donor = src.donor
+			src.right_kidney.donor = src.donor 
 			organ_list["right_kidney"] = right_kidney
 			right_kidney.donor = null
 		if (!src.liver)
@@ -378,6 +378,7 @@
 				var/obj/item/organ/kidney/left/myleft_kidney = src.left_kidney
 				myleft_kidney.set_loc(location)
 				src.left_kidney = null
+				organ_list["left_kidney"] = null
 				return myleft_kidney
 			if ("right_kidney")
 				if (!src.butt)
@@ -385,6 +386,7 @@
 				var/obj/item/organ/kidney/right/myright_kidney = src.right_kidney
 				myright_kidney.set_loc(location)
 				src.right_kidney = null
+				organ_list["right_kidney"] = null
 				return myright_kidney
 			if ("liver")
 				if (!src.butt)
@@ -392,6 +394,7 @@
 				var/obj/item/organ/liver/myliver = src.liver
 				myliver.set_loc(location)
 				src.liver = null
+				organ_list["liver"] = null
 				return myliver
 			if ("stomach")
 				if (!src.butt)
@@ -399,6 +402,7 @@
 				var/obj/item/organ/stomach/mystomach = src.stomach
 				mystomach.set_loc(location)
 				src.stomach = null
+				organ_list["stomach"] = null
 				return mystomach
 			if ("intestines")
 				if (!src.butt)
@@ -406,6 +410,7 @@
 				var/obj/item/organ/intestines/myintestines = src.intestines
 				myintestines.set_loc(location)
 				src.intestines = null
+				organ_list["intestines"] = null
 				return myintestines
 			if ("spleen")
 				if (!src.butt)
@@ -413,6 +418,7 @@
 				var/obj/item/organ/spleen/myspleen = src.spleen
 				myspleen.set_loc(location)
 				src.spleen = null
+				organ_list["spleen"] = null
 				return myspleen
 			if ("pancreas")
 				if (!src.butt)
@@ -420,6 +426,7 @@
 				var/obj/item/organ/pancreas/mypancreas = src.pancreas
 				mypancreas.set_loc(location)
 				src.pancreas = null
+				organ_list["pancreas"] = null
 				return mypancreas
 			if ("appendix")
 				if (!src.butt)
@@ -428,6 +435,8 @@
 				var/obj/item/organ/appendix/myappendix = src.appendix
 				myappendix.set_loc(location)
 				src.appendix = null
+				organ_list["appendix"] = null
+
 				return myappendix
 
 
