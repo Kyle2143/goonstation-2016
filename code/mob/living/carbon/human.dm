@@ -6486,12 +6486,12 @@
 //organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
 /mob/living/carbon/human/proc/damage_organs(var/amount, var/probability, var/list/organs)
 	for (var/organ in organs)
-		prob_damage_organs(amount, probability, organ)
+		prob_damage_organ(amount, probability, organ)
 
 //helper method for damage_organs, but does have some use on its own
 /mob/living/carbon/human/proc/prob_damage_organ(var/amount, var/probability, var/organ)
-		if(prob(probability))
-			take_organ_damage(amount, organ)
+	if (prob(probability))
+		take_organ_damage(amount, organ)
 
 //damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
 //only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
