@@ -1050,11 +1050,57 @@
 	desc = "Inflating meat airsacks that pass breathed oxygen into a person's blood and expels carbon dioxide back out. Hopefully whoever used to have these doesn't need them anymore."
 	icon_state = "lungs_t"
 
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!headSurgeryCheck(H))
+			user.show_text("You're going to need to remove that mask/helmet/glasses first.", "blue")
+			return
+
+		if (user.find_in_hand(src) == user.r_hand && !H.organHolder.right_lung)
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] right eye socket!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] right eye socket!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your right eye socket!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "right_lung", 2.0)
+			H.update_body()
+
+		else if (user.find_in_hand(src) == user.l_hand && !H.organHolder.left_lung)
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] left eye socket!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] left eye socket!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your left eye socket!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "left_lung", 2.0)
+			H.update_body()
+
+		else
+			..()
+		return
+
 /obj/item/organ/lung/left
 	name = "left lung"
 	desc = "Inflating meat airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a left lung, since it has three lobes. Hopefully whoever used to have this one doesn't need it anymore."
 	icon_state = "lung_L"
 	body_side = L_ORGAN
+
 
 /obj/item/organ/lung/right
 	name = "right lung"
@@ -1914,7 +1960,46 @@
 	organ_name = "liver"
 	desc = "Ew, this thing is just the wurst."
 	icon_state = "liver"
-	
+
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Liver Transplant")
+					src.donor.cure_disease(disease)
+			return
+
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!H.organHolder.liver)
+
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] chest!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] chest!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your chest!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "liver", 3.0)
+			H.update_body()
+
+		else
+			..()
+		return
+
 	// on_mob_life(var/mob/M)
 	// 	if(!M) M = holder.my_atom
 	// 	if(holder.has_reagent("ethanol")) holder.remove_reagent("ethanol", 8)
@@ -1929,6 +2014,51 @@
 	organ_name = "kidney_t"
 	desc = "Bean shaped, but not actually beans. You can still eat them, though!"
 	icon_state = "kidneys"
+
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!headSurgeryCheck(H))
+			user.show_text("You're going to need to remove that mask/helmet/glasses first.", "blue")
+			return
+
+		if (user.find_in_hand(src) == user.r_hand && !H.organHolder.right_kidney)
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] right eye socket!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] right eye socket!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your right eye socket!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "right_kidney", 2.0)
+			H.update_body()
+
+		else if (user.find_in_hand(src) == user.l_hand && !H.organHolder.left_kidney)
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] left eye socket!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] left eye socket!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your left eye socket!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "left_kidney", 2.0)
+			H.update_body()
+
+		else
+			..()
+		return
 
 /obj/item/organ/kidney/left
 	name = "left kidney"
@@ -1948,26 +2078,181 @@
 	desc = "A little meat sack containing acid for the digestion of food. Like most things that come out of living creatures, you can probably eat it."
 	icon_state = "stomach"
 
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!H.organHolder.stomach)
+
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] chest!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] chest!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your chest!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "stomach", 3.0)
+			H.update_body()
+
+		else
+			..()
+		return
+
 /obj/item/organ/intestines
 	name = "intestines"
 	organ_name = "intestines"
 	desc = "Did you know that if you laid your guts out in a straight line, they'd be about 9 meters long? Also, you'd probably be dying, so it's not something you should do. Probably."
 	icon_state = "intestines"
 
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!H.organHolder.intestines)
+
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] chest!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] chest!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your chest!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "intestines", 3.0)
+			H.update_body()
+
+		else
+			..()
+		return
+
 /obj/item/organ/spleen
 	name = "spleen"
 	organ_name = "spleen"
 	icon_state = "spleen"
+
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!H.organHolder.spleen)
+
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] chest!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] chest!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your chest!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "spleen", 3.0)
+			H.update_body()
+
+		else
+			..()
+		return
 
 /obj/item/organ/pancreas
 	name = "pancreas"
 	organ_name = "pancreas"
 	icon_state = "pancreas"
 
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!H.organHolder.pancreas)
+
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] chest!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] chest!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your chest!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "pancreas", 3.0)
+			H.update_body()
+
+		else
+			..()
+		return
+
 /obj/item/organ/appendix
 	name = "appendix"
 	organ_name = "appendix"
 	icon_state = "appendix"
+	
+	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
+		if (!ismob(M))
+			return
+
+		src.add_fingerprint(user)
+
+		if (user.zone_sel.selecting != "chest")
+			return ..()
+		if (!surgeryCheck(M, user))
+			return ..()
+
+		var/mob/living/carbon/human/H = M
+		if (!H.organHolder)
+			return ..()
+
+		if (!H.organHolder.appendix)
+
+			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+
+			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] chest!</span>",\
+			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] chest!</span>",\
+			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your chest!</span>")
+
+			user.u_equip(src)
+			H.organHolder.receive_organ(src, "appendix", 3.0)
+			H.update_body()
+
+		else
+			..()
+		return
 
 #undef L_ORGAN
 #undef R_ORGAN

@@ -6480,6 +6480,7 @@
 	src.toxloss = max(0,src.toxloss + amount)
 	return
 
+//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
 
 //amount, damge to be done to organs
 //probability, num 0-100 for whether or not to damage an organ found
