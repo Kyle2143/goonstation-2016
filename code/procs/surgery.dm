@@ -1098,9 +1098,6 @@
 			else
 				src.surgeryConfusion(patient, surgeon, damage_high)
 				return 1
-			else
-				src.surgeryConfusion(patient, surgeon, damage_low)
-				return 1
 
 		else
 			return 0
@@ -1372,12 +1369,10 @@
 					else
 						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
 					patient.updatehealth()
-					patient.butt_op_stage = 2.0
+					patient.organHolder.chest.op_stage = 2.0
 					return 1
-
-			else
-				src.surgeryConfusion(patient, surgeon, damage_high)
-				return 1
+		else
+			return 0
 
 /* ---------- SAW - HEART ---------- */
 
