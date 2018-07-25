@@ -399,6 +399,9 @@ datum
 					var/mob/living/carbon/human/H = M
 					if (H.bleeding && prob(33))
 						H.bleeding--
+					//heal all functional organs, ignore heart and brain since they don't use this system yet
+					H.damage_organs(-2, 100,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+
 				M.updatehealth()
 				//M.UpdateDamageIcon()
 				..(M)
@@ -1176,3 +1179,88 @@ datum
 					M.updatehealth()
 				..(M)
 				return
+
+		//heals spleen/lungs
+		medical/organ_drug1
+			name = "organ drug Class 1"
+			id = "organ_drug1"
+			description = "A drug that targets spleen/lungs for healing."
+			reagent_state = LIQUID
+			fluid_r = 10
+			fluid_g = 180
+			fluid_b = 120
+			transparency = 255
+			depletion_rate = 0.2
+			value = 3
+
+			on_mob_life(var/mob/M)
+				if(!M) M = holder.my_atom
+				if (istype(M, /mob/living/carbon/human))
+					var/mob/living/carbon/human/H = M
+					
+					if (H.organHolder.spleen && H.organHolder.spleen.health <= 5)
+						H.damage_organs(-2, "spleen")
+
+					if (H.organHolder.left_lung && H.organHolder.left_lung.health <= 5)
+						H.damage_organs(-2, "left_lung")
+
+					if (H.organHolder.right_lung && H.organHolder.right_lung.health <= 5)
+						H.damage_organs(-2, "right_lung")
+
+		//heals liver/kidneys/stomach/intestines
+		medical/organ_drug2
+			name = "organ drug Class 2"
+			id = "organ_drug3"
+			description = "A drug that targets liver/kidneys/stomach/intestines for healing."
+			reagent_state = LIQUID
+			fluid_r = 10
+			fluid_g = 120
+			fluid_b = 180
+			transparency = 255
+			depletion_rate = 0.2
+			value = 3
+
+			on_mob_life(var/mob/M)
+				if(!M) M = holder.my_atom
+				if (istype(M, /mob/living/carbon/human))
+					var/mob/living/carbon/human/H = M
+
+					if (H.organHolder.liver && H.organHolder.liver.health <= 5)
+						H.damage_organs(-2, "liver")
+
+					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health <= 5)
+						H.damage_organs(-2, "left_kidney")
+						
+					if (H.organHolder.stomach && H.organHolder.stomach.health <= 5)
+						H.damage_organs(-2, "stomach")
+
+					if (H.organHolder.stomach && H.organHolder.stomach.health <= 5)
+						H.damage_organs(-2, "stomach")
+						
+					if (H.organHolder.intestines && H.organHolder.intestines.health <= 5)
+						H.damage_organs(-2, "intestines")
+
+		//heals appendix/pancreas
+		medical/organ_drug3
+			name = "organ drug Class 3"
+			id = "organ_drug3"
+			description = "A drug that targets appendix/pancreas for healing."
+			reagent_state = LIQUID
+			fluid_r = 80
+			fluid_g = 120
+			fluid_b = 120
+			transparency = 255
+			depletion_rate = 0.2
+			value = 3
+
+			on_mob_life(var/mob/M)
+				if(!M) M = holder.my_atom
+				if (istype(M, /mob/living/carbon/human))
+					var/mob/living/carbon/human/H = M
+
+					if (H.organHolder.appendix && H.organHolder.appendix.health <= 5)
+						H.damage_organs(-2, "appendix")
+
+					if (H.organHolder.pancreas && H.organHolder.pancreas.health <= 5)
+						H.damage_organs(-2, "pancreas")
+						
