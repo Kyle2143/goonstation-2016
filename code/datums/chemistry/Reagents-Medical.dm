@@ -1206,11 +1206,12 @@ datum
 
 					if (H.organHolder.right_lung && H.organHolder.right_lung.health <= 10)
 						H.damage_organs(-2, "right_lung")
+				..(M)		
 
 		//heals liver/kidneys/stomach/intestines
 		medical/organ_drug2
 			name = "organ drug Class 2"
-			id = "organ_drug3"
+			id = "organ_drug2"
 			description = "A drug that targets liver/kidneys/stomach/intestines for healing."
 			reagent_state = LIQUID
 			fluid_r = 10
@@ -1239,6 +1240,7 @@ datum
 						
 					if (H.organHolder.intestines && H.organHolder.intestines.health <= 10)
 						H.damage_organs(-2, "intestines")
+				..(M)		
 
 		//heals appendix/pancreas
 		medical/organ_drug3
@@ -1263,4 +1265,4 @@ datum
 
 					if (H.organHolder.pancreas && H.organHolder.pancreas.health <= 10)
 						H.damage_organs(-2, "pancreas")
-						
+				..(M)		
