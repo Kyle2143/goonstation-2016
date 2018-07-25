@@ -244,6 +244,37 @@
 		..()
 		reagents.add_reagent("fluorosurfactant", 30)
 
+//organ healing chems
+/obj/item/reagent_containers/glass/bottle/organ_drug1
+	name = "organ_drug1 bottle"
+	desc = "A small bottle."
+	bottle_style = "1"
+	amount_per_transfer_from_this = 5
+
+	New()
+		..()
+		reagents.add_reagent("organ_drug1", 30)
+
+/obj/item/reagent_containers/glass/bottle/organ_drug2
+	name = "organ_drug1 bottle"
+	desc = "A small bottle."
+	bottle_style = "1"
+	amount_per_transfer_from_this = 5
+
+	New()
+		..()
+		reagents.add_reagent("organ_drug2", 30)
+
+/obj/item/reagent_containers/glass/bottle/organ_drug3
+	name = "organ_drug1 bottle"
+	desc = "A small bottle."
+	bottle_style = "1"
+	amount_per_transfer_from_this = 5
+
+	New()
+		..()
+		reagents.add_reagent("organ_drug3", 30)
+
 /* ========================================================= */
 /* -------------------- Chem Precursors -------------------- */
 /* ========================================================= */

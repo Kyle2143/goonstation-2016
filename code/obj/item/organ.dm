@@ -28,17 +28,17 @@
 
 	proc/get_kidney_amt()
 		var/count = 0
-		if (!organ_list && organ_list["left_kidney"])
+		if (left_kidney)
 			count++
-		if (!organ_list && organ_list["right_kidney"])
+		if (right_kidney)
 			count++
 		return count
 
 	proc/get_lung_amt()
 		var/count = 0
-		if (!organ_list && organ_list["left_lung"])
+		if (left_lung)
 			count++
-		if (!organ_list && organ_list["right_lung"])
+		if (right_lung)
 			count++
 		return count
 

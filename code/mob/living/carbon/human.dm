@@ -4287,7 +4287,7 @@
 			return
 
 		if (src.blood_volume < 500 && src.blood_volume > 0) // if we're full or empty, don't bother v
-			if (prob(66))
+			if (prob(66) && src.organHolder.spleen && src.organHolder.liver.health < 10)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
 				src.blood_volume ++ // maybe get a little blood back ^
 
 		if (src.bleeding)
@@ -4463,7 +4463,55 @@
 				src.take_oxygen_deprivation(20)
 				src.updatehealth()
 
-		// lungs are skipped until they can be removed/whatever
+
+		// lungs 
+		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) isn't just checked once, but OK
+			if (src.organHolder.get_lung_amt() == 2)
+				src.remove_stam_mod_regen("single_lung_removal")
+				src.remove_stam_mod_max("single_lung_removal")
+				src.remove_stam_mod_regen("double_lung_removal")
+				src.remove_stam_mod_max("double_lung_removal")
+
+			else if (src.organHolder.get_lung_amt() == 1)
+				if (prob(20))
+					src.take_oxygen_deprivation(1)
+					src.losebreath+=1
+				src.add_stam_mod_regen("single_lung_removal", 5)
+				src.add_stam_mod_max("single_lung_removal", 80)
+
+			else if (src.organHolder.get_lung_amt() == 0)
+				src.take_oxygen_deprivation(5)
+				src.losebreath+=rand(1,5)
+
+				src.remove_stam_mod_regen("single_lung_removal")
+				src.remove_stam_mod_max("single_lung_removal")
+				src.add_stam_mod_regen("double_lung_removal", 10)
+				src.add_stam_mod_max("double_lung_removal", 160)
+
+				src.weakened = max(src.weakened, 5)
+
+		// kdineys
+		if (!src.nodamage)
+			if (src.organHolder.get_kidney_amt() == 0)
+				src.take_toxin_damage(2)
+
+		// liver
+		if (!src.nodamage)
+			if (!src.organHolder.liver || src.organHolder.liver.health < 10)
+				src.take_toxin_damage(2)
+
+
+		// pancreas if there's no pancreas, user does not generate insulin if they have sugar in their body.
+		if (!src.nodamage)
+			if (!src.organHolder.pancreas || src.organHolder.pancreas.health < 10)
+				if (src.reagents)
+					if (src.reagents && src.reagents.has_reagent("sugar", 30) )	
+						src.reagents.add_reagent("insulin", 2)
+
+		// spleen  if there's no spleen don't let the user regen blood naturally
+			// if (!src.organHolder.spleen || (src.organHolder.liver.health > 10))
+				//handle_blood does the spleen check since all the spleen will do is let you regen blood for now, but I think this should set
+
 		if (!src.organHolder.left_eye && src.organHolder.right_eye) // we have no left eye, but we also don't have the blind overlay (presumably)
 			if (!src.hasOverlayComposition(/datum/overlayComposition/blinded))
 				src.addOverlayComposition(/datum/overlayComposition/blinded_l_eye)
