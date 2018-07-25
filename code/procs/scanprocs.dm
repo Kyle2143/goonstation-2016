@@ -131,7 +131,7 @@
 				brain_data = "<span style='color:red'>Subject has no brain.</span>"
 
 
-			if (verbose_reagent_info && !isvampire(H)) // Added a pair of vampire checks here (Convair880).
+			if (verbose_reagent_info && !isvampire(H))
 				var/organ_data1 = ""
 				var/found = 0
 				
