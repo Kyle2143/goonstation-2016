@@ -1197,14 +1197,14 @@ datum
 				if(!M) M = holder.my_atom
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
-					
-					if (H.organHolder.spleen && H.organHolder.spleen.health <= 5)
+
+					if (H.organHolder.spleen && H.organHolder.spleen.health <= 10)
 						H.damage_organs(-2, "spleen")
 
-					if (H.organHolder.left_lung && H.organHolder.left_lung.health <= 5)
+					if (H.organHolder.left_lung && H.organHolder.left_lung.health <= 10)
 						H.damage_organs(-2, "left_lung")
 
-					if (H.organHolder.right_lung && H.organHolder.right_lung.health <= 5)
+					if (H.organHolder.right_lung && H.organHolder.right_lung.health <= 10)
 						H.damage_organs(-2, "right_lung")
 
 		//heals liver/kidneys/stomach/intestines
@@ -1225,19 +1225,19 @@ datum
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.liver && H.organHolder.liver.health <= 5)
+					if (H.organHolder.liver && H.organHolder.liver.health <= 10)
 						H.damage_organs(-2, "liver")
 
-					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health <= 5)
+					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health <= 10)
 						H.damage_organs(-2, "left_kidney")
 						
-					if (H.organHolder.stomach && H.organHolder.stomach.health <= 5)
+					if (H.organHolder.stomach && H.organHolder.stomach.health <= 10)
 						H.damage_organs(-2, "stomach")
 
-					if (H.organHolder.stomach && H.organHolder.stomach.health <= 5)
+					if (H.organHolder.stomach && H.organHolder.stomach.health <= 10)
 						H.damage_organs(-2, "stomach")
 						
-					if (H.organHolder.intestines && H.organHolder.intestines.health <= 5)
+					if (H.organHolder.intestines && H.organHolder.intestines.health <= 10)
 						H.damage_organs(-2, "intestines")
 
 		//heals appendix/pancreas
@@ -1258,9 +1258,9 @@ datum
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.appendix && H.organHolder.appendix.health <= 5)
+					if (H.organHolder.appendix && H.organHolder.appendix.health <= 10)
 						H.damage_organs(-2, "appendix")
 
-					if (H.organHolder.pancreas && H.organHolder.pancreas.health <= 5)
+					if (H.organHolder.pancreas && H.organHolder.pancreas.health <= 10)
 						H.damage_organs(-2, "pancreas")
 						
