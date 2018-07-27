@@ -4466,14 +4466,7 @@
 
 		// lungs 
 		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) isn't just checked once, but OK
-			switch (src.organHolder.get_working_lung_amt())
-				if (1)
-					if (prob(20))
-						src.take_oxygen_deprivation(1)
-						src.losebreath+=1
-				if (0)
-					src.take_oxygen_deprivation(5)
-					src.losebreath+=rand(1,5)
+			src.organHolder.handle_lungs_health()
 
 		// kdineys
 		if (!src.nodamage)
