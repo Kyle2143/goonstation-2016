@@ -1226,19 +1226,19 @@ datum
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.liver && H.organHolder.liver.health <= 10)
+					if (H.organHolder.liver && H.organHolder.liver.health >= 10)
 						H.damage_organs(-2, "liver")
 
-					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health <= 10)
+					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health >= 10)
 						H.damage_organs(-2, "left_kidney")
 						
-					if (H.organHolder.stomach && H.organHolder.stomach.health <= 10)
+					if (H.organHolder.stomach && H.organHolder.stomach.health >= 10)
 						H.damage_organs(-2, "stomach")
 
-					if (H.organHolder.stomach && H.organHolder.stomach.health <= 10)
+					if (H.organHolder.stomach && H.organHolder.stomach.health >= 10)
 						H.damage_organs(-2, "stomach")
 						
-					if (H.organHolder.intestines && H.organHolder.intestines.health <= 10)
+					if (H.organHolder.intestines && H.organHolder.intestines.health >= 10)
 						H.damage_organs(-2, "intestines")
 				..(M)		
 
@@ -1260,9 +1260,9 @@ datum
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.appendix && H.organHolder.appendix.health <= 10)
+					if (H.organHolder.appendix && H.organHolder.appendix.health >= 10)
 						H.damage_organs(-2, "appendix")
 
-					if (H.organHolder.pancreas && H.organHolder.pancreas.health <= 10)
+					if (H.organHolder.pancreas && H.organHolder.pancreas.health >= 10)
 						H.damage_organs(-2, "pancreas")
 				..(M)		

@@ -210,8 +210,8 @@
 		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/pill/mannitol", 10)
 		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/pill/mutadone", 5)
 		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/organ_drug1", 2)
-		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/organ_drug1", 2)
-		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/organ_drug1", 2)
+		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/organ_drug2", 2)
+		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/organ_drug3", 2)
 
 		product_list += new/datum/data/vending_product("/obj/item/bandage", 4)
 		product_list += new/datum/data/vending_product("/obj/item/device/healthanalyzer", 4)
