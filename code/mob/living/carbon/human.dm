@@ -4287,7 +4287,7 @@
 			return
 
 		if (src.blood_volume < 500 && src.blood_volume > 0) // if we're full or empty, don't bother v
-			if (prob(66) && src.organHolder.spleen && src.organHolder.liver.health < 10)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
+			if (prob(66) && src.organHolder.spleen && src.organHolder.spleen.health > 0)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
 				src.blood_volume ++ // maybe get a little blood back ^
 
 		if (src.bleeding)
@@ -4466,51 +4466,47 @@
 
 		// lungs 
 		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) isn't just checked once, but OK
-			if (src.organHolder.get_lung_amt() == 2)
-				src.remove_stam_mod_regen("single_lung_removal")
-				src.remove_stam_mod_max("single_lung_removal")
-				src.remove_stam_mod_regen("double_lung_removal")
-				src.remove_stam_mod_max("double_lung_removal")
-
-			else if (src.organHolder.get_lung_amt() == 1)
-				if (prob(20))
-					src.take_oxygen_deprivation(1)
-					src.losebreath+=1
-				src.add_stam_mod_regen("single_lung_removal", 5)
-				src.add_stam_mod_max("single_lung_removal", 80)
-
-			else if (src.organHolder.get_lung_amt() == 0)
-				src.take_oxygen_deprivation(5)
-				src.losebreath+=rand(1,5)
-
-				src.remove_stam_mod_regen("single_lung_removal")
-				src.remove_stam_mod_max("single_lung_removal")
-				src.add_stam_mod_regen("double_lung_removal", 10)
-				src.add_stam_mod_max("double_lung_removal", 160)
-
-				src.weakened = max(src.weakened, 5)
+			switch (src.organHolder.get_working_lung_amt())
+				if (1)
+					if (prob(20))
+						src.take_oxygen_deprivation(1)
+						src.losebreath+=1
+				if (0)
+					src.take_oxygen_deprivation(5)
+					src.losebreath+=rand(1,5)
 
 		// kdineys
 		if (!src.nodamage)
-			if (src.organHolder.get_kidney_amt() == 0)
-				src.take_toxin_damage(2)
+			if (src.organHolder.get_working_kidney_amt() == 0)
+				src.take_toxin_damage_no_organ(2, 1)
 
 		// liver
 		if (!src.nodamage)
-			if (!src.organHolder.liver || src.organHolder.liver.health < 10)
-				src.take_toxin_damage(2)
+			if (!src.organHolder.liver || src.organHolder.liver.health <=  0)
+				src.take_toxin_damage_no_organ(2, 1)
+				
+			else if (src.organHolder.liver.health <=35 && prob(organHolder.liver.health * 0.2))
+				src.contract_disease(/datum/ailment/disease/liverfailure,null,null,1)
 
 
 		// pancreas if there's no pancreas, user does not generate insulin if they have sugar in their body.
 		if (!src.nodamage)
-			if (!src.organHolder.pancreas || src.organHolder.pancreas.health < 10)
+			if (!src.organHolder.pancreas || src.organHolder.pancreas.health <= 0)
 				if (src.reagents)
 					if (src.reagents && src.reagents.has_reagent("sugar", 30) )	
 						src.reagents.add_reagent("insulin", 2)
 
 		// spleen  if there's no spleen don't let the user regen blood naturally
 			// if (!src.organHolder.spleen || (src.organHolder.liver.health > 10))
-				//handle_blood does the spleen check since all the spleen will do is let you regen blood for now, but I think this should set
+				//handle_blood does the spleen check since all the spleen will do is let you regen blood for now, but this could be needed if there is another function for a spleen
+		
+		//stomach
+		// if (!src.nodamage)
+		// 	if (!src.organHolder.stomach || src.organHolder.stomach.health <= 0)
+
+		//intestines
+		// if (!src.nodamage)
+		// 	if (!src.organHolder.intestines || src.organHolder.intestines.health <= 0)
 
 		if (!src.organHolder.left_eye && src.organHolder.right_eye) // we have no left eye, but we also don't have the blind overlay (presumably)
 			if (!src.hasOverlayComposition(/datum/overlayComposition/blinded))
@@ -6514,19 +6510,13 @@
 		src.sims.updateHudIcons(new_style)
 	return
 
-/mob/living/carbon/human/take_toxin_damage(var/amount)
-	if (..())
-		return
-	if (src.bioHolder && src.bioHolder.HasEffect("resist_toxic"))
-		return
-
-	//this proc is called for damage and healing, only damage organs when healing. New organ healing drugs will explicitely heal organs
+//take toxin damage, but don't damage any organs. Using this for damaging the player when damage is caused due to organs not working. no liver/kidney
+/mob/living/carbon/human/take_toxin_damage_no_organ(var/amount)
+	..()
 	if (amount > 1)
 		damage_organs(src.toxloss/20, 40, list("left_kidney", "right_kidney"))
 		prob_damage_organ(src.toxloss/40, 60, "liver")
 
-	src.toxloss = max(0,src.toxloss + amount)
-	return
 
 //made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
 
