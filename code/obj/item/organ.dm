@@ -767,38 +767,39 @@
 
 	//change stamina modifies based on amount of working lungs. lungs w/ health > 0
 	proc/handle_lungs_health()
-		if (src.get_working_lung_amt() != lungs_changed)
-			switch (src.get_working_lung_amt())
-				if (0)
-					src.remove_stam_mod_regen("single_lung_removal")
-					src.remove_stam_mod_max("single_lung_removal")
-					src.add_stam_mod_regen("double_lung_removal", -6)
-					src.add_stam_mod_max("double_lung_removal", -150)
-					lungs_changed = 0
-					user.visible_message("<span style=\"color:red\"><b>[user]</b> 0.</span>")
 
-					donor.take_oxygen_deprivation(5)
-					donor.losebreath+=rand(1,5)
+		switch (src.get_working_lung_amt())
+			if (0)
+				if (src.get_working_lung_amt() != lungs_changed)
+					donor.remove_stam_mod_regen("single_lung_removal")
+					donor.remove_stam_mod_max("single_lung_removal")
+					donor.add_stam_mod_regen("double_lung_removal", -6)
+					donor.add_stam_mod_max("double_lung_removal", -150)
 
-				if (1)
-					src.remove_stam_mod_regen("double_lung_removal")
-					src.remove_stam_mod_max("double_lung_removal")
-					src.add_stam_mod_regen("single_lung_removal", -3)
-					src.add_stam_mod_max("single_lung_removal", -75)
-					lungs_changed = 1
-					user.visible_message("<span style=\"color:red\"><b>[user]</b> 1.</span>")
+				lungs_changed = 0
+				user.visible_message("<span style=\"color:red\"><b>[user]</b> 0.</span>")
+				donor.take_oxygen_deprivation(5)
+				donor.losebreath+=rand(1,5)
+			if (1)
+				if (src.get_working_lung_amt() != lungs_changed)
+					donor.remove_stam_mod_regen("double_lung_removal")
+					donor.remove_stam_mod_max("double_lung_removal")
+					donor.add_stam_mod_regen("single_lung_removal", -3)
+					donor.add_stam_mod_max("single_lung_removal", -75)
 
-					if (prob(20))
-						donor.take_oxygen_deprivation(1)
-						donor.losebreath+=1
-
-				if (2)
-					src.remove_stam_mod_regen("single_lung_removal")
-					src.remove_stam_mod_max("single_lung_removal")	
-					src.remove_stam_mod_regen("double_lung_removal")
-					src.remove_stam_mod_max("double_lung_removal")
-					lungs_changed = 2
-					user.visible_message("<span style=\"color:red\"><b>[user]</b> 2.</span>")
+				lungs_changed = 1
+				user.visible_message("<span style=\"color:red\"><b>[user]</b> 1.</span>")
+				if (prob(20))
+					donor.take_oxygen_deprivation(1)
+					donor.losebreath+=1
+			if (2)
+				if (src.get_working_lung_amt() != lungs_changed)
+					donor.remove_stam_mod_regen("single_lung_removal")
+					donor.remove_stam_mod_max("single_lung_removal")	
+					donor.remove_stam_mod_regen("double_lung_removal")
+					donor.remove_stam_mod_max("double_lung_removal")
+				lungs_changed = 2
+				user.visible_message("<span style=\"color:red\"><b>[user]</b> 2.</span>")
 
 /mob/living/carbon/human/proc/eye_istype(var/obj/item/I)
 	if (!src.organHolder || !I)
