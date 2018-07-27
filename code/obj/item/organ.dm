@@ -26,19 +26,20 @@
 
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
 
-	proc/get_kidney_amt()
+	//organs should not perform their functions if they have 0 health
+	proc/get_working_kidney_amt()
 		var/count = 0
-		if (left_kidney)
+		if (left_kidney && left_kidney.health > 0)
 			count++
-		if (right_kidney)
+		if (right_kidney && right_kidney.health > 0)
 			count++
 		return count
 
-	proc/get_lung_amt()
+	proc/get_working_lung_amt()
 		var/count = 0
-		if (left_lung)
+		if (left_lung && left_lung.health > 0)
 			count++
-		if (right_lung)
+		if (right_lung && right_lung.health > 0)
 			count++
 		return count
 
@@ -353,6 +354,7 @@
 				myLeftLung.set_loc(location)
 				myLeftLung.on_removal()
 				src.left_lung = null
+				handle_lung_stamina_change()
 				return myLeftLung
 
 			if ("right_lung")
@@ -362,6 +364,7 @@
 				myRightLung.set_loc(location)
 				myRightLung.on_removal()
 				src.right_lung = null
+				handle_lung_stamina_change()
 				return myRightLung
 
 			if ("butt")
@@ -627,8 +630,8 @@
 				src.left_lung = newLeftLung
 				newLeftLung.set_loc(src.donor)
 				organ_list["left_lung"] = newLeftLung
+				handle_lung_stamina_change()
 				success = 1
-
 			if ("right_lung")
 				if (src.right_lung)
 					if (force)
@@ -640,6 +643,7 @@
 				src.right_lung = newRightLung
 				newRightLung.set_loc(src.donor)
 				organ_list["right_lung"] = newRightLung
+				handle_lung_stamina_change()
 				success = 1
 
 			if ("butt")
@@ -759,6 +763,25 @@
 			if (I.reagents)
 				I.reagents.trans_to(src.donor, 330)
 			return 1
+
+	//change stamina modifies based on lung amount
+	proc/handle_lung_stamina_change()
+		switch (src.get_working_lung_amt())
+			if (2)
+				src.remove_stam_mod_regen("single_lung_removal")
+				src.remove_stam_mod_max("single_lung_removal")	
+				src.remove_stam_mod_regen("double_lung_removal")
+				src.remove_stam_mod_max("double_lung_removal")
+			if (1)
+				src.remove_stam_mod_regen("double_lung_removal")
+				src.remove_stam_mod_max("double_lung_removal")
+				src.add_stam_mod_regen("single_lung_removal", -3)
+				src.add_stam_mod_max("single_lung_removal", -75)
+			if (0)
+				src.remove_stam_mod_regen("single_lung_removal")
+				src.remove_stam_mod_max("single_lung_removal")
+				src.add_stam_mod_regen("double_lung_removal", -6)
+				src.add_stam_mod_max("double_lung_removal", -150)
 
 /mob/living/carbon/human/proc/eye_istype(var/obj/item/I)
 	if (!src.organHolder || !I)
