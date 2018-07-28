@@ -22,7 +22,7 @@
 	var/obj/item/organ/spleen = null
 	var/obj/item/organ/pancreas = null
 	var/obj/item/organ/appendix = null
-	var/lungs_changed = 0				//for only changing lung stamina debuffs if it has changed since last cycle
+	var/lungs_changed = 2				//for only changing lung stamina debuffs if it has changed since last cycle. starts at 2 for having 2 working lungs
 
 
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
@@ -355,7 +355,7 @@
 				myLeftLung.set_loc(location)
 				myLeftLung.on_removal()
 				src.left_lung = null
-				handle_lung_stamina_change()
+				handle_lungs_health()
 				return myLeftLung
 
 			if ("right_lung")
@@ -365,7 +365,7 @@
 				myRightLung.set_loc(location)
 				myRightLung.on_removal()
 				src.right_lung = null
-				handle_lung_stamina_change()
+				handle_lungs_health()
 				return myRightLung
 
 			if ("butt")
@@ -631,7 +631,7 @@
 				src.left_lung = newLeftLung
 				newLeftLung.set_loc(src.donor)
 				organ_list["left_lung"] = newLeftLung
-				handle_lung_stamina_change()
+				handle_lungs_health()
 				success = 1
 			if ("right_lung")
 				if (src.right_lung)
@@ -644,7 +644,7 @@
 				src.right_lung = newRightLung
 				newRightLung.set_loc(src.donor)
 				organ_list["right_lung"] = newRightLung
-				handle_lung_stamina_change()
+				handle_lungs_health()
 				success = 1
 
 			if ("butt")
@@ -766,40 +766,38 @@
 			return 1
 
 	//change stamina modifies based on amount of working lungs. lungs w/ health > 0
+	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the
 	proc/handle_lungs_health()
-
-		switch (src.get_working_lung_amt())
+		var/working_lungs = src.get_working_lung_amt()
+		switch (working_lungs)
 			if (0)
-				if (src.get_working_lung_amt() != lungs_changed)
+				if (working_lungs != lungs_changed)
 					donor.remove_stam_mod_regen("single_lung_removal")
 					donor.remove_stam_mod_max("single_lung_removal")
 					donor.add_stam_mod_regen("double_lung_removal", -6)
 					donor.add_stam_mod_max("double_lung_removal", -150)
+					lungs_changed = 0
 
-				lungs_changed = 0
-				user.visible_message("<span style=\"color:red\"><b>[user]</b> 0.</span>")
 				donor.take_oxygen_deprivation(5)
 				donor.losebreath+=rand(1,5)
 			if (1)
-				if (src.get_working_lung_amt() != lungs_changed)
+				if (working_lungs != lungs_changed)
 					donor.remove_stam_mod_regen("double_lung_removal")
 					donor.remove_stam_mod_max("double_lung_removal")
 					donor.add_stam_mod_regen("single_lung_removal", -3)
 					donor.add_stam_mod_max("single_lung_removal", -75)
+					lungs_changed = 1
 
-				lungs_changed = 1
-				user.visible_message("<span style=\"color:red\"><b>[user]</b> 1.</span>")
 				if (prob(20))
 					donor.take_oxygen_deprivation(1)
 					donor.losebreath+=1
 			if (2)
-				if (src.get_working_lung_amt() != lungs_changed)
+				if (working_lungs != lungs_changed)
 					donor.remove_stam_mod_regen("single_lung_removal")
 					donor.remove_stam_mod_max("single_lung_removal")	
 					donor.remove_stam_mod_regen("double_lung_removal")
 					donor.remove_stam_mod_max("double_lung_removal")
-				lungs_changed = 2
-				user.visible_message("<span style=\"color:red\"><b>[user]</b> 2.</span>")
+					lungs_changed = 2
 
 /mob/living/carbon/human/proc/eye_istype(var/obj/item/I)
 	if (!src.organHolder || !I)

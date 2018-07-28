@@ -4471,15 +4471,15 @@
 		// kdineys
 		if (!src.nodamage)
 			if (src.organHolder.get_working_kidney_amt() == 0)
-				src.take_toxin_damage_no_organ(2, 1)
+				src.take_toxin_damage_no_organ(2)
 
 		// liver
 		if (!src.nodamage)
 			if (!src.organHolder.liver || src.organHolder.liver.health <=  0)
-				src.take_toxin_damage_no_organ(2, 1)
+				src.take_toxin_damage_no_organ(2)
 				
 			else if (src.organHolder.liver.health <=35 && prob(organHolder.liver.health * 0.2))
-				src.contract_disease(/datum/ailment/disease/liverfailure,null,null,1)
+				src.contract_disease(/datum/ailment/disease/liver_failure,null,null,1)
 
 
 		// pancreas if there's no pancreas, user does not generate insulin if they have sugar in their body.
@@ -6504,7 +6504,7 @@
 	return
 
 //take toxin damage, but don't damage any organs. Using this for damaging the player when damage is caused due to organs not working. no liver/kidney
-/mob/living/carbon/human/take_toxin_damage_no_organ(var/amount)
+/mob/living/carbon/human/proc/take_toxin_damage_no_organ(var/amount)
 	..()
 	if (amount > 1)
 		damage_organs(src.toxloss/20, 40, list("left_kidney", "right_kidney"))
