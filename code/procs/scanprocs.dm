@@ -145,9 +145,9 @@
 					if (organ.health < 100)
 						if (!found)
 							found = 1
-						organ_data1 += "<span style='color:red'>[organ.name] has [organ.health] / 100</span><br>"
+						organ_data1 += "<br><span style='color:red'><b>[organ.name]</b> has [organ.health] / 100</span>"
 				if (found)
-					organ_data = "<span style='color:red'>Scans indicate organ damage in:</span><br>"
+					organ_data = "<span style='color:red'>Scans indicate organ damage in:</span>"
 					organ_data += organ_data1
 
 		else

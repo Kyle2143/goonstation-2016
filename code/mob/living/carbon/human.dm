@@ -4471,12 +4471,12 @@
 		// kdineys
 		if (!src.nodamage)
 			if (src.organHolder.get_working_kidney_amt() == 0)
-				src.take_toxin_damage_no_organ(2)
+				src.take_toxin_damage(2, 1)
 
 		// liver
 		if (!src.nodamage)
 			if (!src.organHolder.liver || src.organHolder.liver.health <=  0)
-				src.take_toxin_damage_no_organ(2)
+				src.take_toxin_damage(2, 1)
 				
 			else if (src.organHolder.liver.health <=35 && prob(organHolder.liver.health * 0.2))
 				src.contract_disease(/datum/ailment/disease/liver_failure,null,null,1)
@@ -6503,13 +6503,25 @@
 		src.sims.updateHudIcons(new_style)
 	return
 
-//take toxin damage, but don't damage any organs. Using this for damaging the player when damage is caused due to organs not working. no liver/kidney
-/mob/living/carbon/human/proc/take_toxin_damage_no_organ(var/amount)
-	..()
-	if (amount > 1)
-		damage_organs(src.toxloss/20, 40, list("left_kidney", "right_kidney"))
-		prob_damage_organ(src.toxloss/40, 60, "liver")
+//ignore organs if true. Needed for when non-functioning/missing kidney/liver genetates tox damage
+/mob/living/carbon/human/take_toxin_damage(var/amount, var/ignore)
+	if (..())
+		return
+	
+	if (!ignore)
+		if (amount > 1)
+			if (prob(30))
+				H.take_organ_damage(amount/20, "left_kidney")
+			if (prob(30))
+				H.take_organ_damage(amount/20, "right_kidney")
+			if (prob(30))
+				H.take_organ_damage(amount/40, "left_lung")
 
+	return
+
+/mob/lving/carbon/human/proc/full_heal()
+	H.damage_organs(-10000, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+	..()
 
 //made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
 

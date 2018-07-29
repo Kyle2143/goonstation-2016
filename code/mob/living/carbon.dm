@@ -312,13 +312,6 @@
 	if (src.bioHolder && src.bioHolder.HasEffect("resist_toxic"))
 		return
 
-
-	// if (istype(src, /mob/living/carbon/human))
-	// 	mob/living/carbon/human\H = src
-		
-	// 	// if (H.organholder && H.organ)
-
-
 	src.toxloss = max(0,src.toxloss + amount)
 	return
 
