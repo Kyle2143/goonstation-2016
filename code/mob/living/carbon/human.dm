@@ -5749,6 +5749,8 @@
 	boutput(src, "<span style=\"color:red\">This statement is universally true because if you did you probably wouldn't be desperate enough to see this message.</span>")
 
 /mob/living/carbon/human/full_heal()
+	src.damage_organs(-10000, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+
 	blinded = 0
 	bleeding = 0
 	blood_volume = 500
@@ -6511,17 +6513,13 @@
 	if (!ignore)
 		if (amount > 1)
 			if (prob(30))
-				H.take_organ_damage(amount/20, "left_kidney")
+				src.take_organ_damage(amount/20, "left_kidney")
 			if (prob(30))
-				H.take_organ_damage(amount/20, "right_kidney")
+				src.take_organ_damage(amount/20, "right_kidney")
 			if (prob(30))
-				H.take_organ_damage(amount/40, "left_lung")
+				src.take_organ_damage(amount/40, "left_lung")
 
 	return
-
-/mob/lving/carbon/human/proc/full_heal()
-	H.damage_organs(-10000, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
-	..()
 
 //made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
 
