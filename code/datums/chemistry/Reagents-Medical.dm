@@ -1196,23 +1196,18 @@ datum
 
 			on_mob_life(var/mob/M)
 				if(!M) M = holder.my_atom
-				M.visible_message("<span style=\"color:red\">[M]  hit life with drug1!</span>")
 
 				if (istype(M, /mob/living/carbon/human))
-					M.visible_message("<span style=\"color:red\">[M]  hit istype human, is human drug1!</span>")
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.spleen && H.organHolder.spleen.health >= 10)
-						M.visible_message("<span style=\"color:red\">[M]  hit spleen!</span>")
+					if (H.organHolder.spleen && H.organHolder.spleen.health >= 10 && H.organHolder.spleen.health < 100)
 						H.take_organ_damage(-2, "spleen")
 
-					if (H.organHolder.left_lung && H.organHolder.left_lung.health >= 10)
-						M.visible_message("<span style=\"color:red\">[M]  hit ll!</span>")
+					if (H.organHolder.left_lung && H.organHolder.left_lung.health >= 10 && H.organHolder.left_lung.health < 100)
 
 						H.take_organ_damage(-2, "left_lung")
 
-					if (H.organHolder.right_lung && H.organHolder.right_lung.health >= 10)
-						M.visible_message("<span style=\"color:red\">[M]  hit rl!</span>")
+					if (H.organHolder.right_lung && H.organHolder.right_lung.health >= 10 && H.organHolder.right_lung.health < 100)
 						H.take_organ_damage(-2, "right_lung")
 					M.updatehealth()
 				..(M)		
@@ -1235,19 +1230,19 @@ datum
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.liver && H.organHolder.liver.health >= 10)
+					if (H.organHolder.liver && H.organHolder.liver.health >= 10 && H.organHolder.liver.health < 100)
 						H.take_organ_damage(-2, "liver")
 
-					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health >= 10)
+					if (H.organHolder.left_kidney && H.organHolder.left_kidney.health >= 10 && H.organHolder.left_kidney.health < 100)
 						H.take_organ_damage(-2, "left_kidney")
 						
-					if (H.organHolder.stomach && H.organHolder.stomach.health >= 10)
+					if (H.organHolder.stomach && H.organHolder.stomach.health >= 10 && H.organHolder.stomach.health < 100)
 						H.take_organ_damage(-2, "stomach")
 
-					if (H.organHolder.stomach && H.organHolder.stomach.health >= 10)
+					if (H.organHolder.stomach && H.organHolder.stomach.health >= 10 && H.organHolder.stomach.health < 100)
 						H.take_organ_damage(-2, "stomach")
 						
-					if (H.organHolder.intestines && H.organHolder.intestines.health >= 10)
+					if (H.organHolder.intestines && H.organHolder.intestines.health >= 10 && H.organHolder.intestines.health < 100)
 						H.take_organ_damage(-2, "intestines")
 
 					M.updatehealth()
@@ -1272,10 +1267,10 @@ datum
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
 
-					if (H.organHolder.appendix && H.organHolder.appendix.health >= 10)
+					if (H.organHolder.appendix && H.organHolder.appendix.health >= 10 && H.organHolder.appendix.health < 100)
 						H.take_organ_damage(-2, "appendix")
 
-					if (H.organHolder.pancreas && H.organHolder.pancreas.health >= 10)
+					if (H.organHolder.pancreas && H.organHolder.pancreas.health >= 10 && H.organHolder.pancreas.health < 100)
 						H.take_organ_damage(-2, "pancreas")
 					M.updatehealth()
 				..(M)		
