@@ -4034,9 +4034,11 @@
 		if (breath.temperature > (T0C+66) && !src.is_heat_resistant()) // Hot air hurts :(
 			if (prob(20))
 				boutput(src, "<span style=\"color:red\">You feel a searing heat in your lungs!</span>")
-			TakeDamage("chest", 0, min((breath.temperature - (T0C+66)) / 3,10) + 6, 0, DAMAGE_BURN)
+			var/burn_damage = min((breath.temperature - (T0C+66)) / 3,10) + 6
+			TakeDamage("chest", 0, burn_damage, 0, DAMAGE_BURN)
 			hud.update_fire_indicator(1)
 			if (prob(4))
+				H.damage_organs(max(burn_damage, 3), 10, list("left_lung", "right_lung"))
 				boutput(src, "<span style=\"color:red\">Your lungs hurt like hell! This can't be good!</span>")
 				//src.contract_disease(new/datum/ailment/disability/cough, 1, 0) // cogwerks ailment project - lung damage from fire
 		else
@@ -6528,12 +6530,9 @@
 //organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
 /mob/living/carbon/human/proc/damage_organs(var/amount, var/probability, var/list/organs)
 	for (var/organ in organs)
-		prob_damage_organ(amount, probability, organ)
+		if (prob(probability))
+			prob_damage_organ(amount, probability, organ)
 
-//helper method for damage_organs, but does have some use on its own
-/mob/living/carbon/human/proc/prob_damage_organ(var/amount, var/probability, var/organ)
-	if (prob(probability))
-		take_organ_damage(amount, organ)
 
 //damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
 //only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
