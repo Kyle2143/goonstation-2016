@@ -4486,10 +4486,14 @@
 
 		// pancreas if there's no pancreas, user does not generate insulin if they have sugar in their body.
 		if (!src.nodamage)
-			if (!src.organHolder.pancreas || src.organHolder.pancreas.health <= 0)
-				if (src.reagents)
-					if (src.reagents && src.reagents.has_reagent("sugar", 30) )	
-						src.reagents.add_reagent("insulin", 2)
+			if (src.organHolder.pancreas && src.organHolder.pancreas.health <= 0)
+				if (src.reagents && src.reagents.has_reagent("sugar", 80))	
+					pick (
+						prob(25)
+							src.organHolder.take_organ_damage(2, "spleen")
+						prob(50)
+							src.reagents.add_reagent("insulin", 2)
+						)
 
 		// spleen  if there's no spleen don't let the user regen blood naturally
 			// if (!src.organHolder.spleen || (src.organHolder.liver.health > 10))
@@ -6515,37 +6519,10 @@
 	if (!ignore)
 		if (amount > 1)
 			if (prob(30))
-				src.take_organ_damage(amount/20, "left_kidney")
+				src.organHolder.take_organ_damage(amount/20, "left_kidney")
 			if (prob(30))
-				src.take_organ_damage(amount/20, "right_kidney")
+				src.organHolder.take_organ_damage(amount/20, "right_kidney")
 			if (prob(30))
-				src.take_organ_damage(amount/40, "left_lung")
+				src.organHolder.take_organ_damage(amount/40, "left_lung")
 
 	return
-
-//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
-
-//amount, damge to be done to organs
-//probability, num 0-100 for whether or not to damage an organ found
-//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
-/mob/living/carbon/human/proc/damage_organs(var/amount, var/probability, var/list/organs)
-	for (var/organ in organs)
-		if (prob(probability))
-			prob_damage_organ(amount, probability, organ)
-
-
-//damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
-//only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
-//return 1 on success, 0 on failure
-/mob/living/carbon/human/proc/take_organ_damage(var/amount, var/organ)
-	if (src.organHolder && src.organHolder.organ_list)
-		if (src.organHolder.organ_list[organ])
-
-			var/obj/item/organ/O = src.organHolder.organ_list[organ]
-			if (istype(O,/obj/item/organ))
-				O.health = min(100, O.health - amount)		//this health damage counts down from 100, crazy right?
-				src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
-
-				return 1
-
-	return 0

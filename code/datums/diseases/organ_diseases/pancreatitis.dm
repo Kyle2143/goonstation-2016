@@ -56,6 +56,6 @@
 			if (prob(20)) affected_mob.emote(pick("twitch", "groan"))
 				if (ishuman(affected_mob))
 					var/mob/living/carbon/human/H = affected_mob
-					H.take_organ_damage(3, "pancreas")
+					H.organHolder.take_organ_damage(3, "pancreas")
 			affected_mob.take_tox_damage(1)
 			affected_mob.updatehealth()

@@ -52,6 +52,7 @@
 					src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
 
 					return 1
+		src.take_toxin_damage(amount)
 
 		return 0
 
@@ -2258,6 +2259,7 @@
 	name = "spleen"
 	organ_name = "spleen"
 	icon_state = "spleen"
+	body_side = L_ORGAN
 
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
@@ -2303,6 +2305,7 @@
 	name = "pancreas"
 	organ_name = "pancreas"
 	icon_state = "pancreas"
+	body_side = R_ORGAN
 
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
