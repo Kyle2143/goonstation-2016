@@ -53,11 +53,13 @@
 
 			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
 		if (3)
-			if (prob(20)) affected_mob.emote(pick("twitch", "groan"))
+			if (prob(20))
+				affected_mob.emote(pick("twitch", "groan"))
 				if (ishuman(affected_mob))
 					var/mob/living/carbon/human/H = affected_mob
 					H.take_organ_damage(3, "pancreas")
 
-			
+			//destroy human's appendix, and add a load of toxic chemicals or bacteria to the person.
+
 			affected_mob.take_tox_damage(1)
 			affected_mob.updatehealth()

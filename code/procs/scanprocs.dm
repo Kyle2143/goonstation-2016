@@ -132,22 +132,38 @@
 
 
 			if (verbose_reagent_info && !isvampire(H))
-				var/organ_data1 = ""
-				var/found = 0
+				var/organ_data1 = null
 				
-				for (var/O in H.organHolder.organ_list)
-					var/obj/item/organ/organ = H.organHolder.organ_list[O]
-					if (organ == null)
-						continue
+				//This doesn't detect missing organs. removing for now, might be useful to have though not sure if we even want to detect missing organs...
+				// for (var/O in H.organHolder.organ_list)
+				// 	var/obj/item/organ/organ = H.organHolder.organ_list[O]
+				// 	if (organ == null)
+				// 		continue
 
-					if (istype(organ, /obj/item/organ/head) || istype(organ, /obj/item/organ/brain) || istype(organ, /obj/item/organ/chest) || istype(organ, /obj/item/skull) || istype(organ, /obj/item/clothing/head/butt))
-						continue
-					if (organ.health < 100)
-						if (!found)
-							found = 1
-						organ_data1 += "<br><span style='color:red'><b>[organ.name]</b> has [organ.health] / 100</span>"
-				if (found)
-					organ_data = "<span style='color:red'>Scans indicate organ damage in:</span>"
+				// 	if (istype(organ, /obj/item/organ/head) || istype(organ, /obj/item/organ/brain) || istype(organ, /obj/item/organ/chest) || istype(organ, /obj/item/skull) || istype(organ, /obj/item/clothing/head/butt))
+				// 		continue
+				// 	if (organ.health < 100)
+				// 		if (!found)
+				// 			found = 1
+				// 		organ_data1 += "<br><span style='color:red'><b>[organ.name]</b> has [organ.health] / 100</span>"
+				
+				organ_data1 += organ_health_scan("left_eye", H)
+				organ_data1 += organ_health_scan("left_eye", H)
+				organ_data1 += organ_health_scan("right_eye", H)
+				organ_data1 += organ_health_scan("left_lung", H)
+				organ_data1 += organ_health_scan("right_lung", H)
+
+				organ_data1 += organ_health_scan("left_kidney", H)
+				organ_data1 += organ_health_scan("right_kidney", H)
+				organ_data1 += organ_health_scan("liver", H)
+				organ_data1 += organ_health_scan("stomach", H)
+				organ_data1 += organ_health_scan("intestines", H)
+				organ_data1 += organ_health_scan("spleen", H)
+				organ_data1 += organ_health_scan("pancreas", H)
+				organ_data1 += organ_health_scan("appendix", H)
+
+				if (organ_data1)
+					organ_data = "<span style='color:red'>Scans Indicate Organ Damage:</span>"
 					organ_data += organ_data1
 
 		else
@@ -198,6 +214,18 @@
 	[disease_data ? "[disease_data]" : null]"
 
 	return data
+
+//takes string input, for name in organholder.organ_list and checks if the organholder has anything
+/proc/organ_health_scan(var/input, var/mob/living/carbon/human/H)
+	var/obj/item/organ/O = H.organHolder.organ_list[input]
+	if (O && istype(O, /obj/item/organ))
+		if (O.health >= 100)
+			return null
+		else
+			return "<br><span style='color:purple'><b>[input]</b> HEALTH = [O.health]/100</span>"
+	else
+		return "<br><span style='color:red'><b>The patient's [input]</b> is missing!</span>"
+
 
 /proc/update_medical_record(var/mob/living/carbon/human/M)
 	if (!M || !ishuman(M))

@@ -56,7 +56,8 @@
 		if (3)
 			if (prob(8)) affected_mob.emote(pick("twitch", "gasp"))
 				
-			if (prob(20)) affected_mob.emote(pick("twitch", "gasp"))
+			if (prob(20)) 
+				affected_mob.emote(pick("twitch", "gasp"))
 				H.damage_organs(3, 20, list("left_kidney", "right_kidney"))
 				H.losebreath++
 

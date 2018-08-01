@@ -798,6 +798,32 @@
 					donor.remove_stam_mod_regen("double_lung_removal")
 					donor.remove_stam_mod_max("double_lung_removal")
 					lungs_changed = 2
+//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
+
+//amount, damge to be done to organs
+//probability, num 0-100 for whether or not to damage an organ found
+//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
+	proc/damage_organs(var/amount, var/probability, var/list/organs)
+		for (var/organ in organs)
+			if (prob(probability))
+				prob_damage_organ(amount, probability, organ)
+
+
+//damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
+//only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
+//return 1 on success, 0 on failure
+	proc/take_organ_damage(var/amount, var/organ)
+		if (src && src.organ_list)
+			if (src.organ_list[organ])
+
+				var/obj/item/organ/O = src.organ_list[organ]
+				if (istype(O,/obj/item/organ))
+					O.health = min(100, O.health - amount)		//this health damage counts down from 100, crazy right?
+					src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
+
+					return 1
+
+		return 0
 
 /mob/living/carbon/human/proc/eye_istype(var/obj/item/I)
 	if (!src.organHolder || !I)
