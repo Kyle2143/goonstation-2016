@@ -27,6 +27,34 @@
 
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
 
+
+//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
+
+//amount, damge to be done to organs
+//probability, num 0-100 for whether or not to damage an organ found
+//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
+	proc/damage_organs(var/amount, var/probability, var/list/organs)
+		for (var/organ in organs)
+			if (prob(probability))
+				prob_damage_organ(amount, probability, organ)
+
+
+//damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
+//only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
+//return 1 on success, 0 on failure
+	proc/take_organ_damage(var/amount, var/organ)
+		if (src && src.organ_list)
+			if (src.organ_list[organ])
+
+				var/obj/item/organ/O = src.organ_list[organ]
+				if (istype(O,/obj/item/organ))
+					O.health = min(100, O.health - amount)		//this health damage counts down from 100, crazy right?
+					src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
+
+					return 1
+
+		return 0
+
 	//organs should not perform their functions if they have 0 health
 	proc/get_working_kidney_amt()
 		var/count = 0
@@ -798,32 +826,6 @@
 					donor.remove_stam_mod_regen("double_lung_removal")
 					donor.remove_stam_mod_max("double_lung_removal")
 					lungs_changed = 2
-//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
-
-//amount, damge to be done to organs
-//probability, num 0-100 for whether or not to damage an organ found
-//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
-	proc/damage_organs(var/amount, var/probability, var/list/organs)
-		for (var/organ in organs)
-			if (prob(probability))
-				prob_damage_organ(amount, probability, organ)
-
-
-//damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
-//only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
-//return 1 on success, 0 on failure
-	proc/take_organ_damage(var/amount, var/organ)
-		if (src && src.organ_list)
-			if (src.organ_list[organ])
-
-				var/obj/item/organ/O = src.organ_list[organ]
-				if (istype(O,/obj/item/organ))
-					O.health = min(100, O.health - amount)		//this health damage counts down from 100, crazy right?
-					src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
-
-					return 1
-
-		return 0
 
 /mob/living/carbon/human/proc/eye_istype(var/obj/item/I)
 	if (!src.organHolder || !I)
@@ -1168,6 +1170,15 @@
 	desc = "Inflating meat airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a right lung, since it has two lobes and a cardiac notch, where the heart would be. Hopefully whoever used to have this one doesn't need it anymore."
 	icon_state = "lung_R"
 	body_side = R_ORGAN
+
+/obj/item/organ/lung/cyber
+	name = "cyberlung"
+	desc = "A fancy electronic eye to replace one that someone's lost. Kinda fragile, but better than nothing!"
+	icon_state = "lung-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
 
 /*========================*/
 /*----------Eyes----------*/
@@ -2070,6 +2081,15 @@
 	// 	..(M)
 	// 	return
 
+/obj/item/organ/liver/cyber
+	name = "cyberliver"
+	desc = "A fancy robotic liver to replace one that someone's lost!"
+	icon_state = "liver-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
+
 /obj/item/organ/kidney
 	name = "kidneys"
 	organ_name = "kidney_t"
@@ -2133,6 +2153,15 @@
 	icon_state = "kidney_R"
 	body_side = R_ORGAN
 
+/obj/item/organ/kidney/cyber
+	name = "cyberkidney"
+	desc = "A fancy robotic kidney to replace one that someone's lost!"
+	icon_state = "kidney-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
+
 /obj/item/organ/stomach
 	name = "stomach"
 	organ_name = "stomach"
@@ -2169,6 +2198,15 @@
 		else
 			..()
 		return
+
+/obj/item/organ/stomach/cyber
+	name = "cyberstomach"
+	desc = "A fancy robotic stomach to replace one that someone's lost!"
+	icon_state = "stomach-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
 
 /obj/item/organ/intestines
 	name = "intestines"
@@ -2207,6 +2245,15 @@
 			..()
 		return
 
+/obj/item/organ/intestines/cyber
+	name = "cyberintestines"
+	desc = "A fancy robotic intestines to replace one that someone's lost!"
+	icon_state = "intestines-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
+
 /obj/item/organ/spleen
 	name = "spleen"
 	organ_name = "spleen"
@@ -2242,6 +2289,15 @@
 		else
 			..()
 		return
+
+/obj/item/organ/spleen/cyber
+	name = "cyberspleen"
+	desc = "A fancy robotic spleen to replace one that someone's lost!"
+	icon_state = "spleen-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
 
 /obj/item/organ/pancreas
 	name = "pancreas"
@@ -2279,6 +2335,15 @@
 			..()
 		return
 
+/obj/item/organ/pancreas/cyber
+	name = "cyberpancreas"
+	desc = "A fancy robotic pancreas to replace one that someone's lost!"
+	icon_state = "pancreas-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
+
 /obj/item/organ/appendix
 	name = "appendix"
 	organ_name = "appendix"
@@ -2314,6 +2379,15 @@
 		else
 			..()
 		return
+
+/obj/item/organ/appendix/cyber
+	name = "cyberappendix"
+	desc = "A fancy robotic appendix to replace one that someone's lost!"
+	icon_state = "appendix-cyber"
+	item_state = "heart_robo1"
+	robotic = 1
+	edible = 0
+	mats = 6
 
 #undef L_ORGAN
 #undef R_ORGAN
