@@ -142,6 +142,11 @@ datum
 				var/mob/living/carbon/human/H = M
 				if(H.traitHolder.hasTrait("slowmetabolism"))
 					deplRate /= 2
+				if (H.organHolder && (!H.organHolder.liver || H.organHolder.liver.get_damage() >= 100))
+					deplRate /= 2
+				if (H.organHolder && (!H.organHolder.get_working_kidneys == 0)
+					deplRate /= 2
+
 			holder.remove_reagent(src.id, deplRate) //By default it slowly disappears.
 
 			if(M && overdose > 0) check_overdose(M)
