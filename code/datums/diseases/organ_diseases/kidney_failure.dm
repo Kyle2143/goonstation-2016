@@ -15,20 +15,18 @@
 	if (..())
 		return
 
-	if (ishuman(affected_mob))
-		var/mob/living/carbon/human/H = affected_mob
+	if (!ishuman(affected_mob))
+		return
+	
+	var/mob/living/carbon/human/H = affected_mob
 		
-		if (!H.organHolder)
-			H.cure_disease(D)
-			return
+	if (!H.organHolder && (!H.organHolder.left_kidney && !H.organHolder.right_kidney))
+		H.cure_disease(D)
+		return
 
-		var/datum/organHolder/oH = H.organHolder
-		if (!oH.kidney)
-			H.cure_disease(D)
-			return
 
 		//handle robokidney failuer. should do some stuff I guess
-		// else if (oH.kidney && oH.kidney.robotic && !oH.heart.health > 0)
+		// else if (H.organHolder.kidney && H.organHolder.kidney.robotic && !H.organHolder.heart.health > 0)
 
 	switch (D.stage)
 		if (1)
@@ -50,7 +48,7 @@
 				boutput(affected_mob, "<span style=\"color:red\">Your back aches terribly!</span>")
 			if (prob(3))
 				boutput(affected_mob, "<span style=\"color:red\">You feel excruciating pain in your upper-right adbomen!</span>")
-				// oH.takekidney
+				// H.organHolder.takekidney
 
 			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
 		if (3)
@@ -58,8 +56,8 @@
 				
 			if (prob(20)) 
 				affected_mob.emote(pick("twitch", "gasp"))
-				H.damage_organs(3, 20, list("left_kidney", "right_kidney"))
+				H.organHolder.damage_organs(0, 0, 3, 20, list("left_kidney", "right_kidney"))
 				H.losebreath++
 
-			affected_mob.take_oxygen_deprivation(1)
+			affected_mob.take_toxin_damage(1)
 			affected_mob.updatehealth()

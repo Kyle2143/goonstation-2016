@@ -147,9 +147,6 @@
 				// 			found = 1
 				// 		organ_data1 += "<br><span style='color:red'><b>[organ.name]</b> has [organ.health] / 100</span>"
 				
-				organ_data1 += organ_health_scan("left_eye", H)
-				organ_data1 += organ_health_scan("left_eye", H)
-				organ_data1 += organ_health_scan("right_eye", H)
 				organ_data1 += organ_health_scan("left_lung", H)
 				organ_data1 += organ_health_scan("right_lung", H)
 
@@ -163,7 +160,7 @@
 				organ_data1 += organ_health_scan("appendix", H)
 
 				if (organ_data1)
-					organ_data = "<span style='color:red'>Scans Indicate Organ Damage:</span>"
+					organ_data = "<span style='color:red'><b>Scans Indicate Organ Damage:</b></span>"
 					organ_data += organ_data1
 
 		else
@@ -219,10 +216,10 @@
 /proc/organ_health_scan(var/input, var/mob/living/carbon/human/H)
 	var/obj/item/organ/O = H.organHolder.organ_list[input]
 	if (O && istype(O, /obj/item/organ))
-		if (O.health >= 100)
-			return null
+		if (O.get_damage() > 0)
+			return "<br><span style='color:purple'><b>[input]</b> - [O.get_damage()]</span>"
 		else
-			return "<br><span style='color:purple'><b>[input]</b> HEALTH = [O.health]/100</span>"
+			return null
 	else
 		return "<br><span style='color:red'><b>The patient's [input]</b> is missing!</span>"
 

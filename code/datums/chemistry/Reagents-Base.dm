@@ -172,9 +172,12 @@ datum
 
 			do_overdose(var/severity, var/mob/M)
 				var/mob/living/carbon/human/H = M
-				if (!istype(H) || !H.bioHolder.HasEffect("resist_alcohol"))
-					H.take_organ_damage(rand(1,2), "liver")
-					..()
+				if (istype(H) && !H.bioHolder.HasEffect("resist_alcohol"))
+					if (prob(25))
+						if (H.organHolder.liver)
+							H.organHolder.liver.take_damage(0, 0, rand(1,2))
+
+				..()
 
 
 		hydrogen
@@ -490,11 +493,13 @@ datum
 						M.paralysis += 3 * severity
 						M.weakened += 4 * severity
 
-					if (prob(8))
-						var/mob/living/carbon/human/H = M
-						if (!istype(H))
-							H.take_organ_damage(rand(1,2), "pancreas")
 
+					if (prob(8))
+
+					
+						var/mob/living/carbon/human/H = M
+						if (istype(H) && H.organHolder.pancreas)
+							H.organHolder.pancreas.take_damage(0, 0, rand(1,2))
 						M.take_toxin_damage(severity)
 						M.updatehealth()
 

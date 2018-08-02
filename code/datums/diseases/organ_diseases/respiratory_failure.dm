@@ -15,20 +15,16 @@
 	if (..())
 		return
 
-	if (ishuman(affected_mob))
-		var/mob/living/carbon/human/H = affected_mob
+	if (!ishuman(affected_mob))
+		return
+	var/mob/living/carbon/human/H = affected_mob
 		
-		if (!H.organHolder)
-			H.cure_disease(D)
-			return
-
-		var/datum/organHolder/oH = H.organHolder
-		if (!oH.respiratory)
-			H.cure_disease(D)
-			return
+	if (!H.organHolder && (!H.organHolder.left_lung && H.organHolder.right_lung))
+		H.cure_disease(D)
+		return
 
 		//handle roborespiratory failuer. should do some stuff I guess
-		// else if (oH.respiratory && oH.respiratory.robotic && !oH.heart.health > 0)
+		// else if (H.organHolder.respiratory && H.organHolder.respiratory.robotic && !H.organHolder.heart.health > 0)
 
 	switch (D.stage)
 		if (1)
@@ -50,15 +46,15 @@
 				boutput(affected_mob, "<span style=\"color:red\">Your back aches terribly!</span>")
 			if (prob(3))
 				boutput(affected_mob, "<span style=\"color:red\">You feel excruciating pain in your upper-right adbomen!</span>")
-				// oH.takerespiratory
+				// H.organHolder.takerespiratory
 
 			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
 		if (3)
 			if (prob(8)) affected_mob.emote(pick("twitch", "gasp"))
 				
 			if (prob(20)) 
-					affected_mob.emote(pick("twitch", "gasp"))
-				H.damage_organs(3, 20, list("left_lung", "right_lung"))
+				affected_mob.emote(pick("twitch", "gasp"))
+				H.organHolder.damage_organs(0, 0, 3, 20, list("left_lung", "right_lung"))
 				H.losebreath++
 
 			affected_mob.take_oxygen_deprivation(1)

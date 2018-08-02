@@ -4038,7 +4038,8 @@
 			TakeDamage("chest", 0, burn_damage, 0, DAMAGE_BURN)
 			hud.update_fire_indicator(1)
 			if (prob(4))
-				H.damage_organs(max(burn_damage, 3), 10, list("left_lung", "right_lung"))
+				if (src.organHolder)
+					src.organHolder.damage_organs(0, max(burn_damage, 3), 0, 80, list("left_lung", "right_lung"))
 				boutput(src, "<span style=\"color:red\">Your lungs hurt like hell! This can't be good!</span>")
 				//src.contract_disease(new/datum/ailment/disability/cough, 1, 0) // cogwerks ailment project - lung damage from fire
 		else
@@ -4289,7 +4290,7 @@
 			return
 
 		if (src.blood_volume < 500 && src.blood_volume > 0) // if we're full or empty, don't bother v
-			if (prob(66) && src.organHolder.spleen && src.organHolder.spleen.health > 0)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
+			if (prob(66) && src.organHolder.spleen && src.organHolder.spleen.get_damage() < 100)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
 				src.blood_volume ++ // maybe get a little blood back ^
 
 		if (src.bleeding)
@@ -4468,7 +4469,7 @@
 
 		// lungs 
 		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) isn't just checked once, but OK
-			src.organHolder.handle_lungs_health()
+			src.organHolder.handle_lungs_stamina()
 
 		// kdineys
 		if (!src.nodamage)
@@ -4477,35 +4478,43 @@
 
 		// liver
 		if (!src.nodamage)
-			if (!src.organHolder.liver || src.organHolder.liver.health <=  0)
+			if (!src.organHolder.liver || src.organHolder.liver.get_damage() >= 100)
 				src.take_toxin_damage(2, 1)
 				
-			else if (src.organHolder.liver.health <=35 && prob(organHolder.liver.health * 0.2))
+			else if (src.organHolder.liver.get_damage() >= 65 && prob(organHolder.liver.get_damage() * 0.2))
 				src.contract_disease(/datum/ailment/disease/liver_failure,null,null,1)
 
 
 		// pancreas if there's no pancreas, user does not generate insulin if they have sugar in their body.
 		if (!src.nodamage)
-			if (src.organHolder.pancreas && src.organHolder.pancreas.health <= 0)
+			if (src.organHolder.pancreas && src.organHolder.pancreas.get_damage() < 100)
 				if (src.reagents && src.reagents.has_reagent("sugar", 80))	
-					pick (
-						prob(25)
-							src.organHolder.take_organ_damage(2, "spleen")
-						prob(50)
-							src.reagents.add_reagent("insulin", 2)
-						)
+					if (prob(50))
+						src.reagents.add_reagent("insulin", 2)
+					if (prob(25))
+						src.organHolder.pancreas.take_damage(0, 0, 3)
+
+				if (src.organHolder.pancreas.get_damage() >= 65 && prob(organHolder.pancreas.get_damage() * 0.2))
+					src.contract_disease(/datum/ailment/disease/pancreatitis,null,null,1)
+
+		// appendix 
+		if (!src.nodamage)
+			if (src.organHolder.appendix && src.organHolder.appendix.get_damage() >= 100)
+				src.organHolder.appendix.broken = 1
+			else if (src.organHolder.appendix.get_damage() >= 65 && prob(organHolder.appendix.get_damage() * 0.2))
+				src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
 
 		// spleen  if there's no spleen don't let the user regen blood naturally
-			// if (!src.organHolder.spleen || (src.organHolder.liver.health > 10))
+			// if (src.organHolder.spleen && (src.organHolder.spleen.get_damage() >= 100))
 				//handle_blood does the spleen check since all the spleen will do is let you regen blood for now, but this could be needed if there is another function for a spleen
 		
 		//stomach
 		// if (!src.nodamage)
-		// 	if (!src.organHolder.stomach || src.organHolder.stomach.health <= 0)
+		// 	if (src.organHolder.stomach && src.organHolder.stomach.get_damage() >= 100)
 
 		//intestines
 		// if (!src.nodamage)
-		// 	if (!src.organHolder.intestines || src.organHolder.intestines.health <= 0)
+		// 	if (src.organHolder.intestines && src.organHolder.intestines.get_damage() >= 100)
 
 		if (!src.organHolder.left_eye && src.organHolder.right_eye) // we have no left eye, but we also don't have the blind overlay (presumably)
 			if (!src.hasOverlayComposition(/datum/overlayComposition/blinded))
@@ -5755,7 +5764,8 @@
 	boutput(src, "<span style=\"color:red\">This statement is universally true because if you did you probably wouldn't be desperate enough to see this message.</span>")
 
 /mob/living/carbon/human/full_heal()
-	src.damage_organs(-10000, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+	if (src.organHolder)
+		src.organHolder.heal_organs(10000, 10000, 10000, 100,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
 
 	blinded = 0
 	bleeding = 0
@@ -6517,12 +6527,16 @@
 		return
 	
 	if (!ignore)
-		if (amount > 1)
+
+		if (amount > 1 && src.organHolder)
 			if (prob(30))
-				src.organHolder.take_organ_damage(amount/20, "left_kidney")
+				if (src.organHolder.left_kidney)
+					src.organHolder.left_kidney.take_damage(0, 0, amount/20)
 			if (prob(30))
-				src.organHolder.take_organ_damage(amount/20, "right_kidney")
+				if (src.organHolder.right_kidney)
+					src.organHolder.right_kidney.take_damage(0, 0, amount/20)
 			if (prob(30))
-				src.organHolder.take_organ_damage(amount/40, "left_lung")
+				if (src.organHolder.liver)
+					src.organHolder.liver.take_damage(0, 0, amount/40)
 
 	return

@@ -14,20 +14,17 @@
 	if (..())
 		return
 
-	if (ishuman(affected_mob))
-		var/mob/living/carbon/human/H = affected_mob
+	if (!ishuman(affected_mob))
+		return
+	
+	var/mob/living/carbon/human/H = affected_mob
 		
-		if (!H.organHolder)
-			H.cure_disease(D)
-			return
-
-		var/datum/organHolder/oH = H.organHolder
-		if (!oH.liver)
-			H.cure_disease(D)
-			return
-
+	if (!H.organHolder && !H.organHolder.liver)
+		H.cure_disease(D)
+		return
+	
 		//handle roboliver failuer. should do some stuff I guess
-		// else if (oH.liver && oH.liver.robotic && !oH.heart.health > 0)
+		// else if (H.organHolder.liver && H.organHolder.liver.robotic && !H.organHolder.heart.health > 0)
 
 	switch (D.stage)
 		if (1)
@@ -49,14 +46,13 @@
 				boutput(affected_mob, "<span style=\"color:red\">Your back aches terribly!</span>")
 			if (prob(3))
 				boutput(affected_mob, "<span style=\"color:red\">You feel excruciating pain in your upper-right adbomen!</span>")
-				// oH.takeliver
+				// H.organHolder.takeliver
 
 			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
 		if (3)
 			if (prob(20)) 
-					affected_mob.emote(pick("twitch", "groan"))
-				if (ishuman(affected_mob))
-					var/mob/living/carbon/human/H = affected_mob
-					H.organHolder.take_organ_damage(3, "liver")
-			affected_mob.take_tox_damage(1)
+				affected_mob.emote(pick("twitch", "groan"))
+				H.organHolder.liver.take_damage(0, 0, 3)
+
+			affected_mob.take_toxin_damage(1)
 			affected_mob.updatehealth()

@@ -28,48 +28,50 @@
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
 
 
-//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
+	//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
 
-//amount, damge to be done to organs
-//probability, num 0-100 for whether or not to damage an organ found
-//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
-	proc/damage_organs(var/amount, var/probability, var/list/organs)
+	//probability, num 0-100 for whether or not to damage an organ found
+	//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
+	proc/damage_organs(var/brute, var/burn, var/tox, var/probability, var/list/organs)
 		for (var/organ in organs)
 			if (prob(probability))
-				prob_damage_organ(amount, probability, organ)
+				do_organ_damage(0, brute, burn, tox, probability, organ)
+
+	proc/heal_organs(var/brute, var/burn, var/tox, var/probability, var/list/organs)
+		for (var/organ in organs)
+			if (prob(probability))
+				do_organ_damage(1, brute, burn, tox, probability, organ)
 
 
-//damage organs specifically choose value for var/organ from strings in organ_list var in obj/item/organ in orgam.dm --kyle
-//only give this an actual organ: obj/item/organ, not item/clothing/butt or obj/item/skull which exist in organholder for some reason.
-//return 1 on success, 0 on failure
-	proc/take_organ_damage(var/amount, var/organ)
-		if (src && src.organ_list)
-			if (src.organ_list[organ])
+	proc/do_organ_damage(var/heal = 0, var/brute, var/burn, var/tox, var/organ)
+		if (src.organ_list)
+			var/obj/item/organ/O = donor.organHolder.organ_list[organ]
 
-				var/obj/item/organ/O = src.organ_list[organ]
-				if (istype(O,/obj/item/organ))
-					O.health = min(100, O.health - amount)		//this health damage counts down from 100, crazy right?
-					src.visible_message("<span style=\"color:red\"><B>[src]</B> damaged [organ] by [amount]!</span>")
-
-					return 1
-		src.take_toxin_damage(amount)
-
+			if (O && istype(O, /obj/item/organ))
+				if (heal)
+					O.heal_damage(brute, burn, tox)
+					donor.visible_message("<span style=\"color:red\"><B>[donor]</B> damaged [organ] by [brute], [burn], [tox]!</span>")
+				else
+					O.take_damage(brute, burn, tox)
+					donor.visible_message("<span style=\"color:red\"><B>[donor]</B> healed [organ] by [brute], [burn], [tox]!</span>")
+				return 1
 		return 0
+
 
 	//organs should not perform their functions if they have 0 health
 	proc/get_working_kidney_amt()
 		var/count = 0
-		if (left_kidney && left_kidney.health > 0)
+		if (left_kidney && left_kidney.get_damage() < 100)
 			count++
-		if (right_kidney && right_kidney.health > 0)
+		if (right_kidney && right_kidney.get_damage() < 100)
 			count++
 		return count
 
 	proc/get_working_lung_amt()
 		var/count = 0
-		if (left_lung && left_lung.health > 0)
+		if (left_lung && left_lung.get_damage() < 100)
 			count++
-		if (right_lung && right_lung.health > 0)
+		if (right_lung && right_lung.get_damage() < 100)
 			count++
 		return count
 
@@ -193,42 +195,34 @@
 			src.left_kidney = new /obj/item/organ/kidney/left
 			src.left_kidney.donor = src.donor
 			organ_list["left_kidney"] = left_kidney
-			left_kidney.donor = null
 		if (!src.right_kidney)
 			src.right_kidney = new /obj/item/organ/kidney/right
 			src.right_kidney.donor = src.donor 
 			organ_list["right_kidney"] = right_kidney
-			right_kidney.donor = null
 		if (!src.liver)
 			src.liver = new /obj/item/organ/liver
 			src.liver.donor = src.donor
 			organ_list["liver"] = liver
-			liver.donor = null
 		if (!src.stomach)
 			src.stomach = new /obj/item/organ/stomach
 			src.stomach.donor = src.donor
 			organ_list["stomach"] = stomach
-			stomach.donor = null
 		if (!src.intestines)
 			src.intestines = new /obj/item/organ/intestines
 			src.intestines.donor = src.donor
 			organ_list["intestines"] = intestines
-			intestines.donor = null
 		if (!src.spleen)
 			src.spleen = new /obj/item/organ/spleen
 			src.spleen.donor = src.donor
 			organ_list["spleen"] = spleen
-			spleen.donor = null
 		if (!src.pancreas)
 			src.pancreas = new /obj/item/organ/pancreas
 			src.pancreas.donor = src.donor
 			organ_list["pancreas"] = pancreas
-			pancreas.donor = null
 		if (!src.appendix)
 			src.appendix = new /obj/item/organ/appendix
 			src.appendix.donor = src.donor
 			organ_list["appendix"] = appendix
-			appendix.donor = null
 
 	proc/drop_organ(var/type, var/location)
 		if (!src.donor || !type)
@@ -384,7 +378,7 @@
 				myLeftLung.set_loc(location)
 				myLeftLung.on_removal()
 				src.left_lung = null
-				handle_lungs_health()
+				handle_lungs_stamina()
 				return myLeftLung
 
 			if ("right_lung")
@@ -394,7 +388,7 @@
 				myRightLung.set_loc(location)
 				myRightLung.on_removal()
 				src.right_lung = null
-				handle_lungs_health()
+				handle_lungs_stamina()
 				return myRightLung
 
 			if ("butt")
@@ -660,7 +654,7 @@
 				src.left_lung = newLeftLung
 				newLeftLung.set_loc(src.donor)
 				organ_list["left_lung"] = newLeftLung
-				handle_lungs_health()
+				handle_lungs_stamina()
 				success = 1
 			if ("right_lung")
 				if (src.right_lung)
@@ -673,7 +667,7 @@
 				src.right_lung = newRightLung
 				newRightLung.set_loc(src.donor)
 				organ_list["right_lung"] = newRightLung
-				handle_lungs_health()
+				handle_lungs_stamina()
 				success = 1
 
 			if ("butt")
@@ -796,7 +790,7 @@
 
 	//change stamina modifies based on amount of working lungs. lungs w/ health > 0
 	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the
-	proc/handle_lungs_health()
+	proc/handle_lungs_stamina()
 		var/working_lungs = src.get_working_lung_amt()
 		switch (working_lungs)
 			if (0)
@@ -869,6 +863,11 @@
 	var/burn_dam = 0
 	var/tox_dam = 0
 
+	var/robotic = 0
+	var/emagged = 0
+	var/synthetic = 0
+	var/broken = 0
+
 	var/created_decal = /obj/decal/cleanable/blood // what kinda mess it makes.  mostly so cyberhearts can splat oil on the ground, but idk maybe you wanna make something that creates a broken balloon or something on impact vOv
 	var/decal_done = 0 // fuckers are tossing these around a lot so I guess they're only gunna make one, ever now
 	var/body_side = null // L_ORGAN/1 for left, R_ORGAN/2 for right
@@ -901,15 +900,16 @@
 		return
 
 	take_damage(brute, burn, tox, damage_type)
-		if (brute <= 0 && burn <= 0)// && tox <= 0)
+		if (brute <= 0 && burn <= 0 && tox <= 0)
 			return 0
 		src.brute_dam += brute
 		src.burn_dam += burn
-		//src.tox_dam += tox
+		src.tox_dam += tox
+		donor.visible_message("<span style=\"color:red\"><B>[src] damaged for [brute], [burn], [tox]!</B></span>", 1)
 
 		if (ishuman(donor))
 			var/mob/living/carbon/human/H = donor
-			H.hit_twitch()
+			// H.hit_twitch()	//no
 			H.UpdateDamage()
 			if (bone_system && src.bones && brute && prob(brute * 2))
 				src.bones.take_damage(damage_type)
@@ -921,10 +921,16 @@
 		src.brute_dam = max(0, src.brute_dam - brute)
 		src.burn_dam = max(0, src.burn_dam - burn)
 		src.tox_dam = max(0, src.tox_dam - tox)
+		donor.visible_message("<span style=\"color:red\"><B>[src] healed for [brute], [burn], [tox]!</B></span>", 1)
+
 		return 1
 
 	get_damage()
 		return src.brute_dam + src.burn_dam	+ src.tox_dam
+
+	emp_act()
+		if (robotic)
+			src.take_damage(20, 20, 20)
 
 /*=========================*/
 /*----------Brain----------*/
@@ -1023,10 +1029,6 @@
 	desc = "Offal, just offal."
 	icon_state = "heart"
 	item_state = "heart"
-	var/robotic = 0
-	var/emagged = 0
-	var/broken = 0
-	var/synthetic = 0
 	module_research = list("medicine" = 1, "efficiency" = 5)
 	module_research_type = /obj/item/organ/heart
 
@@ -1181,6 +1183,7 @@
 	edible = 0
 	mats = 6
 
+
 /*========================*/
 /*----------Eyes----------*/
 /*========================*/
@@ -1190,10 +1193,6 @@
 	organ_name = "eye"
 	desc = "Here's lookin' at you! Er, maybe not so much, anymore."
 	icon_state = "eye"
-	var/robotic = 0
-	var/emagged = 0
-	var/broken = 0
-	var/synthetic = 0
 
 	New()
 		..()
@@ -2097,6 +2096,14 @@
 	desc = "Bean shaped, but not actually beans. You can still eat them, though!"
 	icon_state = "kidneys"
 
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Kidney Transplant")
+					src.donor.cure_disease(disease)
+			return
+
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
 			return
@@ -2169,6 +2176,14 @@
 	desc = "A little meat sack containing acid for the digestion of food. Like most things that come out of living creatures, you can probably eat it."
 	icon_state = "stomach"
 
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Stomach Transplant")
+					src.donor.cure_disease(disease)
+			return
+
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
 			return
@@ -2214,6 +2229,14 @@
 	organ_name = "intestines"
 	desc = "Did you know that if you laid your guts out in a straight line, they'd be about 9 meters long? Also, you'd probably be dying, so it's not something you should do. Probably."
 	icon_state = "intestines"
+
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Intestine Transplant")
+					src.donor.cure_disease(disease)
+			return
 
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
@@ -2261,6 +2284,14 @@
 	icon_state = "spleen"
 	body_side = L_ORGAN
 
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Spleen Transplant")
+					src.donor.cure_disease(disease)
+			return
+
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
 			return
@@ -2307,6 +2338,14 @@
 	icon_state = "pancreas"
 	body_side = R_ORGAN
 
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Pancreas Transplant")
+					src.donor.cure_disease(disease)
+			return
+
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))
 			return
@@ -2351,6 +2390,14 @@
 	name = "appendix"
 	organ_name = "appendix"
 	icon_state = "appendix"
+
+	on_transplant()
+		..()
+		if (src.donor)
+			for (var/datum/ailment_data/disease in src.donor.ailments)
+				if (disease.cure == "Appendix Transplant")
+					src.donor.cure_disease(disease)
+			return
 
 	attack(var/mob/living/carbon/M as mob, var/mob/user as mob)
 		if (!ismob(M))

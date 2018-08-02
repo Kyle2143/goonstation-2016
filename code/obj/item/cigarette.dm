@@ -162,9 +162,11 @@
 							src.reagents.trans_to(M, 1)
 							src.reagents.reaction(M, INGEST)
 							if (prob(30))
-								H.organHolder.take_organ_damage(1, "left_lung")
+								if (H.organHolder && H.organHolder.left_lung)
+									H.organHolder.left_lung.take_damage(0, 0, 1)
 							if (prob(30))
-								H.organHolder.take_organ_damage(1, "right_lung")
+								if (H.organHolder && H.organHolder.right_lung)
+									H.organHolder.right_lung.take_damage(0, 0, 1)
 					else
 						src.reagents.trans_to(M, 1)
 						src.reagents.reaction(M, INGEST)

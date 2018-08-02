@@ -14,20 +14,17 @@
 	if (..())
 		return
 
-	if (ishuman(affected_mob))
-		var/mob/living/carbon/human/H = affected_mob
+	if (!ishuman(affected_mob))
+		return
+	
+	var/mob/living/carbon/human/H = affected_mob
 		
-		if (!H.organHolder)
-			H.cure_disease(D)
-			return
+	if (!H.organHolder && !H.organHolder.pancreas)
+		H.cure_disease(D)
+		return
 
-		var/datum/organHolder/oH = H.organHolder
-		if (!oH.pancreas)
-			H.cure_disease(D)
-			return
-
-		//handle robopancreas failuer. should do some stuff I guess
-		// else if (oH.pancreas && oH.pancreas.robotic && !oH.heart.health > 0)
+	//handle robopancreas failuer. should do some stuff I guess
+	// else if (H.organHolder.pancreas && H.organHolder.pancreas.robotic && !H.organHolder.heart.health > 0)
 
 	switch (D.stage)
 		if (1)
@@ -40,22 +37,24 @@
 				boutput(affected_mob, "<span style=\"color:red\">Your abdomen area hurts!</span>")
 		if (2)
 			if (prob(1) && prob(10))
+				affected_mob.cure_disease(D)
 				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
-				affected_mob.resistances += src.type
-				affected_mob.ailments -= src
 				return
 			if (prob(8)) affected_mob.emote(pick("pale", "groan"))
 			if (prob(5))
 				boutput(affected_mob, "<span style=\"color:red\">Your back aches terribly!</span>")
 			if (prob(3))
 				boutput(affected_mob, "<span style=\"color:red\">You feel excruciating pain in your upper-right adbomen!</span>")
-				// oH.takepancreas
+				// H.organHolder.takepancreas
 
 			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
 		if (3)
-			if (prob(20)) affected_mob.emote(pick("twitch", "groan"))
-				if (ishuman(affected_mob))
-					var/mob/living/carbon/human/H = affected_mob
-					H.organHolder.take_organ_damage(3, "pancreas")
-			affected_mob.take_tox_damage(1)
+			if (prob(1) && prob(10))
+				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
+				affected_mob.cure_disease(D)
+			if (prob(20))
+				affected_mob.emote(pick("pale", "groan"))
+				H.organHolder.pancreas.take_damage(0, 0, 3)
+
+			affected_mob.take_toxin_damage(1)
 			affected_mob.updatehealth()

@@ -400,7 +400,7 @@ datum
 					if (H.bleeding && prob(33))
 						H.bleeding--
 					//heal all functional organs, ignore heart and brain since they don't use this system yet
-					H.damage_organs(-2, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+					H.organHolder.heal_organs(2, 2, 2, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
 
 				M.updatehealth()
 				//M.UpdateDamageIcon()
@@ -1192,27 +1192,21 @@ datum
 			transparency = 255
 			depletion_rate = 0.2
 			value = 3
-					// H.damage_organs(-2, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
 
 			on_mob_life(var/mob/M)
 				if(!M) M = holder.my_atom
 
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
-					var/datum/organholder/OH = H.organHolder
-					if (!istype(OH)) 
-						..(M)
-						return
+					
+					if (H.organHolder.spleen && H.organHolder.spleen.get_damage() < 90 && H.organHolder.spleen.get_damage() > 0)
+						H.organHolder.spleen.heal_damage(2, 2, 2, "spleen")
 
-					if (OH.spleen && OH.spleen.health >= 10 && OH.spleen.health < 100)
-						H.take_organ_damage(-2, "spleen")
+					if (H.organHolder.left_lung && H.organHolder.left_lung.get_damage() < 90 && H.organHolder.left_lung.get_damage() > 0)
+						H.organHolder.spleen.heal_damage(2, 2, 2, "left_lung")
 
-					if (OH.left_lung && OH.left_lung.health >= 10 && OH.left_lung.health < 100)
-
-						H.take_organ_damage(-2, "left_lung")
-
-					if (OH.right_lung && OH.right_lung.health >= 10 && OH.right_lung.health < 100)
-						H.take_organ_damage(-2, "right_lung")
+					if (H.organHolder.right_lung && H.organHolder.right_lung.get_damage() < 90 && H.organHolder.right_lung.get_damage() > 0)
+						H.organHolder.spleen.heal_damage(2, 2, 2, "right_lung")
 					M.updatehealth()
 				..(M)		
 
@@ -1233,25 +1227,21 @@ datum
 				if(!M) M = holder.my_atom
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
-					var/datum/organholder/OH = H.organHolder
-					if (!istype(OH)) 
-						..(M)
-						return
 
-					if (OH.liver && OH.liver.health >= 10 && OH.liver.health < 100)
-						H.take_organ_damage(-2, "liver")
+					if (H.organHolder.liver && H.organHolder.liver.get_damage() < 90 && H.organHolder.liver.get_damage() > 0)
+						H.organHolder.liver.heal_damage(2, 2, 2)
 
-					if (OH.left_kidney && OH.left_kidney.health >= 10 && OH.left_kidney.health < 100)
-						H.take_organ_damage(-2, "left_kidney")
+					if (H.organHolder.left_kidney && H.organHolder.left_kidney.get_damage() < 90 && H.organHolder.left_kidney.get_damage() > 0)
+						H.organHolder.left_kidney.heal_damage(2, 2, 2)
 						
-					if (OH.stomach && OH.stomach.health >= 10 && OH.stomach.health < 100)
-						H.take_organ_damage(-2, "stomach")
-
-					if (OH.stomach && OH.stomach.health >= 10 && OH.stomach.health < 100)
-						H.take_organ_damage(-2, "stomach")
+					if (H.organHolder.right_kidney && H.organHolder.right_kidney.get_damage() < 90 && H.organHolder.right_kidney.get_damage() > 0)
+						H.organHolder.right_kidney.heal_damage(2, 2, 2)
 						
-					if (OH.intestines && OH.intestines.health >= 10 && OH.intestines.health < 100)
-						H.take_organ_damage(-2, "intestines")
+					if (H.organHolder.stomach && H.organHolder.stomach.get_damage() < 90 && H.organHolder.stomach.get_damage() > 0)
+						H.organHolder.stomach.heal_damage(2, 2, 2)
+						
+					if (H.organHolder.intestines && H.organHolder.intestines.get_damage() < 90 && H.organHolder.intestines.get_damage() > 0)
+						H.organHolder.intestines.heal_damage(2, 2, 2)
 
 					M.updatehealth()
 				..(M)		
@@ -1274,15 +1264,11 @@ datum
 				if(!M) M = holder.my_atom
 				if (istype(M, /mob/living/carbon/human))
 					var/mob/living/carbon/human/H = M
-					var/datum/organholder/OH = H.organHolder
-					if (!istype(OH)) 
-						..(M)
-						return
 
-					if (OH.appendix && OH.appendix.health >= 10 && OH.appendix.health < 100)
-						H.take_organ_damage(-2, "appendix")
+					if (H.organHolder.appendix && H.organHolder.appendix.get_damage() < 90 && H.organHolder.appendix.get_damage() > 0)
+						H.organHolder.appendix.heal_damage(2, 2, 2)
 
-					if (OH.pancreas && OH.pancreas.health >= 10 && OH.pancreas.health < 100)
-						H.take_organ_damage(-2, "pancreas")
+					if (H.organHolder.pancreas && H.organHolder.pancreas.get_damage() < 90 && H.organHolder.pancreas.get_damage() > 0)
+						H.organHolder.pancreas.heal_damage(2, 2, 2)
 					M.updatehealth()
 				..(M)		
