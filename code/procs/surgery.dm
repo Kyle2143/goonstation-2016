@@ -566,7 +566,7 @@
 			op_stage = (actions you can take) -> where it will send you
 			0.0 = (G)cut -> 1.0 || (D)cut -> 5.0
 			1.0 = (G)cut -> 3.0 || (D)cut -> 4.0 || (G)saw -> 2.0
-			2.0 = (G)cut is remove spleen || (D)cut is remove lungs R/L
+			2.0 = (G)cut is remove splee32n || (D)cut is remove lungs R/L
 			3.0 = (G)cut is remove appendix || (D)cut is remove liver
 			4.0 = (G)cut is remove stomach || (D)cut is remove intestines
 			5.0 = (G)cut -> 6.0 || (D)cut -> 7.0

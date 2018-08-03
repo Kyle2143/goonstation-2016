@@ -13,5 +13,6 @@
 		if (potential_victims.len)
 			var/num = rand(1, 3)
 			for (var/i = 0, i < num, i++)
-				var/mob/living/carbon/human/patient_zero = pick(potential_victims)
-				patient_zero.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
+				var/mob/living/carbon/human/patient = pick(potential_victims)
+				if (patient.organHolder && patient.organHolder.appendix && !patient.organHolder.appendix.robotic)
+					patient.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)

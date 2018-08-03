@@ -144,7 +144,7 @@ datum
 					deplRate /= 2
 				if (H.organHolder && (!H.organHolder.liver || H.organHolder.liver.get_damage() >= 100))
 					deplRate /= 2
-				if (H.organHolder && (!H.organHolder.get_working_kidney_amt() == 0))
+				if (H.organHolder && (H.organHolder.get_working_kidney_amt() == 0))
 					deplRate /= 2
 
 			holder.remove_reagent(src.id, deplRate) //By default it slowly disappears.

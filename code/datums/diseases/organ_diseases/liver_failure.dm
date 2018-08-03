@@ -19,7 +19,7 @@
 	
 	var/mob/living/carbon/human/H = affected_mob
 		
-	if (!H.organHolder && !H.organHolder.liver)
+	if (!H.organHolder || !H.organHolder.liver)
 		H.cure_disease(D)
 		return
 	

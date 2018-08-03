@@ -885,6 +885,17 @@
 	rand_pos = 1
 	health = 100 //organs can take damage now, hurray
 
+	attackby(obj/item/W as obj, mob/user as mob)
+		if (istype(W, /obj/item/device/healthanalyzer))
+			var/obj/item/device/healthanalyzer/HA = W
+			if(HA.reagent_upgrade)
+				boutput(user, "<br><span style='color:purple'><b>[src]</b> - [src.get_damage()]</span>")
+				return
+		else
+			src.take_damage(W.force, 0, 0, W.hit_type)
+  
+		..()
+
 	New()
 		..()
 		spawn(5)
@@ -966,14 +977,6 @@
 				else
 					. += "<br><span style=\"color:red\">This brain has gone cold.</span>"
 	
-	attackby(obj/item/W as obj, mob/user as mob)
-		if (istype(W, /obj/item/device/healthanalyzer))
-			var/obj/item/device/healthanalyzer/HA = W
-			if(HA.reagent_upgrade)
-				boutput(user, "<br><span style='color:purple'><b>[src]</b> - [src.get_damage()]</span>")
-				return
-		..()
-
 	attack(mob/living/carbon/M as mob, mob/living/carbon/user as mob)
 		if (!ismob(M))
 			return

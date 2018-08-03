@@ -22,7 +22,7 @@
 	var/mob/living/carbon/human/H = affected_mob
 
 	//to cure, gotta remove BOTH lungs. Don't want to make it too easy for ya
-	if (!H.organHolder && (!H.organHolder.left_lung && !H.organHolder.right_lung))
+	if (!H.organHolder|| (!H.organHolder.left_lung && !H.organHolder.right_lung))
 		H.cure_disease(D)
 		return
 
