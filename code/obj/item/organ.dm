@@ -35,28 +35,26 @@
 	proc/damage_organs(var/brute, var/burn, var/tox, var/probability, var/list/organs)
 		for (var/organ in organs)
 			if (prob(probability))
-				do_organ_damage(0, brute, burn, tox, probability, organ)
+				do_organ_damage(0, brute, burn, tox, organ)
 
 	proc/heal_organs(var/brute, var/burn, var/tox, var/probability, var/list/organs)
 		for (var/organ in organs)
 			if (prob(probability))
-				do_organ_damage(1, brute, burn, tox, probability, organ)
+				do_organ_damage(1, brute, burn, tox, organ)
 
 
-	proc/do_organ_damage(var/heal, var/brute, var/burn, var/tox, var/organ)
-		if (src.organ_list)
-			var/obj/item/organ/O = donor.organHolder.organ_list[organ]
+	proc/do_organ_damage(var/heal, var/brute, var/burn, var/tox, var/organ as text)
+		if (islist(src.organ_list))
+			if (src.organ_list[organ])
+				var/obj/item/organ/O = src.organ_list[organ]
 
-			if (O && istype(O, /obj/item/organ))
-				if (heal)
-					O.heal_damage(brute, burn, tox)
-					donor.visible_message("<span style=\"color:red\"><B>[donor]</B> damaged [organ] by [brute], [burn], [tox]!</span>")
-				else
-					O.take_damage(brute, burn, tox)
-					donor.visible_message("<span style=\"color:red\"><B>[donor]</B> healed [organ] by [brute], [burn], [tox]!</span>")
-				return 1
+				if (O && istype(O, /obj/item/organ))
+					if (heal)
+						O.heal_damage(brute, burn, tox)
+					else
+						O.take_damage(brute, burn, tox)
+					return 1
 		return 0
-
 
 	//organs should not perform their functions if they have 0 health
 	proc/get_working_kidney_amt()
@@ -917,7 +915,6 @@
 		src.brute_dam += brute
 		src.burn_dam += burn
 		src.tox_dam += tox
-		donor.visible_message("<span style=\"color:red\"><B>[src] damaged for [brute], [burn], [tox]!</B></span>", 1)
 
 		if (ishuman(donor))
 			var/mob/living/carbon/human/H = donor
@@ -933,7 +930,6 @@
 		src.brute_dam = max(0, src.brute_dam - brute)
 		src.burn_dam = max(0, src.burn_dam - burn)
 		src.tox_dam = max(0, src.tox_dam - tox)
-		donor.visible_message("<span style=\"color:red\"><B>[src] healed for [brute], [burn], [tox]!</B></span>", 1)
 
 		return 1
 
