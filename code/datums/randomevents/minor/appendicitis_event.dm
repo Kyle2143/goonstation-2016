@@ -12,5 +12,6 @@
 			potential_victims += H
 		if (potential_victims.len)
 			var/num = rand(1, 3)
-			var/mob/living/carbon/human/patient_zero = pick(potential_victims)
-			patient_zero.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
+			for (var/i = 0, i < num, i++)
+				var/mob/living/carbon/human/patient_zero = pick(potential_victims)
+				patient_zero.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
