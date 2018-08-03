@@ -745,6 +745,86 @@
 	create = 1
 	category = "Component"
 
+/datum/manufacture/cyberappendix
+	name = "Cyberappendix"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/appendix/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberpancreas
+	name = "Cyberpancreas"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/pancreas/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberspleen
+	name = "Cyberspleen"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/spleen/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberintestines
+	name = "Cyberintestines"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/intestines/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberstomach
+	name = "Cyberstomach"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/stomach/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberkidney
+	name = "Cyberkidney"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/kidney/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberliver
+	name = "Cyberliver"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/liver/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
+/datum/manufacture/cyberlung
+	name = "Cyberlung"
+	item_paths = list("MET-1","CON-1","ALL")
+	item_names = list("Metal","Conductive Material","Any Material")
+	item_amounts = list(1,1,1)
+	item_outputs = list(/obj/item/organ/lung/cyber)
+	time = 25
+	create = 1
+	category = "Component"
+
 /datum/manufacture/cyberbutt
 	name = "Cyberbutt"
 	item_paths = list("MET-1","CON-1","ALL")
