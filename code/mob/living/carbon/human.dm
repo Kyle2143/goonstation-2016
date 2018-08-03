@@ -6230,6 +6230,38 @@
 			processed += organHolder.right_lung
 			if (prob(25) && organHolder.right_lung.loc == src)
 				ret += organHolder.right_lung
+		if (organHolder.right_kidney)
+			processed += organHolder.right_kidney
+			if (prob(25) && organHolder.right_kidney.loc == src)
+				ret += organHolder.right_kidney
+		if (organHolder.left_kidney)
+			processed += organHolder.left_kidney
+			if (prob(25) && organHolder.left_kidney.loc == src)
+				ret += organHolder.left_kidney
+		if (organHolder.liver)
+			processed += organHolder.liver
+			if (prob(25) && organHolder.liver.loc == src)
+				ret += organHolder.liver
+		if (organHolder.pancreas)
+			processed += organHolder.pancreas
+			if (prob(25) && organHolder.pancreas.loc == src)
+				ret += organHolder.pancreas
+		if (organHolder.spleen)
+			processed += organHolder.spleen
+			if (prob(25) && organHolder.spleen.loc == src)
+				ret += organHolder.spleen
+		if (organHolder.appendix)
+			processed += organHolder.appendix
+			if (prob(25) && organHolder.appendix.loc == src)
+				ret += organHolder.appendix
+		if (organHolder.stomach)
+			processed += organHolder.stomach
+			if (prob(25) && organHolder.stomach.loc == src)
+				ret += organHolder.stomach
+		if (organHolder.intestines)
+			processed += organHolder.intestines
+			if (prob(25) && organHolder.intestines.loc == src)
+				ret += organHolder.intestines
 		if (prob(50))
 			var/obj/item/clothing/head/wig/W = create_wig()
 			if (W)
