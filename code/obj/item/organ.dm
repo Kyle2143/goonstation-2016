@@ -43,7 +43,7 @@
 				do_organ_damage(1, brute, burn, tox, probability, organ)
 
 
-	proc/do_organ_damage(var/heal = 0, var/brute, var/burn, var/tox, var/organ)
+	proc/do_organ_damage(var/heal, var/brute, var/burn, var/tox, var/organ)
 		if (src.organ_list)
 			var/obj/item/organ/O = donor.organHolder.organ_list[organ]
 
@@ -374,20 +374,22 @@
 			if ("left_lung")
 				if (!src.left_lung)
 					return 0
-				var/obj/item/organ/lung/myLeftLung = src.left_lung
+				var/obj/item/organ/lung/left/myLeftLung = src.left_lung
 				myLeftLung.set_loc(location)
 				myLeftLung.on_removal()
 				src.left_lung = null
+				organ_list["left_lung"] = null
 				handle_lungs_stamina()
 				return myLeftLung
 
 			if ("right_lung")
 				if (!src.right_lung)
 					return 0
-				var/obj/item/organ/lung/myRightLung = src.right_lung
+				var/obj/item/organ/lung/right/myRightLung = src.right_lung
 				myRightLung.set_loc(location)
 				myRightLung.on_removal()
 				src.right_lung = null
+				organ_list["right_lung"] = null
 				handle_lungs_stamina()
 				return myRightLung
 
@@ -404,6 +406,7 @@
 					return 0
 				var/obj/item/organ/kidney/left/myleft_kidney = src.left_kidney
 				myleft_kidney.set_loc(location)
+				myleft_kidney.on_removal()
 				src.left_kidney = null
 				organ_list["left_kidney"] = null
 				return myleft_kidney
@@ -412,6 +415,7 @@
 					return 0
 				var/obj/item/organ/kidney/right/myright_kidney = src.right_kidney
 				myright_kidney.set_loc(location)
+				myright_kidney.on_removal()
 				src.right_kidney = null
 				organ_list["right_kidney"] = null
 				return myright_kidney
@@ -420,6 +424,7 @@
 					return 0
 				var/obj/item/organ/liver/myliver = src.liver
 				myliver.set_loc(location)
+				myliver.on_removal()
 				src.liver = null
 				organ_list["liver"] = null
 				return myliver
@@ -428,6 +433,7 @@
 					return 0
 				var/obj/item/organ/stomach/mystomach = src.stomach
 				mystomach.set_loc(location)
+				mystomach.on_removal()
 				src.stomach = null
 				organ_list["stomach"] = null
 				return mystomach
@@ -436,6 +442,7 @@
 					return 0
 				var/obj/item/organ/intestines/myintestines = src.intestines
 				myintestines.set_loc(location)
+				myintestines.on_removal()
 				src.intestines = null
 				organ_list["intestines"] = null
 				return myintestines
@@ -444,6 +451,7 @@
 					return 0
 				var/obj/item/organ/spleen/myspleen = src.spleen
 				myspleen.set_loc(location)
+				myspleen.on_removal()
 				src.spleen = null
 				organ_list["spleen"] = null
 				return myspleen
@@ -452,6 +460,7 @@
 					return 0
 				var/obj/item/organ/pancreas/mypancreas = src.pancreas
 				mypancreas.set_loc(location)
+				mypancreas.on_removal()
 				src.pancreas = null
 				organ_list["pancreas"] = null
 				return mypancreas
@@ -461,6 +470,7 @@
 
 				var/obj/item/organ/appendix/myappendix = src.appendix
 				myappendix.set_loc(location)
+				myappendix.on_removal()
 				src.appendix = null
 				organ_list["appendix"] = null
 
@@ -788,8 +798,10 @@
 				I.reagents.trans_to(src.donor, 330)
 			return 1
 
+	//OK you're probably thinking why this in needed at all. It seemed the simplest way, to add and remove stamina based on the amount of lungs.
+
 	//change stamina modifies based on amount of working lungs. lungs w/ health > 0
-	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the
+	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the stamina modifier
 	proc/handle_lungs_stamina()
 		var/working_lungs = src.get_working_lung_amt()
 		switch (working_lungs)
@@ -808,7 +820,7 @@
 					donor.remove_stam_mod_regen("double_lung_removal")
 					donor.remove_stam_mod_max("double_lung_removal")
 					donor.add_stam_mod_regen("single_lung_removal", -3)
-					donor.add_stam_mod_max("single_lung_removal", -75)
+					donor.add_stam_mod_max("single_lung_removal", -75)						
 					lungs_changed = 1
 
 				if (prob(20))
@@ -957,6 +969,14 @@
 						. += "<br><span style=\"color:red\">This brain has gone cold.</span>"
 				else
 					. += "<br><span style=\"color:red\">This brain has gone cold.</span>"
+	
+	attackby(obj/item/W as obj, mob/user as mob)
+		if (istype(W, /obj/item/device/healthanalyzer))
+			var/obj/item/device/healthanalyzer/HA = W
+			if(HA.reagent_upgrade)
+				boutput(user, "<br><span style='color:purple'><b>[src]</b> - [src.get_damage()]</span>")
+				return
+		..()
 
 	attack(mob/living/carbon/M as mob, mob/living/carbon/user as mob)
 		if (!ismob(M))
@@ -1135,27 +1155,28 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (user.find_in_hand(src) == user.r_hand && !H.organHolder.right_lung)
-			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+		if (H.organHolder.chest && H.organHolder.chest.op_stage == 2.0)
+			if (user.find_in_hand(src) == user.r_hand && !H.organHolder.right_lung)
+				var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
-			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] right lung socket!</span>",\
-			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] right lung socket!</span>",\
-			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your right lung socket!</span>")
+				H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] right lung socket!</span>",\
+				user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] right lung socket!</span>",\
+				H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your right lung socket!</span>")
 
-			user.u_equip(src)
-			H.organHolder.receive_organ(src, "right_lung", 2.0)
-			H.update_body()
+				user.u_equip(src)
+				H.organHolder.receive_organ(src, "right_lung", 2.0)
+				H.update_body()
 
-		else if (user.find_in_hand(src) == user.l_hand && !H.organHolder.left_lung)
-			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+			else if (user.find_in_hand(src) == user.l_hand && !H.organHolder.left_lung)
+				var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
-			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] left lung socket!</span>",\
-			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] left lung socket!</span>",\
-			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your left lung socket!</span>")
+				H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] left lung socket!</span>",\
+				user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] left lung socket!</span>",\
+				H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your left lung socket!</span>")
 
-			user.u_equip(src)
-			H.organHolder.receive_organ(src, "left_lung", 2.0)
-			H.update_body()
+				user.u_equip(src)
+				H.organHolder.receive_organ(src, "left_lung", 2.0)
+				H.update_body()
 
 		else
 			..()
@@ -2056,7 +2077,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.liver)
+		if (!H.organHolder.liver && H.organHolder.chest && H.organHolder.chest.op_stage == 3.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
@@ -2122,28 +2143,28 @@
 		if (!headSurgeryCheck(H))
 			user.show_text("You're going to need to remove that mask/helmet/glasses first.", "blue")
 			return
+		if (H.organHolder.chest && H.organHolder.chest.op_stage == 7.0)
+			if (user.find_in_hand(src) == user.r_hand && !H.organHolder.right_kidney)
+				var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
-		if (user.find_in_hand(src) == user.r_hand && !H.organHolder.right_kidney)
-			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+				H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] right kidney socket!</span>",\
+				user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] right kidney socket!</span>",\
+				H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your right kidney socket!</span>")
 
-			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] right kidney socket!</span>",\
-			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] right kidney socket!</span>",\
-			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your right kidney socket!</span>")
+				user.u_equip(src)
+				H.organHolder.receive_organ(src, "right_kidney", 2.0)
+				H.update_body()
 
-			user.u_equip(src)
-			H.organHolder.receive_organ(src, "right_kidney", 2.0)
-			H.update_body()
+			else if (user.find_in_hand(src) == user.l_hand && !H.organHolder.left_kidney)
+				var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
-		else if (user.find_in_hand(src) == user.l_hand && !H.organHolder.left_kidney)
-			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
+				H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] left kidney socket!</span>",\
+				user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] left kidney socket!</span>",\
+				H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your left kidney socket!</span>")
 
-			H.tri_message("<span style=\"color:red\"><b>[user]</b> [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into [H == user ? "[his_or_her(H)]" : "[H]'s"] left kidney socket!</span>",\
-			user, "<span style=\"color:red\">You [fluff] [src] into [user == H ? "your" : "[H]'s"] left kidney socket!</span>",\
-			H, "<span style=\"color:red\">[H == user ? "You" : "<b>[user]</b>"] [fluff][fluff == "smoosh" || fluff == "squish" ? "es" : "s"] [src] into your left kidney socket!</span>")
-
-			user.u_equip(src)
-			H.organHolder.receive_organ(src, "left_kidney", 2.0)
-			H.update_body()
+				user.u_equip(src)
+				H.organHolder.receive_organ(src, "left_kidney", 2.0)
+				H.update_body()
 
 		else
 			..()
@@ -2199,7 +2220,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.stomach)
+		if (!H.organHolder.stomach && H.organHolder.chest && H.organHolder.chest.op_stage == 4.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
@@ -2253,7 +2274,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.intestines)
+		if (!H.organHolder.intestines && H.organHolder.chest && H.organHolder.chest.op_stage == 4.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
@@ -2307,7 +2328,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.spleen)
+		if (!H.organHolder.spleen && H.organHolder.chest && H.organHolder.chest.op_stage == 3.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
@@ -2361,7 +2382,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.pancreas)
+		if (!H.organHolder.pancreas && H.organHolder.chest && H.organHolder.chest.op_stage == 6.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
@@ -2414,7 +2435,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.appendix)
+		if (!H.organHolder.appendix && H.organHolder.chest && H.organHolder.chest.op_stage == 3.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 

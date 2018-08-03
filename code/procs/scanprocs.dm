@@ -160,7 +160,7 @@
 				organ_data1 += organ_health_scan("appendix", H)
 
 				if (organ_data1)
-					organ_data = "<span style='color:red'><b>Scans Indicate Organ Damage:</b></span>"
+					organ_data = "<span style='color:purple'><b>Scans Indicate Organ Damage:</b></span>"
 					organ_data += organ_data1
 
 		else
@@ -221,7 +221,7 @@
 		else
 			return null
 	else
-		return "<br><span style='color:red'><b>The patient's [input]</b> is missing!</span>"
+		return "<br><span style='color:purple'><b>The patient's [input]</b> is missing!</span>"
 
 
 /proc/update_medical_record(var/mob/living/carbon/human/M)

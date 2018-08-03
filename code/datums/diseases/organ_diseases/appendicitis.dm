@@ -29,32 +29,37 @@
 	switch (D.stage)
 		if (1)
 			if (prob(1) && prob(10))
-				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
-				affected_mob.cure_disease(D)
+				boutput(H, "<span style=\"color:blue\">You feel better.</span>")
+				H.cure_disease(D)
 				return
-			if (prob(8)) affected_mob.emote(pick("pale", "shudder"))
+			if (prob(8)) H.emote(pick("pale", "shudder"))
 			if (prob(5))
-				boutput(affected_mob, "<span style=\"color:red\">Your abdomen area hurts!</span>")
+				boutput(H, "<span style=\"color:red\">Your abdomen hurts!</span>")
 		if (2)
 			if (prob(1) && prob(10))
-				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
-				affected_mob.resistances += src.type
-				affected_mob.ailments -= src
+				boutput(H, "<span style=\"color:blue\">You feel better.</span>")
+				H.resistances += src.type
+				H.ailments -= src
 				return
-			if (prob(8)) affected_mob.emote(pick("pale", "groan"))
+			if (prob(8)) H.emote(pick("pale", "groan"))
 			if (prob(5))
-				boutput(affected_mob, "<span style=\"color:red\">Your back aches terribly!</span>")
+				boutput(H, "<span style=\"color:red\">Your back aches terribly!</span>")
 			if (prob(3))
-				boutput(affected_mob, "<span style=\"color:red\">You feel excruciating pain in your upper-right adbomen!</span>")
+				boutput(H, "<span style=\"color:red\">You feel excruciating pain in your upper-right adbomen!</span>")
 				// H.organHolder.takepancreas
 
-			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
+			if (prob(5)) H.emote(pick("faint", "collapse", "groan"))
 		if (3)
 			if (prob(20))
-				affected_mob.emote(pick("twitch", "groan"))
+				H.emote(pick("twitch", "groan"))
 				H.organHolder.appendix.take_damage(0, 0, 3)
 
-			//destroy human's appendix, and add a load of toxic chemicals or bacteria to the person.
+			//human's appendix burst, and add a load of toxic chemicals or bacteria to the person.
+			if (prob(5))
+				H.reagents.add_reagent("toxin", 40)
+				H.cure_disease(D)
+				H.organHolder.appendix.take_damage(200,200,200)
+				H.organHolder.drop_organ("appendix")
 
-			affected_mob.take_toxin_damage(1)
-			affected_mob.updatehealth()
+			H.take_toxin_damage(1)
+			H.updatehealth()

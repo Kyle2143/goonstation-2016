@@ -564,8 +564,10 @@
 			2.0 = (G)cut is remove spleen || (D)cut is remove lungs R/L
 			3.0 = (G)cut is remove appendix || (D)cut is remove liver
 			4.0 = (G)cut is remove stomach || (D)cut is remove intestines
-			5.0 = (G)cut -> 6.0 || (D)cut -> 8.0
-			6.0 = 
+			5.0 = (G)cut -> 6.0 || (D)cut -> 7.0
+			6.0 = (G)cut is remove pancreas
+			7.0 = (G)cut is remove kidneys
+			8.0 = 
 			G = INTENT_GRAB
 			G = INTENT_DISARM
 
@@ -613,9 +615,9 @@
 
 					return 1
 
-				//second cut, path for appendix/liver
 				if (1.0)
 
+					//second cut, path for appendix/liver
 					if (surgeon.a_intent == INTENT_GRAB)
 						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
@@ -636,6 +638,29 @@
 							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
 						patient.updatehealth()
 						patient.organHolder.chest.op_stage = 3.0
+						return 1
+
+					//second cut, path for stomach/Intestines
+					else if (surgeon.a_intent == INTENT_DISARM)
+						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+
+						if (prob(screw_up_prob))
+							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
+							patient.TakeDamage("chest", damage_low, 0)
+							take_bleeding_damage(patient, surgeon, damage_low)
+							return 1
+
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] stomach/intestines area open with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] stomach/intestines area open with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your stomach/intestines area open with [src]!</span>")
+
+						patient.TakeDamage("chest", damage_low, 0)
+						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+							take_bleeding_damage(patient, surgeon, damage_low)
+						else
+							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+						patient.updatehealth()
+						patient.organHolder.chest.op_stage = 4.0
 						return 1
 
 				//remove lungs or spleen

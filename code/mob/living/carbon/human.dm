@@ -2218,7 +2218,7 @@
 			. += "<br><span style=\"color:red\"><B>[src.name] no longer has a skull in [t_his] head, [t_his] face is just empty skin mush!</B></span>"
 		else if (!oH.head)
 			. += "<br><span style=\"color:red\"><B>[src.name] has been decapitated!</B></span>"
-
+		
 		if (oH.head)
 			if (((src.wear_mask && src.wear_mask.see_face) || !src.wear_mask) && ((src.head && src.head.see_face) || !src.head))
 				if (!oH.right_eye)
@@ -2226,8 +2226,8 @@
 				if (!oH.left_eye)
 					. += "<br><span style=\"color:red\"><B>[src.name]'s left eye is missing!</B></span>"
 
-		if (src.organHolder.heart)
-			if (src.organHolder.heart.op_stage > 0.0)
+		if (src.organHolder.heart && src.organHolder.chest)
+			if (src.organHolder.heart.op_stage > 0.0 || src.organHolder.chest.op_stage > 0.0)
 				. += "<br><span style=\"color:red\"><B>[src.name] has an open incision on [t_his] chest!</B></span>"
 		else
 			. += "<br><span style=\"color:red\"><B>[src.name]'s chest is cut wide open; [t_his] heart has been removed!</B></span>"
@@ -3960,7 +3960,7 @@
 
 			return 0
 
-		if (src.health < 0) //We aren't breathing.
+		if (src.health < 0 || (src.organHolder && !src.organHolder.left_lung && !src.organHolder.right_lung)) //We aren't breathing.
 			return 0
 
 		var/safe_oxygen_min = 17 // Minimum safe partial pressure of O2, in kPa
@@ -4032,16 +4032,19 @@
 				src.irradiate(RV.moles/10,1)
 
 		if (breath.temperature > (T0C+66) && !src.is_heat_resistant()) // Hot air hurts :(
-			if (prob(20))
-				boutput(src, "<span style=\"color:red\">You feel a searing heat in your lungs!</span>")
-			var/burn_damage = min((breath.temperature - (T0C+66)) / 3,10) + 6
-			TakeDamage("chest", 0, burn_damage, 0, DAMAGE_BURN)
-			hud.update_fire_indicator(1)
-			if (prob(4))
-				if (src.organHolder)
-					src.organHolder.damage_organs(0, max(burn_damage, 3), 0, 80, list("left_lung", "right_lung"))
-				boutput(src, "<span style=\"color:red\">Your lungs hurt like hell! This can't be good!</span>")
-				//src.contract_disease(new/datum/ailment/disability/cough, 1, 0) // cogwerks ailment project - lung damage from fire
+			if (!(breath.temperature < (T0C+150) && (src.organHolder && src.organHolder.left_lung.robotic && src.organHolder.right_lung.robotic)))
+
+				var/burn_damage = min((breath.temperature - (T0C+66)) / 3,10) + 6
+				TakeDamage("chest", 0, burn_damage, 0, DAMAGE_BURN)
+				if (prob(20))
+					boutput(src, "<span style=\"color:red\">You feel a searing heat in your lungs!</span>")
+					if (src.organHolder)
+						src.organHolder.damage_organs(0, max(burn_damage, 3), 0, 80, list("left_lung", "right_lung"))
+
+				hud.update_fire_indicator(1)
+				if (prob(4))
+					boutput(src, "<span style=\"color:red\">Your lungs hurt like hell! This can't be good!</span>")
+					//src.contract_disease(new/datum/ailment/disability/cough, 1, 0) // cogwerks ailment project - lung damage from fire
 		else
 			hud.update_fire_indicator(0)
 
@@ -4468,20 +4471,27 @@
 
 
 		// lungs 
-		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) isn't just checked once, but OK
+		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) aren't just checked once, but OK
 			src.organHolder.handle_lungs_stamina()
+			if (src.organHolder.get_working_lung_amt() == 1)
+				if ((src.organHolder.left_lung && src.organHolder.left_lung.get_damage() > 65) || (src.organHolder.right_lung && src.organHolder.right_lung.get_damage() > 65))
+					src.contract_disease(/datum/ailment/disease/respiratory_failure,null,null,1)
+
 
 		// kdineys
 		if (!src.nodamage)
 			if (src.organHolder.get_working_kidney_amt() == 0)
 				src.take_toxin_damage(2, 1)
+			else if (src.organHolder.get_working_kidney_amt() == 1)
+				if ((src.organHolder.left_kidney && src.organHolder.left_kidney.get_damage() > 65) || (src.organHolder.right_kidney && src.organHolder.right_kidney.get_damage() > 65))
+					src.contract_disease(/datum/ailment/disease/kidney_failure,null,null,1)
 
 		// liver
 		if (!src.nodamage)
 			if (!src.organHolder.liver || src.organHolder.liver.get_damage() >= 100)
 				src.take_toxin_damage(2, 1)
 				
-			else if (src.organHolder.liver.get_damage() >= 65 && prob(organHolder.liver.get_damage() * 0.2))
+			else if (src.organHolder.liver.get_damage() >= 65 && (prob(organHolder.liver.get_damage() * 0.2) || src.organHolder.liver.get_damage() > 100))
 				src.contract_disease(/datum/ailment/disease/liver_failure,null,null,1)
 
 
@@ -4494,14 +4504,14 @@
 					if (prob(25))
 						src.organHolder.pancreas.take_damage(0, 0, 3)
 
-				if (src.organHolder.pancreas.get_damage() >= 65 && prob(organHolder.pancreas.get_damage() * 0.2))
+				if (src.organHolder.pancreas.get_damage() >= 65 && (prob(src.organHolder.pancreas.get_damage() * 0.2) || src.organHolder.liver.get_damage() > 100))
 					src.contract_disease(/datum/ailment/disease/pancreatitis,null,null,1)
 
 		// appendix 
 		if (!src.nodamage)
 			if (src.organHolder.appendix && src.organHolder.appendix.get_damage() >= 100)
-				src.organHolder.appendix.broken = 1
-			else if (src.organHolder.appendix.get_damage() >= 65 && prob(organHolder.appendix.get_damage() * 0.2))
+				src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
+			else if (src.organHolder.appendix.get_damage() >= 65 && prob(src.organHolder.appendix.get_damage() * 0.2))
 				src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
 
 		// spleen  if there's no spleen don't let the user regen blood naturally
@@ -5766,6 +5776,12 @@
 /mob/living/carbon/human/full_heal()
 	if (src.organHolder)
 		src.organHolder.heal_organs(10000, 10000, 10000, 100,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+		if (src.organHolder.chest)
+			src.organHolder.chest.op_stage = 0
+		if (src.organHolder.heart)
+			src.organHolder.heart.op_stage = 0
+		if (src.organHolder.brain)
+			src.organHolder.brain.op_stage = 0
 
 	blinded = 0
 	bleeding = 0
