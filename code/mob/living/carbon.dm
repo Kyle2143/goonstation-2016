@@ -290,7 +290,6 @@
 		src.reagents.clear_reagents()
 	..()
 
-//Kind of want to remove this and just move it into the new take_organ_damage proc
 /mob/living/carbon/take_brain_damage(var/amount)
 	if (..())
 		return
