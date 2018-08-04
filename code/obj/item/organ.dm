@@ -2092,15 +2092,6 @@
 			..()
 		return
 
-	// on_mob_life(var/mob/M)
-	// 	if(!M) M = holder.my_atom
-	// 	if(holder.has_reagent("ethanol")) holder.remove_reagent("ethanol", 8)
-	// 	if (M.get_toxin_damage() <= 25)
-	// 		M.take_toxin_damage(-2)
-	// 		M.updatehealth()
-	// 	..(M)
-	// 	return
-
 /obj/item/organ/liver/cyber
 	name = "cyberliver"
 	desc = "A fancy robotic liver to replace one that someone's lost!"
