@@ -6,24 +6,25 @@
 // Can hold items and human size things, no other draggables
 /obj/machinery/disposal/booth
 	name = "booth chute"
-	icon_state = "disposal"
-	// icon_state = "boothchute"
+	icon_state = "chute-booth-open"
 	desc = "A pneumatic delivery chute for sending people across a space station. Ever see Futurama? It's like that."
+
+	var/image/background_image = null
+	// var/background_image_state = "chute-booth-background"
+	var/opening = 0
+
 	// icon_style = "brig"
 	density = 0
 
+
 	go_out(mob/user)
 		user.set_loc(src.loc)
-		update()
 		return
 
-		// if(usr.stat || usr.restrained() || src.flushing)
-		// 	DEBUG_MESSAGE("[src] is flushing/usr.stat returned with someting/usr is restrained")
-		// 	return
 	attack_hand(mob/user as mob)
 		// interact(user, 0)
 		flush = 1
-		
+		closeup()
 		use_power(200)
 		var/O_limit
 
@@ -38,28 +39,46 @@
 				O.set_loc(src)
 		flush()
 
-	// perform a flush
 	flush()
-		for(var/atom/movable/O in src.contents)
-			animate_slide(O, 0, -24, 50)
-
-
 		..()
+		openup()
+		// for(var/atom/movable/O in src.contents)
+		// 	animate_slide(O, 0, -24, 50)
 
-	// expel the contents of the holder object, then delete it
-	// called when the holder exits the outlet
+	update()
+		src.layer = FLY_LAYER+1
+		if (!src.background_image)
+			src.background_image = image(src.icon, background_image)
+			src.background_image.layer = OBJ_LAYER
+			src.UpdateOverlays(src.background_image, "chute-booth-background")
+		return
+
 	expel(var/obj/disposalholder/H)
 
 		for(var/atom/movable/AM in H)
 			AM.set_loc(src.loc)
-			// AM.pipe_eject(dir)
-			// spawn(1)
-			// 	AM.throw_at(target, 3, 1)
 		H.vent_gas(src.loc)
 		qdel(H)
 
 		return
 
+	//open up, called on trigger
+	proc/openup()
+		opening = 1
+		flick("chute-booth-opening", src)
+		src.icon_state = "chute-booth-open"
+
+	proc/closeup()
+		opening = 0
+		flick("chute-booth-closing", src)
+		src.icon_state = "chute-booth-closed"
+
+	// proc/update_icon()
+	// 	src.layer = OBJ_LAYER
+	// 	if (!src.background_image)
+	// 		src.background_image = image(src.icon, src.background_image_state)
+	// 		src.background_image.layer = FLY_LAYER+1
+	// 		src.UpdateOverlays(src.background_image, "chute-booth-[opening ? "opening" : "closing"]")
 
 /obj/machinery/disposal
 	name = "disposal unit"
