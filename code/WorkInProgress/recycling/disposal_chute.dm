@@ -4,6 +4,62 @@
 // Once full (~1 atm), uses air resv to flush items into the pipes
 // Automatically recharges air (unless off), will flush when ready if pre-set
 // Can hold items and human size things, no other draggables
+/obj/machinery/disposal/booth
+	name = "booth chute"
+	icon_state = "disposal"
+	// icon_state = "boothchute"
+	desc = "A pneumatic delivery chute for sending people across a space station. Ever see Futurama? It's like that."
+	// icon_style = "brig"
+	density = 0
+
+	go_out(mob/user)
+		user.set_loc(src.loc)
+		update()
+		return
+
+		// if(usr.stat || usr.restrained() || src.flushing)
+		// 	DEBUG_MESSAGE("[src] is flushing/usr.stat returned with someting/usr is restrained")
+		// 	return
+	attack_hand(mob/user as mob)
+		// interact(user, 0)
+		flush = 1
+		
+		use_power(200)
+		var/O_limit
+
+		for(var/atom/movable/O in src.loc)
+			if(!O.anchored)
+				O_limit++
+				if(O_limit >= 5)
+					for(var/mob/M in hearers(src, null))
+						boutput(M, "<span style=\"color:blue\">The booth chute lets out a screech, it mustn't be able to load any more items.</span>")
+					break
+				use_power(300)
+				O.set_loc(src)
+		flush()
+
+	// perform a flush
+	flush()
+		for(var/atom/movable/O in src.contents)
+			animate_slide(O, 0, -24, 50)
+
+
+		..()
+
+	// expel the contents of the holder object, then delete it
+	// called when the holder exits the outlet
+	expel(var/obj/disposalholder/H)
+
+		for(var/atom/movable/AM in H)
+			AM.set_loc(src.loc)
+			// AM.pipe_eject(dir)
+			// spawn(1)
+			// 	AM.throw_at(target, 3, 1)
+		H.vent_gas(src.loc)
+		qdel(H)
+
+		return
+
 
 /obj/machinery/disposal
 	name = "disposal unit"
