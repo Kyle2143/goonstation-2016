@@ -133,20 +133,7 @@
 
 			if (verbose_reagent_info && !isvampire(H))
 				var/organ_data1 = null
-				
-				//This doesn't detect missing organs. removing for now, might be useful to have though not sure if we even want to detect missing organs...
-				// for (var/O in H.organHolder.organ_list)
-				// 	var/obj/item/organ/organ = H.organHolder.organ_list[O]
-				// 	if (organ == null)
-				// 		continue
-
-				// 	if (istype(organ, /obj/item/organ/head) || istype(organ, /obj/item/organ/brain) || istype(organ, /obj/item/organ/chest) || istype(organ, /obj/item/skull) || istype(organ, /obj/item/clothing/head/butt))
-				// 		continue
-				// 	if (organ.health < 100)
-				// 		if (!found)
-				// 			found = 1
-				// 		organ_data1 += "<br><span style='color:red'><b>[organ.name]</b> has [organ.health] / 100</span>"
-				
+								
 				organ_data1 += organ_health_scan("left_lung", H)
 				organ_data1 += organ_health_scan("right_lung", H)
 
@@ -164,7 +151,7 @@
 					organ_data += organ_data1
 
 		else
-			brain_data = "<span style='color:red'>Subject has no organs.</span>"
+			organ_data = "<span style='color:red'>Subject has no organs.</span>"
 
 		if (H.organHolder && !H.organHolder.heart)
 			heart_data = "<span style='color:red'>Subject has no heart.</span>"
@@ -222,7 +209,6 @@
 			return null
 	else
 		return "<br><span style='color:purple'><b>The patient's [input]</b> is missing!</span>"
-
 
 /proc/update_medical_record(var/mob/living/carbon/human/M)
 	if (!M || !ishuman(M))

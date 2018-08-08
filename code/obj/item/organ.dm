@@ -28,7 +28,7 @@
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
 
 
-	//made these because I have no idea what the take_damage/heal_damage procs are doing in obj/item/organ. Something with bones I guess, it doesn't seem to effect the obj health var which I'm using
+	//(damage|heal)_organs used for effecting a lot of organs at once just by supplying a list and a damage amount.
 
 	//probability, num 0-100 for whether or not to damage an organ found
 	//organs, list of organs to damage. give it induvidual organs like "left_lung", not "lungs"
@@ -43,6 +43,7 @@
 				do_organ_damage(1, brute, burn, tox, organ)
 
 
+	//calls (heal|take)_damage on induvidual organ specified attached to this organHolder
 	proc/do_organ_damage(var/heal, var/brute, var/burn, var/tox, var/organ as text)
 		if (islist(src.organ_list))
 			if (src.organ_list[organ])
@@ -664,6 +665,7 @@
 				organ_list["left_lung"] = newLeftLung
 				handle_lungs_stamina()
 				success = 1
+
 			if ("right_lung")
 				if (src.right_lung)
 					if (force)
@@ -797,6 +799,7 @@
 			return 1
 
 	//OK you're probably thinking why this in needed at all. It seemed the simplest way, to add and remove stamina based on the amount of lungs.
+	//Because I have it so that an organ can stop working when it hits 100+ damage, we need to check if we have to make stamina changes often.
 
 	//change stamina modifies based on amount of working lungs. lungs w/ health > 0
 	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the stamina modifier
@@ -976,7 +979,7 @@
 						. += "<br><span style=\"color:red\">This brain has gone cold.</span>"
 				else
 					. += "<br><span style=\"color:red\">This brain has gone cold.</span>"
-	
+
 	attack(mob/living/carbon/M as mob, mob/living/carbon/user as mob)
 		if (!ismob(M))
 			return
@@ -1186,7 +1189,6 @@
 	desc = "Inflating meat airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a left lung, since it has three lobes. Hopefully whoever used to have this one doesn't need it anymore."
 	icon_state = "lung_L"
 	body_side = L_ORGAN
-
 
 /obj/item/organ/lung/right
 	name = "right lung"

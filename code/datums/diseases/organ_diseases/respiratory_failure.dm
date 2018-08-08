@@ -36,33 +36,33 @@
 	switch (D.stage)
 		if (1)
 			if (prob(1) && prob(10))
-				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
-				affected_mob.cure_disease(D)
+				boutput(H, "<span style=\"color:blue\">You feel better.</span>")
+				H.cure_disease(D)
 				return
-			if (prob(8)) affected_mob.emote(pick("pale", "shudder"))
+			if (prob(8)) H.emote(pick("pale", "shudder"))
 			if (prob(5))
-				boutput(affected_mob, "<span style=\"color:red\">Your ribs hurt!</span>")
+				boutput(H, "<span style=\"color:red\">Your ribs hurt!</span>")
 		if (2)
 			if (prob(1) && prob(10))
-				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
-				affected_mob.resistances += src.type
-				affected_mob.ailments -= src
+				boutput(H, "<span style=\"color:blue\">You feel better.</span>")
+				H.resistances += src.type
+				H.ailments -= src
 				return
-			if (prob(8)) affected_mob.emote(pick("pale", "groan"))
+			if (prob(8)) H.emote(pick("pale", "groan"))
 			if (prob(10))
-				boutput(affected_mob, "<span style=\"color:red\">It hurts to breathe!</span>")
+				boutput(H, "<span style=\"color:red\">It hurts to breathe!</span>")
 				H.losebreath++
 
-			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
+			if (prob(5)) H.emote(pick("faint", "collapse", "groan"))
 		if (3)
-			if (prob(8)) affected_mob.emote(pick("twitch", "gasp"))
+			if (prob(8)) H.emote(pick("twitch", "gasp"))
 				
 			if (prob(20)) 
-				affected_mob.emote(pick("twitch", "gasp"))
-				boutput(affected_mob, "<span style=\"color:red\">You can hardly breathe due to the pain!</span>")
+				H.emote(pick("twitch", "gasp"))
+				boutput(H, "<span style=\"color:red\">You can hardly breathe due to the pain!</span>")
 
 				H.organHolder.damage_organs(0, 0, 3, 60, list("left_lung", "right_lung"))
 				H.losebreath+=2
 
-			affected_mob.take_oxygen_deprivation(1)
-			affected_mob.updatehealth()
+			H.take_oxygen_deprivation(1)
+			H.updatehealth()

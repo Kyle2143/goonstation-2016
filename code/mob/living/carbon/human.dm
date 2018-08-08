@@ -2218,7 +2218,7 @@
 			. += "<br><span style=\"color:red\"><B>[src.name] no longer has a skull in [t_his] head, [t_his] face is just empty skin mush!</B></span>"
 		else if (!oH.head)
 			. += "<br><span style=\"color:red\"><B>[src.name] has been decapitated!</B></span>"
-		
+
 		if (oH.head)
 			if (((src.wear_mask && src.wear_mask.see_face) || !src.wear_mask) && ((src.head && src.head.see_face) || !src.head))
 				if (!oH.right_eye)
@@ -3945,7 +3945,6 @@
 
 		canmove = 1
 
-	//Kyle, add lung damage and handling cyber lungs maybe
 	proc/handle_breath(datum/gas_mixture/breath)
 		if (src.nodamage) return
 
@@ -4477,7 +4476,6 @@
 				if ((src.organHolder.left_lung && src.organHolder.left_lung.get_damage() > 65) || (src.organHolder.right_lung && src.organHolder.right_lung.get_damage() > 65))
 					src.contract_disease(/datum/ailment/disease/respiratory_failure,null,null,1)
 
-
 		// kdineys
 		if (!src.nodamage)
 			if (src.organHolder.get_working_kidney_amt() == 0)
@@ -4493,7 +4491,6 @@
 				
 			else if (src.organHolder.liver.get_damage() >= 65 && (prob(organHolder.liver.get_damage() * 0.2) || src.organHolder.liver.get_damage() > 100))
 				src.contract_disease(/datum/ailment/disease/liver_failure,null,null,1)
-
 
 		// pancreas if there's no pancreas, user does not generate insulin if they have sugar in their body.
 		if (!src.nodamage)
@@ -6573,9 +6570,7 @@
 /mob/living/carbon/human/take_toxin_damage(var/amount, var/ignore)
 	if (..())
 		return
-	
 	if (!ignore)
-
 		if (amount > 1 && src.organHolder)
 			if (prob(30))
 				if (src.organHolder.left_kidney)
@@ -6586,5 +6581,4 @@
 			if (prob(30))
 				if (src.organHolder.liver)
 					src.organHolder.liver.take_damage(0, 0, amount/40)
-
 	return

@@ -555,8 +555,6 @@
 
 /* ---------- SCALPEL - chest ---------- */
 	else if (surgeon.zone_sel.selecting == "chest" && (surgeon.a_intent == INTENT_GRAB || surgeon.a_intent == INTENT_DISARM))		
-
-
 		/* chest op_stage description
 			G = INTENT_GRAB
 			D = INTENT_DISARM
@@ -573,7 +571,6 @@
 			6.0 = (G)cut is remove pancreas
 			7.0 = (G)cut is remove kidneys
 
-
 			remove spleen = 	(G)cut - (G)saw - (G)cut
 			remove lungs = 		(G)cut - (G)saw - (D)cut - Right/Left hands for removing R/L lungs
 
@@ -585,7 +582,6 @@
 
 			remove pancreas = 	(D)cut - (G)cut - (G)cut
 			remove kidneys = 	(D)cut - (D)cut - (G)cut - Right/Left hands for removing R/L kidneys
-
 
 			*note, for lungs/kidneys R/L hand use only matters for last cut
 		*/

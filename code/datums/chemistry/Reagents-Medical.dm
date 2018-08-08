@@ -1208,7 +1208,7 @@ datum
 					if (H.organHolder.right_lung && H.organHolder.right_lung.get_damage() < 90 && H.organHolder.right_lung.get_damage() > 0)
 						H.organHolder.spleen.heal_damage(2, 2, 2, "right_lung")
 					M.updatehealth()
-				..(M)		
+				..(M)
 
 		//heals liver/kidneys/stomach/intestines
 		medical/organ_drug2
@@ -1242,9 +1242,8 @@ datum
 						
 					if (H.organHolder.intestines && H.organHolder.intestines.get_damage() < 90 && H.organHolder.intestines.get_damage() > 0)
 						H.organHolder.intestines.heal_damage(2, 2, 2)
-
 					M.updatehealth()
-				..(M)		
+				..(M)
 
 		//heals appendix/pancreas
 		medical/organ_drug3
@@ -1259,7 +1258,6 @@ datum
 			depletion_rate = 0.2
 			value = 3
 
-
 			on_mob_life(var/mob/M)
 				if(!M) M = holder.my_atom
 				if (istype(M, /mob/living/carbon/human))
@@ -1267,8 +1265,7 @@ datum
 
 					if (H.organHolder.appendix && H.organHolder.appendix.get_damage() < 90 && H.organHolder.appendix.get_damage() > 0)
 						H.organHolder.appendix.heal_damage(2, 2, 2)
-
 					if (H.organHolder.pancreas && H.organHolder.pancreas.get_damage() < 90 && H.organHolder.pancreas.get_damage() > 0)
 						H.organHolder.pancreas.heal_damage(2, 2, 2)
 					M.updatehealth()
-				..(M)		
+				..(M)

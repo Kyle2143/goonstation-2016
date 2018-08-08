@@ -176,9 +176,7 @@ datum
 					if (prob(25))
 						if (H.organHolder.liver && !H.organHolder.liver.robotic)
 							H.organHolder.liver.take_damage(0, 0, rand(1,2))
-
 				..()
-
 
 		hydrogen
 			name = "hydrogen"
@@ -493,10 +491,7 @@ datum
 						M.paralysis += 3 * severity
 						M.weakened += 4 * severity
 
-
 					if (prob(8))
-
-					
 						var/mob/living/carbon/human/H = M
 						if (istype(H) && H.organHolder.pancreas)
 							H.organHolder.pancreas.take_damage(0, 0, rand(1,2))
