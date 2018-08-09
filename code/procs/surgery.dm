@@ -596,9 +596,9 @@
 						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] chest open with [src]!</span>",\
-					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] chest open with [src]!</span>",\
-					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your chest open with [src]!</span>")
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut on [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] chest with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You make a cut on [surgeon == patient ? "your" : "[patient]'s"] chest with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You make a cut" : "<b>[surgeon]</b> makes a cut"] on chest with [src]!</span>")
 
 					patient.TakeDamage("chest", damage_low, 0)
 					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
@@ -626,9 +626,9 @@
 							take_bleeding_damage(patient, surgeon, damage_low)
 							return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] appendix/liver area open with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] appendix/liver area open with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your appendix/liver area open with [src]!</span>")
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right abdomen open with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right abdomen open with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right abdomen open with [src]!</span>")
 
 						patient.TakeDamage("chest", damage_low, 0)
 						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
@@ -649,9 +649,9 @@
 							take_bleeding_damage(patient, surgeon, damage_low)
 							return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] stomach/intestines area open with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] stomach/intestines area open with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your stomach/intestines area open with [src]!</span>")
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] lower abdomen open with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] lower abdomen open with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your lower abdomen open with [src]!</span>")
 
 						patient.TakeDamage("chest", damage_low, 0)
 						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
@@ -881,9 +881,9 @@
 							take_bleeding_damage(patient, surgeon, damage_low)
 							return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] something something pancreas with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] something something pancreas with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your something something pancreas with [src]!</span>")
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] pancreas with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] pancreas with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your pancreas with [src]!</span>")
 
 						patient.TakeDamage("chest", damage_low, 0)
 						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
@@ -906,9 +906,9 @@
 							take_bleeding_damage(patient, surgeon, damage_low)
 							return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] something something kidneys with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] something something kidneys with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your something something kidneys with [src]!</span>")
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access  [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] kidneys with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] kidneys with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your kidneys with [src]!</span>")
 
 						patient.TakeDamage("chest", damage_low, 0)
 						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
@@ -1395,6 +1395,10 @@
 						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
 					patient.updatehealth()
 					patient.organHolder.chest.op_stage = 2.0
+
+					if (patient.organHolder.heart)
+						patient.organHolder.heart.op_stage = 2.0
+
 					return 1
 		else
 			return 0
