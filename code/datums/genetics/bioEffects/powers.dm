@@ -105,6 +105,7 @@
 	power = 0
 	ability_path = /datum/targetable/geneticsAbility/apparition
 
+
 /datum/targetable/geneticsAbility/apparition
 	name = "Apparition"
 	desc = "Allows the subject teleport to a previously visited location."
@@ -112,9 +113,23 @@
 	targeted = 0
 	target_anything = 0
 	var/first_cast = 1		//first cast sets the teleport location
-	// var/turf/list/destinations = list()
 	var/turf/destination
 
+	New()
+		..()
+
+		src.object.verbs+=/datum/targetable/geneticsAbility/apparition/verb/reset_dest
+
+	verb/reset_dest()
+		if (istype(src,/obj/screen/ability/topBar/genetics))
+			if (!istype(src.owner,/datum/targetable/geneticsAbility/apparition))
+				boutput(usr, "You decide you no longer want to be prepared to apparate to [destination].AAAAAAAAAAAAA")
+				src.owner.first_cast = 1
+				src.owner.destination = null
+		else
+			boutput(usr, "You decide you no longer want to be prepared to apparate to [destination].BBBBBBBBB")
+			first_cast = 1
+			destination = null
 
 	cast(atom/target)
 		if (..())
@@ -126,12 +141,13 @@
 			// destinations += get_turf(owner)
 			destination = get_turf(owner)
 			first_cast = 0
-			boutput(usr, "You decide that [destination.name] is one of the locations you want to apparate to.")
+			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
 			return
 
-		owner.say("Disapparate!")
+		boutput(usr, "You hold still and concentrate for a moment in preparation.")
 
 		if (do_after(owner, 30))
+			owner.say("Disapparate!")
 			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
 
@@ -169,12 +185,15 @@
 		if (istype(M, /mob/living/carbon/human))
 			var/mob/living/carbon/human/H = M
 
+			var/part_splinched
 			if (prob(50) && H.organHolder)
-				var/organ_to_drop = pick("left_eye", "right_eye", "left_lung", "right_lung", "butt") //add more organs when they actually do something
-				H.organHolder.drop_organ(organ_to_drop)
-			else
-				var/limb_to_drop = pick("l_arm", "r_arm", "l_leg", "l_leg")
-				H.sever_limb(limb_to_drop)
+				part_splinched = pick("left_eye", "right_eye", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "spleen", "pancreas", "appendix", "stomach", "intestines") //add more organs when they actually do something
+				H.organHolder.drop_organ(part_splinched)
+			else if (prob(50))
+				part_splinched = pick("l_arm", "r_arm", "l_leg", "l_leg")
+				H.sever_limb(part_splinched)
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and [part_splinched] goes flying off!</span>")			
+
 
 	verb/forget_destination()
 		first_cast = 1
