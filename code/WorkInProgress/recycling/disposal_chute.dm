@@ -4,6 +4,7 @@
 // Once full (~1 atm), uses air resv to flush items into the pipes
 // Automatically recharges air (unless off), will flush when ready if pre-set
 // Can hold items and human size things, no other draggables
+
 /obj/machinery/disposal
 	name = "disposal unit"
 	desc = "A pneumatic waste disposal unit."
