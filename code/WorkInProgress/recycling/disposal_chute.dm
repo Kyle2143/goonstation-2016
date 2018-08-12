@@ -4,113 +4,6 @@
 // Once full (~1 atm), uses air resv to flush items into the pipes
 // Automatically recharges air (unless off), will flush when ready if pre-set
 // Can hold items and human size things, no other draggables
-/obj/machinery/disposal/booth
-	name = "booth chute"
-	icon_state = "chute-booth-opened"
-	desc = "A pneumatic delivery chute for sending people across a space station. Ever see Futurama? It's like that."
-
-	var/image/background_image = null
-	var/background_image_state = "chute-booth-background"
-	var/opening = 0
-
-	icon_style = "booth"
-	density = 0
-
-	New()
-		src.background_image = image(src.icon, "")
-		src.background_image.icon_state = "chute-booth-background"
-		src.layer = FLY_LAYER+1
-		src.background_image.layer = OBJ_LAYER
-
-	
-		src.underlays += src.background_image
-		..()
-
-	go_out(mob/user)
-		user.set_loc(src.loc)
-		return
-
-	attack_hand(mob/user as mob)
-		// interact(user, 0)
-		flush = 1
-
-	update()
-		return
-
-	expel(var/obj/disposalholder/H)
-
-		for(var/atom/movable/AM in H)
-			AM.set_loc(src.loc)
-		H.vent_gas(src.loc)
-		qdel(H)
-
-		return
-
-	// flush()
-	// 	flushing = 1
-	// 	flick("[icon_style]-flush", src)
-
-
-	// 	spawn(5)
-	// 		..()
-
-	flush()
-		flushing = 1
-		// flick("[icon_style]-flush", src)
-		closeup()
-
-		var/obj/disposalholder/H = new()	// virtual holder object which actually
-		sleep(7)
-		var/O_limit
-		for(var/atom/movable/O in src.loc)
-			if(!O.anchored)
-				O_limit++
-				if(O_limit >= 3)
-					for(var/mob/M in hearers(src, null))
-						boutput(M, "<span style=\"color:blue\">The booth chute lets out a screech, it mustn't be able to load any more items.</span>")
-					break
-				use_power(300)
-				// src.contents += O
-				O.set_loc(src)
-
-
-		H.init(src)	// copy the contents of disposer to holder
-
-		air_contents.zero()
-
-		sleep(10)
-		playsound(src, 'sound/machines/disposalflush.ogg', 50, 0, 0)
-		sleep(5) // wait for animation to finish
-
-
-		H.start(src) // start the holder processing movement
-		flushing = 0
-		// now reset disposal state
-		flush = 0
-		if(mode == 2)	// if was ready,
-			mode = 1	// switch to charging
-		power_usage = 600
-
-		openup()
-		return
-
-
-	// called when area power changes
-	power_change()
-		..()	// do default setting/reset of stat NOPOWER bit
-		update()	// update icon
-		return
-
-	proc/openup()
-		opening = 1
-		flick("chute-booth-opening", src)
-		src.icon_state = "chute-booth-opened"
-
-	proc/closeup()
-		opening = 0
-		flick("chute-booth-closing", src)
-		src.icon_state = "chute-booth-closed"
-
 /obj/machinery/disposal
 	name = "disposal unit"
 	desc = "A pneumatic waste disposal unit."
@@ -641,3 +534,97 @@
 			newsignal.data["sender"] = src.net_id
 
 			radio_connection.post_signal(src, newsignal)
+
+/obj/machinery/disposal/booth
+	name = "transport booth"
+	icon = 'icons/obj/disposal-new.dmi'
+	icon_state = "chute-booth-opened"
+	desc = "A pneumatic delivery chute for sending people across a space station. Ever see Futurama? It's like that."
+
+	var/image/background_image = null
+	var/background_image_state = "chute-booth-background"
+	var/opening = 0
+
+	icon_style = "booth"
+	density = 0
+
+	New()
+		src.background_image = image(src.icon, "")
+		src.background_image.icon_state = "chute-booth-background"
+		src.layer = FLY_LAYER+1
+		src.background_image.layer = OBJ_LAYER
+	
+		src.underlays += src.background_image
+		..()
+
+	go_out(mob/user)
+		user.set_loc(src.loc)
+		return
+
+	attack_hand(mob/user as mob)
+		flush = 1
+
+	attackby(var/obj/item/I, var/mob/user)
+		return
+	MouseDrop_T(mob/target, mob/user)
+		return
+	hitby(MO as mob|obj)
+		return
+	update()
+		return
+
+	expel(var/obj/disposalholder/H)
+
+		for(var/atom/movable/AM in H)
+			AM.set_loc(src.loc)
+		H.vent_gas(src.loc)
+		qdel(H)
+		return
+
+	flush()
+		flushing = 1
+		closeup()
+
+		var/obj/disposalholder/H = new()	// virtual holder object which actually
+		sleep(7)							// Wait for doors to close before placing things in contents.
+		var/O_limit
+		for(var/atom/movable/O in src.loc)
+			if(!O.anchored)
+				if (istype(O, /obj/vehicle))
+					use_power(900)
+					O.set_loc(src)
+					break
+
+				O_limit++
+				if(O_limit >= 3)
+					for(var/mob/M in hearers(src, null))
+						boutput(M, "<span style=\"color:blue\">The transport booth lets out a screech, it looks like it's filled to capacity!</span>")
+					break
+				use_power(300)
+				O.set_loc(src)
+
+		H.init(src)	// copy the contents of disposer to holder
+		air_contents.zero()
+		sleep(10)
+		playsound(src, 'sound/machines/disposalflush.ogg', 50, 0, 0)
+		sleep(5) // wait for animation to finish
+
+		H.start(src) // start the holder processing movement
+		flushing = 0
+		// now reset disposal state
+		flush = 0
+		if(mode == 2)	// if was ready,
+			mode = 1	// switch to charging
+		power_usage = 600
+		openup()
+		return
+
+	proc/closeup()
+		opening = 0
+		flick("chute-booth-closing", src)
+		src.icon_state = "chute-booth-closed"
+
+	proc/openup()
+		opening = 1
+		flick("chute-booth-opening", src)
+		src.icon_state = "chute-booth-opened"
