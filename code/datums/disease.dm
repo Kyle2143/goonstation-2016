@@ -137,6 +137,7 @@
 	var/develop_resist = 0 // can you develop a resistance to this?
 	var/spread = "Unknown" // how does this disease transmit itself around?
 	var/cycles = 0         // does this disease have a cyclical nature? if so, how many cycles have elapsed?
+	var/count = 0
 
 	stage_act()
 		if (!affected_mob || disposed)
@@ -154,6 +155,14 @@
 			affected_mob.cure_disease(src)
 			return 1
 
+		if (count < 300/stage)
+			count++
+			boutput(H, "<span style=\"color:blue\">count = [count]</span>")
+		else
+			count = 0
+			boutput(H, "<span style=\"color:blue\">count set to ZERO 0</span>")
+
+
 		var/advance_prob = stage_prob
 		if (state == "Acute")
 			advance_prob *= 2
@@ -166,7 +175,9 @@
 					affected_mob.cure_disease(src)
 				return 1
 			else if (stage < master.max_stages)
-				stage++
+				if (count >= 60/stage)
+					stage++
+					boutput(H, "<span style=\"color:red\">Stage Advances::: [stage]!</span>")
 
 		// Common cures
 		if (cure != "Incurable")
