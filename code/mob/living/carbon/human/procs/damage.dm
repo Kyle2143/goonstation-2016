@@ -513,7 +513,7 @@
 			src.UpdateDamageIcon()
 			src.UpdateDamage()
 	else
-		if (zone == "chest" && brute >= 5 && prob(25))
+		if (zone == "chest" && brute > 5 && prob(25))
 			src.organHolder.damage_organs(brute/5, 0, 0, 5, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","appendix", "pancreas"))
 			src.organHolder.damage_organs(brute/10, 0, 0, 5, list("spleen", "left_lung", "right_lung"))
 
