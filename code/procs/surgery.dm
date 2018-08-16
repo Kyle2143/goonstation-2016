@@ -246,6 +246,8 @@
 				if (prob(66))
 					user.show_text("<b>[patient]</b> inhales deeply!", "blue")
 					patient.take_oxygen_deprivation(-50)
+					if (patient.organHolder && patient.organHolder.heart)
+						patient.organHolder.heart.heal_damage(10,10,10)
 					patient.updatehealth()
 				else
 					user.show_text("<b>[patient]</b> doesn't respond!", "red")
