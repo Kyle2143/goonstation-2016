@@ -4467,7 +4467,8 @@
 				src.losebreath += 20
 				src.take_oxygen_deprivation(20)
 				src.updatehealth()
-
+			else if (src.organHolder.heart.get_damage() > 100)
+				src.contract_disease(/datum/ailment/disease/flatline,null,null,1)
 
 		// lungs 
 		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) aren't just checked once, but OK

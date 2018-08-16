@@ -70,6 +70,7 @@
 				boutput(affected_mob, "<span style=\"color:red\">Your arm hurts!</span>")
 			else if (prob(5))
 				boutput(affected_mob, "<span style=\"color:red\">Your chest hurts!</span>")
+				damage_heart_if_found(D.stage)
 		if (2)
 			if (prob(1) && prob(10))
 				boutput(affected_mob, "<span style=\"color:blue\">You feel better.</span>")
@@ -79,14 +80,27 @@
 			if (prob(8)) affected_mob.emote(pick("pale", "groan"))
 			if (prob(5))
 				boutput(affected_mob, "<span style=\"color:red\">Your heart lurches in your chest!</span>")
+				damage_heart_if_found(D.stage)
 				affected_mob.losebreath++
 			if (prob(3))
 				boutput(affected_mob, "<span style=\"color:red\">Your heart stops beating!</span>")
+				damage_heart_if_found(D.stage)
+
 				affected_mob.losebreath+=3
 			if (prob(5)) affected_mob.emote(pick("faint", "collapse", "groan"))
 		if (3)
 			affected_mob.take_oxygen_deprivation(1)
 			affected_mob.updatehealth()
+			damage_heart_if_found(D.stage)
 			if (prob(8)) affected_mob.emote(pick("twitch", "gasp"))
 			if (prob(5))
 				affected_mob.contract_disease(/datum/ailment/disease/flatline,null,null,1)
+
+//Because apparently mobs without an organholder or heart object can have this disease, I'm checking if it's human and if they have a heart. Which they should if they're human.
+datum/ailment/disease/heartfailure/proc/damage_heart_if_found(var/stage)
+	if (ishuman(affected_mob))
+		var/mob/living/carbon/human/H = affected_mob
+		if (H.organHolder && H.organHolder.heart && !H.organHolder.heart.robotic)
+			H.organHolder.heart.take_damage(0, stage, 0)
+
+			return
