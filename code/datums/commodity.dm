@@ -1410,6 +1410,14 @@
 	upperfluc = 1000
 	lowerfluc = -1000
 
+/datum/commodity/bodyparts/kidney/cyber
+	comname = "Cyber Kidney"
+	comtype = /obj/item/organ/cyber
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
+
 /datum/commodity/bodyparts/liver
 	comname = "Human Liver"
 	comtype = /obj/item/organ/liver
@@ -1417,6 +1425,14 @@
 	baseprice = 3500
 	upperfluc = 1500
 	lowerfluc = -1500
+
+/datum/commodity/bodyparts/liver/cyber
+	comname = "Cyber Liver"
+	comtype = /obj/item/organ/liver/cyber
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
 
 /datum/commodity/bodyparts/stomach
 	comname = "Human Stomach"
@@ -1426,6 +1442,14 @@
 	upperfluc = 1000
 	lowerfluc = -1000
 
+/datum/commodity/bodyparts/stomach/cyber
+	comname = "Cyber Stomach"
+	comtype = /obj/item/organ/stomach/cyber
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
+
 /datum/commodity/bodyparts/instestines
 	comname = "Human Instestines"
 	comtype = /obj/item/organ/instestines
@@ -1433,6 +1457,14 @@
 	baseprice = 2000
 	upperfluc = 1000
 	lowerfluc = -1000
+
+/datum/commodity/bodyparts/instestines/cyber
+	comname = "Cyber Instestines"
+	comtype = /obj/item/organ/instestines/cyber
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
 
 /datum/commodity/bodyparts/spleen
 	comname = "Human Spleen"
@@ -1442,6 +1474,14 @@
 	upperfluc = 1000
 	lowerfluc = -1000
 
+/datum/commodity/bodyparts/spleen/cyber
+	comname = "Cyber Spleen"
+	comtype = /obj/item/organ/spleen/cyber
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
+
 /datum/commodity/bodyparts/pancreas
 	comname = "Human Pancreas"
 	comtype = /obj/item/organ/pancreas
@@ -1450,11 +1490,27 @@
 	upperfluc = 2000
 	lowerfluc = -1500
 
+/datum/commodity/bodyparts/pancreas/cyber
+	comname = "Cyber Pancreas"
+	comtype = /obj/item/organ/pancreas/cyber
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
+
 /datum/commodity/bodyparts/appendix
 	comname = "Human Appendix"
 	comtype = /obj/item/organ/appendix
 	price = 1000
 	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
+
+/datum/commodity/bodyparts/appendix/cyber
+	comname = "Cyber Appendix"
+	comtype = /obj/item/organ/appendix/cyber
+	price = 500
+	baseprice = 500
 	upperfluc = 500
 	lowerfluc = -500
 
