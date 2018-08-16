@@ -886,7 +886,6 @@
 	var/body_side = null // L_ORGAN/1 for left, R_ORGAN/2 for right
 	var/datum/bone/bones = null
 	rand_pos = 1
-	health = 100 //organs can take damage now, hurray
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if (istype(W, /obj/item/device/healthanalyzer))

@@ -6571,7 +6571,7 @@
 	if (..())
 		return
 	if (!ignore)
-		if (amount > 1 && src.organHolder)
+		if (amount > 0 && src.organHolder)
 			if (prob(30))
 				if (src.organHolder.left_kidney)
 					src.organHolder.left_kidney.take_damage(0, 0, amount/20)
@@ -6582,3 +6582,30 @@
 				if (src.organHolder.liver)
 					src.organHolder.liver.take_damage(0, 0, amount/40)
 	return
+
+/mob/living/carbon/human/take_brain_damage(var/amount)
+	if (!isnum(amount) || amount == 0)
+		return 1
+
+	//old way that has damage attached to var on /mob/living/carbon/human not on /obj/item/organ/brain
+	// src.brainloss = max(0,min(src.brainloss + amount,120))
+
+	if (src.organHolder && src.organHolder.brain)
+		if (amount > 0)
+			src.organHolder.brain.take_damage(amount, 0, 0)
+		else
+			src.organHolder.brain.heal_damage(amount, 0, 0)
+
+	if (src.organHolder.brain.get_damage() >= 120)
+		src.visible_message("<span style=\"color:red\"><b>[src.name]</b> goes limp, their facial expression utterly blank.</span>")
+		src.death()
+		return
+	return
+
+
+/mob/living/carbon/human/get_brain_damage()
+	if (src.organHolder && src.organHolder.brain)
+		return src.organHolder.brain.get_damage()
+	//leaving this just in case, should never be called I assume
+	return src.brainloss
+
