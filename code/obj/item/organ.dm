@@ -27,7 +27,14 @@
 
 	var/list/organ_list = list("all", "head", "skull", "brain", "left_eye", "right_eye", "chest", "heart", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "liver", "stomach", "intestines", "spleen", "pancreas", "appendix")
 
-
+	//loops through organ_list. if it's missing an organ, return 1. might be useful to make a proc that creates a list of all missing organs instead, but I'm tired
+	proc/is_missing_organs()
+		// var/list/organs = null
+		if (islist(organ_list))
+			for (var/i in organ_list)
+				if (!organ_list[i])
+					return 1
+		return 0
 	//(damage|heal)_organs used for effecting a lot of organs at once just by supplying a list and a damage amount.
 
 	//probability, num 0-100 for whether or not to damage an organ found

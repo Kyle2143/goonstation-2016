@@ -51,6 +51,12 @@
 					C.reagents.clear_reagents()
 					C.lying = 0
 					C.canmove = 1
+
+					if (C.organHolder)
+						C.organHolder.heal_organs(1000, 1000, 1000, 100, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+						if (C.organHolder.is_missing_organs())
+							C.organHolder.create_organs()
+
 					boutput(C, "<span style=\"color:blue\">We have regenerated.</span>")
 					logTheThing("combat", C, null, "[C] finishes regenerative statis as a changeling [log_loc(C)].")
 					C.visible_message(__red("<B>[C] appears to wake from the dead, having healed all wounds.</span>"))
@@ -129,6 +135,11 @@
 				C.limbs.r_leg:set_skin_tone()
 				C.visible_message("<span style=\"color:red\"><B> [C]'s right leg grows back!</span>")
 				C.set_body_icon_dirty()
+
+			if (C.organHolder)
+				C.organHolder.heal_organs(5, 5, 5, 90, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+				if (C.organHolder.is_missing_organs())
+					C.organHolder.create_organs()
 
 		if (prob(25)) C.visible_message("<span style=\"color:red\"><B>[C]'s flesh is moving and sliding around oddly!</B></span>")
 

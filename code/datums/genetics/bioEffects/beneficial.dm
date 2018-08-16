@@ -184,6 +184,13 @@
 			if (H.limbs)
 				H.limbs.mend(1)
 
+			//I'm lazy, sue me. If the mob is human and has an organholder. loop through the list of organs, if it is missing one, call create_organs
+			else if (H.organHolder)
+				C.organHolder.heal_organs(3, 3, 3, 60, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+				if (prob(5) && is_missing_organs())
+					H.organHolder.create_organs()
+					boutput(H, "<span style=\"color:blue\">You feel less empty inside.</span>")
+
 /datum/bioEffect/detox
 	name = "Natural Anti-Toxins"
 	desc = "Enables the subject's bloodstream to purge foreign substances more rapidly."
@@ -208,6 +215,10 @@
 			return
 		if (L.reagents)
 			L.reagents.remove_any(remove_per_tick)
+		if (ishuman(L))
+			var/mob/living/carbon/human/H = L
+			if (H.organHolder)
+				H.organHolder.heal_organs(2, 2, 2, 60, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
 
 /////////////
 // Stealth //
