@@ -3631,6 +3631,9 @@
 			src.update_face()
 			src.next_decomp_time = world.time + rand(240,600)*10
 
+			if (src.organHolder && islist(src.organHolder.organ_list))
+				for (var/obj/item/organ/O in src.organHolder.organ_list)
+					O.take_damage(0, 0, 30)
 	proc/stink()
 		if (prob(15))
 			for (var/mob/living/carbon/C in view(6,get_turf(src)))

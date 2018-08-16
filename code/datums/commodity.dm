@@ -1394,6 +1394,71 @@
 	upperfluc = 1000
 	lowerfluc = -1000
 
+/datum/commodity/bodyparts/lung/cyber
+	comname = "Cyber Lung"
+	comtype = /obj/item/organ/lung/cyber
+	price = 1000
+	baseprice = 1250
+	upperfluc = 1000
+	lowerfluc = -1000
+
+/datum/commodity/bodyparts/kidney
+	comname = "Human Kidney"
+	comtype = /obj/item/organ/kidney
+	price = 2500
+	baseprice = 2500
+	upperfluc = 1000
+	lowerfluc = -1000
+
+/datum/commodity/bodyparts/liver
+	comname = "Human Liver"
+	comtype = /obj/item/organ/liver
+	price = 3500
+	baseprice = 3500
+	upperfluc = 1500
+	lowerfluc = -1500
+
+/datum/commodity/bodyparts/stomach
+	comname = "Human Stomach"
+	comtype = /obj/item/organ/stomach
+	price = 2000
+	baseprice = 2000
+	upperfluc = 1000
+	lowerfluc = -1000
+
+/datum/commodity/bodyparts/instestines
+	comname = "Human Instestines"
+	comtype = /obj/item/organ/instestines
+	price = 2000
+	baseprice = 2000
+	upperfluc = 1000
+	lowerfluc = -1000
+
+/datum/commodity/bodyparts/spleen
+	comname = "Human Spleen"
+	comtype = /obj/item/organ/spleen
+	price = 2000
+	baseprice = 2000
+	upperfluc = 1000
+	lowerfluc = -1000
+
+/datum/commodity/bodyparts/pancreas
+	comname = "Human Pancreas"
+	comtype = /obj/item/organ/pancreas
+	price = 3000
+	baseprice = 3000
+	upperfluc = 2000
+	lowerfluc = -1500
+
+/datum/commodity/bodyparts/appendix
+	comname = "Human Appendix"
+	comtype = /obj/item/organ/appendix
+	price = 1000
+	baseprice = 1000
+	upperfluc = 500
+	lowerfluc = -500
+
+/////////Medical Supplies/////////
 /datum/commodity/medical
 	onmarket = 0
 	desc = "Medical Supplies."
