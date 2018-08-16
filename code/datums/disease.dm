@@ -155,13 +155,10 @@
 			affected_mob.cure_disease(src)
 			return 1
 
-		if (count < 300/stage)
-			count++
-			boutput(H, "<span style=\"color:blue\">count = [count]</span>")
-		else
-			count = 0
-			boutput(H, "<span style=\"color:blue\">count set to ZERO 0</span>")
+		var/min_time = 20/stages 		//minimum amount of stage_act() calls before disease is capable of worsening. 
 
+		if (count < min_time)
+			count++
 
 		var/advance_prob = stage_prob
 		if (state == "Acute")
@@ -175,9 +172,9 @@
 					affected_mob.cure_disease(src)
 				return 1
 			else if (stage < master.max_stages)
-				if (count >= 60/stage)
+				if (count >= min_time)
 					stage++
-					boutput(H, "<span style=\"color:red\">Stage Advances::: [stage]!</span>")
+					count = 0
 
 		// Common cures
 		if (cure != "Incurable")
