@@ -155,7 +155,7 @@
 			affected_mob.cure_disease(src)
 			return 1
 
-		var/min_time = 20/stages 		//minimum amount of stage_act() calls before disease is capable of worsening. 
+		var/min_time = 20/stage 		//minimum amount of stage_act() calls before disease is capable of worsening. 
 
 		if (count < min_time)
 			count++

@@ -53,7 +53,7 @@
 					C.canmove = 1
 
 					if (C.organHolder)
-						C.organHolder.heal_organs(1000, 1000, 1000, 100, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+						C.organHolder.heal_organs(1000, 1000, 1000, 100, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart", "brain", "left_eye", "right_eye"))
 						if (C.organHolder.is_missing_organs())
 							C.organHolder.create_organs()
 
@@ -137,7 +137,7 @@
 				C.set_body_icon_dirty()
 
 			if (C.organHolder)
-				C.organHolder.heal_organs(5, 5, 5, 90, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+				C.organHolder.heal_organs(5, 5, 5, 90, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart", "brain", "left_eye", "right_eye"))
 				if (C.organHolder.is_missing_organs())
 					C.organHolder.create_organs()
 

@@ -5718,8 +5718,9 @@
 /mob/living/carbon/human/emp_act()
 	boutput(src, "<span style=\"color:red\"><B>Your equipment malfunctions.</B></span>")
 
-	if (src.organHolder && src.organHolder.heart && src.organHolder.heart.robotic)
-		src.organHolder.heart.broken = 1
+	//emp breaks heart? no thanks. All robotic organs now take damage from EMP's. this will be enough...
+	if (src.organHolder && src.organHolder.heart && src.organHolder.heart.robotic && prob(50))
+	// 	src.organHolder.heart.broken = 1
 		boutput(src, "<span style=\"color:red\"><B>Your cyberheart malfunctions and shuts down!</B></span>")
 		src.contract_disease(/datum/ailment/disease/flatline,null,null,1)
 
@@ -5776,7 +5777,7 @@
 
 /mob/living/carbon/human/full_heal()
 	if (src.organHolder)
-		src.organHolder.heal_organs(10000, 10000, 10000, 100,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+		src.organHolder.heal_organs(10000, 10000, 10000, 100,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart", "brain", "left_eye", "right_eye"))
 		if (src.organHolder.chest)
 			src.organHolder.chest.op_stage = 0
 		if (src.organHolder.heart)
@@ -6611,5 +6612,5 @@
 	if (src.organHolder && src.organHolder.brain)
 		return src.organHolder.brain.get_damage()
 	//leaving this just in case, should never be called I assume
-	return src.brainloss
+	..()
 

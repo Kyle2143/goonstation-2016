@@ -877,6 +877,10 @@ BODY BAG
 	var/mob/Poisoner = null
 	module_research = list("tools" = 3, "medicine" = 3, "weapons" = 0.25)
 
+	New()
+		..()
+		src.create_reagents(5)
+
 	attack(mob/living/carbon/M as mob, mob/user as mob)
 		if (src.reagents && src.reagents.total_volume)
 			logTheThing("combat", user, M, "used [src] on %target% (<b>Intent</b>: <i>[user.a_intent]</i>) (<b>Targeting</b>: <i>[user.zone_sel.selecting]</i>) [log_reagents(src)]")
@@ -886,3 +890,4 @@ BODY BAG
 		if (!snip_surgery(M, user))
 			return ..()
 		else return
+

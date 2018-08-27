@@ -1412,7 +1412,7 @@
 
 /datum/commodity/bodyparts/kidney/cyber
 	comname = "Cyber Kidney"
-	comtype = /obj/item/organ/cyber
+	comtype = /obj/item/organ/kidney/cyber
 	price = 1000
 	baseprice = 1000
 	upperfluc = 500
@@ -1450,17 +1450,17 @@
 	upperfluc = 500
 	lowerfluc = -500
 
-/datum/commodity/bodyparts/instestines
-	comname = "Human Instestines"
-	comtype = /obj/item/organ/instestines
+/datum/commodity/bodyparts/intestines
+	comname = "Human Intestines"
+	comtype = /obj/item/organ/intestines
 	price = 2000
 	baseprice = 2000
 	upperfluc = 1000
 	lowerfluc = -1000
 
-/datum/commodity/bodyparts/instestines/cyber
-	comname = "Cyber Instestines"
-	comtype = /obj/item/organ/instestines/cyber
+/datum/commodity/bodyparts/intestines/cyber
+	comname = "Cyber Intestines"
+	comtype = /obj/item/organ/intestines/cyber
 	price = 1000
 	baseprice = 1000
 	upperfluc = 500

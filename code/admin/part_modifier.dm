@@ -1,7 +1,7 @@
 
 /datum/admins/var/datum/partmod_holder/part_modifier = null
 
-var/list/default_organ_paths = list("head" = /obj/item/organ/head, "skull" = /obj/item/skull, "brain" = /obj/item/organ/brain, "left_eye" = /obj/item/organ/eye, "right_eye" = /obj/item/organ/eye, "chest" = /obj/item/organ/chest, "heart" = /obj/item/organ/heart, "left_lung" = /obj/item/organ/lung, "right_lung" = /obj/item/organ/lung, "butt" = /obj/item/clothing/head/butt)
+var/list/default_organ_paths = list("head" = /obj/item/organ/head, "skull" = /obj/item/skull, "brain" = /obj/item/organ/brain, "left_eye" = /obj/item/organ/eye, "right_eye" = /obj/item/organ/eye, "chest" = /obj/item/organ/chest, "heart" = /obj/item/organ/heart, "left_lung" = /obj/item/organ/lung, "right_lung" = /obj/item/organ/lung, "butt" = /obj/item/clothing/head/butt, "liver" = /obj/item/organ/liver, "stomach" = /obj/item/organ/stomach, "intestines" = /obj/item/organ/intestines, "pancreas" = /obj/item/organ/pancreas, "spleen" = /obj/item/organ/spleen, "appendix" = /obj/item/organ/appendix, "left_kidney" = /obj/item/organ/kidney, "right_kidney" = /obj/item/organ/kidney)
 var/list/default_limb_paths = list("l_arm" = /obj/item/parts/human_parts/arm/left, "r_arm" = /obj/item/parts/human_parts/arm/right, "l_leg" = /obj/item/parts/human_parts/leg/left, "r_leg" = /obj/item/parts/human_parts/leg/right)
 
 /client/proc/modify_parts(var/mob/living/carbon/human/target as mob)

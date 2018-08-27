@@ -186,8 +186,8 @@
 
 			//I'm lazy, sue me. If the mob is human and has an organholder. loop through the list of organs, if it is missing one, call create_organs
 			else if (H.organHolder)
-				C.organHolder.heal_organs(3, 3, 3, 60, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
-				if (prob(5) && is_missing_organs())
+				H.organHolder.heal_organs(3, 3, 3, 60, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart", "brain", "left_eye", "right_eye"))
+				if (prob(5) && H.organHolder.is_missing_organs())
 					H.organHolder.create_organs()
 					boutput(H, "<span style=\"color:blue\">You feel less empty inside.</span>")
 
@@ -218,7 +218,7 @@
 		if (ishuman(L))
 			var/mob/living/carbon/human/H = L
 			if (H.organHolder)
-				H.organHolder.heal_organs(2, 2, 2, 60, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+				H.organHolder.heal_organs(1, 1, 3, 60, list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart"))
 
 /////////////
 // Stealth //

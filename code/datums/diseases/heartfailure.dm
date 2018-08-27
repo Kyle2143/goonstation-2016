@@ -97,7 +97,7 @@
 				affected_mob.contract_disease(/datum/ailment/disease/flatline,null,null,1)
 
 //Because apparently mobs without an organholder or heart object can have this disease, I'm checking if it's human and if they have a heart. Which they should if they're human.
-datum/ailment/disease/heartfailure/proc/damage_heart_if_found(var/stage)
+datum/ailment/disease/heartfailure/proc/damage_heart_if_found(var/stage, var/mob/living/affected_mob)
 	if (ishuman(affected_mob))
 		var/mob/living/carbon/human/H = affected_mob
 		if (H.organHolder && H.organHolder.heart && !H.organHolder.heart.robotic)

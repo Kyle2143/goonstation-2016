@@ -399,8 +399,7 @@ datum
 					var/mob/living/carbon/human/H = M
 					if (H.bleeding && prob(33))
 						H.bleeding--
-					//heal all functional organs, ignore heart and brain since they don't use this system yet
-					H.organHolder.heal_organs(2, 2, 2, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+					H.organHolder.heal_organs(2, 2, 2, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart", "brain"))
 
 				M.updatehealth()
 				//M.UpdateDamageIcon()
@@ -1002,7 +1001,9 @@ datum
 					if(M.get_toxin_damage())
 						M.take_toxin_damage(-3)
 					M.HealDamage("All", 12, 12)
-					H.organHolder.heal_organs(1, 1, 1, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
+					if (istype(M, /mob/living/carbon/human))
+						var/mob/living/carbon/human/H = M
+						H.organHolder.heal_organs(1, 1, 1, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas", "heart", "brain"))
 
 				M.updatehealth()
 				if(prob(25)) M.UpdateDamageIcon() // gonna leave this one on for now, but only call it a quarter of the time

@@ -368,9 +368,9 @@
 				var/obj/item/organ/heart/myHeart = src.heart
 				if (src.donor.reagents)
 					src.donor.reagents.trans_to(myHeart, 330)
-				if (src.heart.robotic)
-					src.donor.remove_stam_mod_regen("heart")
-					src.donor.remove_stam_mod_max("heart")
+				// if (src.heart.robotic)
+				// 	src.donor.remove_stam_mod_regen("heart")
+				// 	src.donor.remove_stam_mod_max("heart")
 				myHeart.set_loc(location)
 				myHeart.on_removal()
 				src.heart = null
@@ -647,12 +647,12 @@
 					if (newHeart.broken || src.donor.bioHolder.HasEffect("elecres"))
 						src.donor.show_text("Something is wrong with [newHeart], it fails to start beating!", "red")
 						src.donor.contract_disease(/datum/ailment/disease/flatline,null,null,1)
-					if (newHeart.emagged)
-						src.donor.add_stam_mod_regen("heart", 20)
-						src.donor.add_stam_mod_max("heart", 100)
-					else
-						src.donor.add_stam_mod_regen("heart", 10)
-						src.donor.add_stam_mod_max("heart", 50)
+					// if (newHeart.emagged)
+					// 	src.donor.add_stam_mod_regen("heart", 20)
+					// 	src.donor.add_stam_mod_max("heart", 100)
+					// else
+					// 	src.donor.add_stam_mod_regen("heart", 10)
+					// 	src.donor.add_stam_mod_max("heart", 50)
 				newHeart.op_stage = op_stage
 				src.heart = newHeart
 				newHeart.set_loc(src.donor)
@@ -924,10 +924,54 @@
 		return
 
 	proc/on_transplant(var/mob/M as mob)
+		if (ishuman(M))
+			var/mob/living/carbon/human/H = M
+			src.donor = H
+		else 
+			return
+
+		//all robotic organs have a base stamina buff, some have others, see heart. maybe lungs in future
+		if (src.robotic)
+			if (src.emagged)
+				src.donor.add_stam_mod_regen("cyber-[src.organ_name]", 5)
+				src.donor.add_stam_mod_max("cyber-[src.organ_name]", 20)
+			else
+				src.donor.add_stam_mod_regen("cyber-[src.organ_name]", 2)
+				src.donor.add_stam_mod_max("cyber-[src.organ_name]", 10)
+
 		return
 
 	proc/on_removal()
+		//all robotic organs have a stamina buff we must remove
+		if (src.robotic)
+			if (src.emagged)
+				src.donor.remove_stam_mod_regen("cyber-[src.organ_name]")
+				src.donor.remove_stam_mod_max("cyber-[src.organ_name]")
+			else
+				src.donor.remove_stam_mod_regen("cyber-[src.organ_name]")
+				src.donor.remove_stam_mod_max("cyber-[src.organ_name]")
+
 		return
+
+	emag_act(var/mob/user, var/obj/item/card/emag/E)
+		if (!src.robotic)
+			return
+		if (user)
+			user.show_text("You disable the safety limiters on [src].", "red")
+		src.visible_message("<span style=\"color:red\"><B>[src] sparks and shudders oddly!</B></span>", 1)
+		src.emagged = 1
+		return 1
+
+	demag(var/mob/user)
+		if (!src.robotic)
+			return
+
+		if (!src.emagged)
+			return 0
+		if (user)
+			user.show_text("You reactivate the safety limiters on [src].", "red")
+		src.emagged = 0
+		return 1
 
 	take_damage(brute, burn, tox, damage_type)
 		if (brute <= 0 && burn <= 0 && tox <= 0)
@@ -1062,6 +1106,16 @@
 
 	on_transplant()
 		..()
+
+		if (src.robotic)
+			if (src.emagged)
+				src.donor.add_stam_mod_regen("heart", 15)
+				src.donor.add_stam_mod_max("heart", 90)
+			else
+				src.donor.add_stam_mod_regen("heart", 5)
+				src.donor.add_stam_mod_max("heart", 40)
+
+
 		if (src.donor)
 			for (var/datum/ailment_data/disease in src.donor.ailments)
 				if (disease.cure == "Heart Transplant")
@@ -1083,7 +1137,7 @@
 		if (!H.organHolder)
 			return ..()
 
-		if (!H.organHolder.heart)
+		if (!H.organHolder.heart && H.organHolder.chest.op_stage == 9.0)
 
 			var/fluff = pick("insert", "shove", "place", "drop", "smoosh", "squish")
 
@@ -1118,25 +1172,6 @@
 	edible = 0
 	robotic = 1
 	mats = 8
-
-	emag_act(var/mob/user, var/obj/item/card/emag/E)
-		if (user)
-			user.show_text("You disable the safety limiters on [src].", "red")
-		src.visible_message("<span style=\"color:red\"><B>[src] sparks and shudders oddly!</B></span>", 1)
-		src.emagged = 1
-		return 1
-
-	demag(var/mob/user)
-		if (!src.emagged)
-			return 0
-		if (user)
-			user.show_text("You reactivate the safety limiters on [src].", "red")
-		src.emagged = 0
-		return 1
-
-	emp_act()
-		if (!src.broken)
-			src.broken = 1
 
 /*=========================*/
 /*----------Lungs----------*/
@@ -1381,6 +1416,7 @@
 					assigned.images.Add(I)
 
 	on_transplant(var/mob/M as mob)
+		..()
 		if (M.client)
 			src.assigned = M.client
 			spawn(-1)
@@ -1423,6 +1459,7 @@
 		return
 
 	on_transplant(var/mob/M as mob)
+		..()
 		src.camera.c_tag = "[M]'s Eye"
 		return ..()
 

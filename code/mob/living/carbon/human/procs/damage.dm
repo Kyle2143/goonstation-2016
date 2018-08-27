@@ -604,7 +604,7 @@
 
 
 		var/update = 0
-		for (var/organName in src.organs)
+		for (var/organName in src.organs)	//This is that "organs" list which is used for things like head/chest/limbs. 
 			var/obj/item/extOrgan = src.organs["[organName]"]
 			if (istype(extOrgan, /obj/item/organ))
 				var/obj/item/organ/O = extOrgan

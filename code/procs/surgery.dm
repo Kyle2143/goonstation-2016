@@ -20,8 +20,6 @@
 
 	else // if all else fails?
 		return 0 // surgery is not okay
-		boutput(M, "<span style=\"color:blue\">[user] begins cutting your hair.</span>")
-		playsound(src.loc, "sound/items/Scissor.ogg", 100, 1)
 
 /proc/headSurgeryCheck(var/mob/living/carbon/human/patient as mob)
 	if (!patient) // did we not get passed a patient?
@@ -508,7 +506,7 @@
 
 /* ---------- SCALPEL - BUTT ---------- */
 
-	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent == "harm")
+	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent == INTENT_HARM)
 		if (patient.butt_op_stage == 0.0)
 			playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
@@ -614,14 +612,6 @@
 
 				return 1
 
-/* ---------- SCALPEL - HEART ---------- */
-
-		else if (patient.organHolder.heart)
-
-
-			else
-				src.surgeryConfusion(patient, surgeon, damage_high)
-				return 1
 
 		/* chest op_stage description
 			cut = scalpel
@@ -681,403 +671,139 @@
 					patient.organHolder.chest.op_stage = 5.0
 					return 1
 
+				//second cut, path for stomach/Intestines
 				if (1.0)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-					//second cut, path for appendix/liver
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right abdomen open with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right abdomen open with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right abdomen open with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 3.0
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-					//second cut, path for stomach/Intestines
-					else if (surgeon.a_intent == INTENT_DISARM)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] lower abdomen open with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] lower abdomen open with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your lower abdomen open with [src]!</span>")
 
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.chest.op_stage = 4.0
+					return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] lower abdomen open with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] lower abdomen open with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your lower abdomen open with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 4.0
-						return 1
-
-				//remove lungs or spleen
-				if (2.0)
-					//remove spleen with this cut
-					if (surgeon.a_intent == INTENT_GRAB)
-						if (patient.organHolder.spleen)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.spleen)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_high, 0)
-								take_bleeding_damage(patient, surgeon, damage_high)
-								return 1
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] spleen out with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] spleen out with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] spleen out with [src]!</span>")
-
-							patient.TakeDamage("chest", damage_high, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							patient.organHolder.drop_organ("spleen")
-
-							return 1
-					//remove lungs
-					else if (surgeon.a_intent == INTENT_DISARM)
-						//remove left lung
-						if (surgeon.find_in_hand(src) == surgeon.l_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.left_lung)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_high, 0)
-								take_bleeding_damage(patient, surgeon, damage_high)
-								return 1
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] left lung out with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] left lung out with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your left lung out with [src]!</span>")
-
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							logTheThing("combat", surgeon, patient, "removed %target%'s left lung with [src].")
-							patient.organHolder.drop_organ("left_lung")
-
-							return 1
-						//remove right lung
-						else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.right_lung)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_high, 0)
-								take_bleeding_damage(patient, surgeon, damage_high)
-								return 1
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right lung out with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right lung out with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right lung out with [src]!</span>")
-							logTheThing("combat", surgeon, patient, "removed %target%'s right lung with [src].")
-
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							patient.organHolder.drop_organ("right_lung")
-
-							return 1
-
-				//remove appendix or liver
+				//remove liver with this cut
 				if (3.0)
-					//remove appendix with this cut
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (!patient.organHolder.appendix)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] appendix out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] appendix out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your appendix out with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("appendix")
-
+					if (!patient.organHolder.liver)
+						src.surgeryConfusion(patient, surgeon, damage_low)
 						return 1
 
-					//remove liver with this cut
-					else if (surgeon.a_intent == INTENT_DISARM)
-
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-						if (!patient.organHolder.liver)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] liver out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] liver out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your liver out with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("liver")
-
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-				//path for stomach and intestines
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] liver out with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] liver out with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your liver out with [src]!</span>")
+
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.drop_organ("liver")
+
+					return 1
+
+				//remove intestines with this cut
 				if (4.0)
-					//remove stomach with this cut
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (!patient.organHolder.stomach)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] stomach out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] stomach out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your stomach out with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("stomach")
-
+					if (!patient.organHolder.intestines)
+						src.surgeryConfusion(patient, surgeon, damage_low)
 						return 1
 
-					//remove intestines with this cut
-					else if (surgeon.a_intent == INTENT_DISARM)
-
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-						if (!patient.organHolder.intestines)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] intestines out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] intestines out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your intestines out with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("intestines")
-
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-				//paths for pancreas and kidneys
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] intestines out with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] intestines out with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your intestines out with [src]!</span>")
+
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.drop_organ("intestines")
+
+					return 1
+
+				//path for kidneys/spleen/pancreas
 				if (5.0)
-					//path for pancreas
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] pancreas with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] pancreas with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your pancreas with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 6.0
-
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-					//path for kidneys
-					else if (surgeon.a_intent == INTENT_DISARM)
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access  [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] kidneys with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] kidneys with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your kidneys with [src]!</span>")
 
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.chest.op_stage = 7.0
 
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
+					return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access  [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] kidneys with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] kidneys with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your kidneys with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 7.0
-
-						return 1
-
-				//remove pancreas
+				//remove spleen with this cut
 				if (6.0)
-
-					if (surgeon.a_intent == INTENT_GRAB)
+					if (patient.organHolder.spleen)
 						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (!patient.organHolder.pancreas)
+						if (!patient.organHolder.spleen)
 							src.surgeryConfusion(patient, surgeon, damage_low)
 							return 1
 
 						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
+							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
+							patient.TakeDamage("chest", damage_high, 0)
+							take_bleeding_damage(patient, surgeon, damage_high)
 							return 1
 
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] spleen out with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] spleen out with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] spleen out with [src]!</span>")
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] pancreas out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] pancreas out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your pancreas out with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
+						patient.TakeDamage("chest", damage_high, 0)
 						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
 							take_bleeding_damage(patient, surgeon, damage_low)
 						else
 							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
 						patient.updatehealth()
-						patient.organHolder.drop_organ("pancreas")
+						patient.organHolder.drop_organ("spleen")
 
 						return 1
 
-				//remove kidneys
-				if (7.0)
-					if (surgeon.a_intent == INTENT_GRAB)
-						//remove left kidney
-						if (surgeon.find_in_hand(src) == surgeon.l_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.left_kidney)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_low, 0)
-								take_bleeding_damage(patient, surgeon, damage_low)
-								return 1
-
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] left kidney with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] left kidney with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your left kidney with [src]!</span>")
-
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							logTheThing("combat", surgeon, patient, "removed %target%'s left kidney with [src].")
-							patient.organHolder.drop_organ("left_kidney")
-
-							return 1
-						//remove right kidney
-						else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.right_kidney)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_low, 0)
-								take_bleeding_damage(patient, surgeon, damage_low)
-								return 1
-
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right kidney with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right kidney with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right kidney with [src]!</span>")
-							logTheThing("combat", surgeon, patient, "removed %target%'s right kidney with [src].")
-
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							patient.organHolder.drop_organ("right_kidney")
-
-							return 1
-				
+				//heart path
 				if (8.0)
 					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
@@ -1301,7 +1027,7 @@
 
 /* ---------- SAW - BUTT ---------- */
 
-	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent == "harm")
+	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent == INTENT_HARM)
 		switch (patient.butt_op_stage)
 			if (1.0)
 				playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
@@ -1354,7 +1080,7 @@
 
 /* ---------- SAW - lungs/heart ---------- */
 
-	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent == INTENT_GRAB)
+	else if (surgeon.zone_sel.selecting == "chest")
 		if (patient.organHolder.chest)
 			switch (patient.organHolder.chest.op_stage)
 				if (1.0)
@@ -1435,7 +1161,7 @@
 
 /* ---------- SAW - HEART ---------- */
 
-	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent != "harm")
+	else if (surgeon.zone_sel.selecting == "chest" && surgeon.a_intent != INTENT_HARM)
 		if (patient.organHolder.heart)
 			switch (patient.organHolder.heart.op_stage)
 				if (1.0)
@@ -1957,7 +1683,14 @@
 		else
 			return 0
 
+
+
 ////////////////////////////////////////////////////////////////////
+
+/* ============================= */
+/* ------------ SNIP ----------- */
+/* ============================= */
+
 /obj/item/proc/snip_surgery(var/mob/living/carbon/human/patient as mob, var/mob/living/surgeon as mob)
 	if (!ishuman(patient))
 		return 0
@@ -1993,36 +1726,6 @@
 
 /* ---------- SNIP - chest ---------- */
 	if (surgeon.zone_sel.selecting == "chest")		
-		/* chest op_stage description
-			cut = scalpel
-			saw = circular saw
-			snip = surgical scissors/garden snips
-
-			op_stage = (actions you can take) -> where it will send you
-			0.0 = snip -> 1.0 || cut -> 5.0
-			1.0 = snip -> 3.0 || cut -> 4.0 || (G)saw -> 2.0
-			2.0 = cut is remove lungs R/L
-			3.0 = snip is remove appendix || cut is remove liver
-			4.0 = snip is remove stomach || cut is remove intestines
-			5.0 = snip -> 6.0 || cut -> 7.0
-			6.0 = snip is remove pancreas || cut is remove spleen
-			7.0 = snip is remove kidneys
-
-			
-			remove appendix = 	snip -> snip -> snip
-			remove liver = 		snip -> snip -> cut
-
-			remove stomach = 	snip -> cut -> snip
-			remove intestines = snip -> cut -> cut
-
-			remove pancreas = 	cut -> snip -> snip
-			remove spleen = 	cut -> snip -> cut
-
-			remove kidneys = 	cut -> cut -> snip -> Right/Left hands for removing R/L kidneys
-			remove lungs = 		snip -> saw -> snip -> Right/Left hands for removing R/L lungs
-
-			*note, for lungs/kidneys R/L hand use only matters for last cut
-		*/
 		if (patient.organHolder.chest)
 			switch (patient.organHolder.chest.op_stage)
 				if (0.0)
@@ -2045,339 +1748,222 @@
 						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
 					patient.updatehealth()
 
-					if (surgeon.a_intent == INTENT_GRAB)
-						patient.organHolder.chest.op_stage = 1.0
-					if (surgeon.a_intent == INTENT_DISARM)
-						patient.organHolder.chest.op_stage = 5.0
-
+					patient.organHolder.chest.op_stage = 1.0
 					return 1
 
+				//second cut, path for appendix/liver
 				if (1.0)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-					//second cut, path for appendix/liver
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right abdomen open with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right abdomen open with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right abdomen open with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 3.0
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-					//second cut, path for stomach/Intestines
-					else if (surgeon.a_intent == INTENT_DISARM)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right abdomen open with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right abdomen open with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right abdomen open with [src]!</span>")
 
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.chest.op_stage = 3.0
+					return 1
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] lower abdomen open with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] lower abdomen open with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your lower abdomen open with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 4.0
-						return 1
-
-				//remove lungs or spleen
+				//remove lungs
 				if (2.0)
-					//remove spleen with this cut
-					if (surgeon.a_intent == INTENT_GRAB)
-						if (patient.organHolder.spleen)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					//remove left lung
+					if (surgeon.find_in_hand(src) == surgeon.l_hand)
+						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-							if (!patient.organHolder.spleen)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
+						if (!patient.organHolder.left_lung)
+							src.surgeryConfusion(patient, surgeon, damage_low)
+							return 1
 
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_high, 0)
-								take_bleeding_damage(patient, surgeon, damage_high)
-								return 1
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] spleen out with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] spleen out with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] spleen out with [src]!</span>")
-
+						if (prob(screw_up_prob))
+							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
 							patient.TakeDamage("chest", damage_high, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							patient.organHolder.drop_organ("spleen")
-
+							take_bleeding_damage(patient, surgeon, damage_high)
 							return 1
-					//remove lungs
-					else if (surgeon.a_intent == INTENT_DISARM)
-						//remove left lung
-						if (surgeon.find_in_hand(src) == surgeon.l_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-							if (!patient.organHolder.left_lung)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] left lung out with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] left lung out with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your left lung out with [src]!</span>")
 
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_high, 0)
-								take_bleeding_damage(patient, surgeon, damage_high)
-								return 1
+						patient.TakeDamage("chest", damage_low, 0)
+						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+							take_bleeding_damage(patient, surgeon, damage_low)
+						else
+							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+						patient.updatehealth()
+						logTheThing("combat", surgeon, patient, "removed %target%'s left lung with [src].")
+						patient.organHolder.drop_organ("left_lung")
 
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] left lung out with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] left lung out with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your left lung out with [src]!</span>")
+						return 1
+					//remove right lung
+					else if (surgeon.find_in_hand(src) == surgeon.r_hand)
+						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							logTheThing("combat", surgeon, patient, "removed %target%'s left lung with [src].")
-							patient.organHolder.drop_organ("left_lung")
-
+						if (!patient.organHolder.right_lung)
+							src.surgeryConfusion(patient, surgeon, damage_low)
 							return 1
-						//remove right lung
-						else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-							if (!patient.organHolder.right_lung)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_high, 0)
-								take_bleeding_damage(patient, surgeon, damage_high)
-								return 1
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right lung out with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right lung out with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right lung out with [src]!</span>")
-							logTheThing("combat", surgeon, patient, "removed %target%'s right lung with [src].")
-
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							patient.organHolder.drop_organ("right_lung")
-
+						if (prob(screw_up_prob))
+							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
+							patient.TakeDamage("chest", damage_high, 0)
+							take_bleeding_damage(patient, surgeon, damage_high)
 							return 1
+
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right lung out with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right lung out with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right lung out with [src]!</span>")
+						logTheThing("combat", surgeon, patient, "removed %target%'s right lung with [src].")
+
+						patient.TakeDamage("chest", damage_low, 0)
+						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+							take_bleeding_damage(patient, surgeon, damage_low)
+						else
+							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+						patient.updatehealth()
+						patient.organHolder.drop_organ("right_lung")
+
+						return 1
 
 				//remove appendix or liver
 				if (3.0)
 					//remove appendix with this cut
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (!patient.organHolder.appendix)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] appendix out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] appendix out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your appendix out with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("appendix")
-
+					if (!patient.organHolder.appendix)
+						src.surgeryConfusion(patient, surgeon, damage_low)
 						return 1
 
-					//remove liver with this cut
-					else if (surgeon.a_intent == INTENT_DISARM)
-
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-						if (!patient.organHolder.liver)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] liver out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] liver out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your liver out with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("liver")
-
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
+
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] appendix out with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] appendix out with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your appendix out with [src]!</span>")
+
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+
+					patient.organHolder.drop_organ("appendix")
+					return 1
 
 				//path for stomach and intestines
 				if (4.0)
 					//remove stomach with this cut
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (!patient.organHolder.stomach)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] stomach out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] stomach out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your stomach out with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("stomach")
-
+					if (!patient.organHolder.stomach)
+						src.surgeryConfusion(patient, surgeon, damage_low)
 						return 1
 
-					//remove intestines with this cut
-					else if (surgeon.a_intent == INTENT_DISARM)
-
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-						if (!patient.organHolder.intestines)
-							src.surgeryConfusion(patient, surgeon, damage_low)
-							return 1
-
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] intestines out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] intestines out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your intestines out with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.drop_organ("intestines")
-
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
+
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] stomach out with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] stomach out with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your stomach out with [src]!</span>")
+
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.drop_organ("stomach")
+
+					return 1
 
 				//paths for pancreas and kidneys
 				if (5.0)
 					//path for pancreas
-					if (surgeon.a_intent == INTENT_GRAB)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] pancreas with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] pancreas with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your pancreas with [src]!</span>")
-
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
 						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 6.0
-
+						take_bleeding_damage(patient, surgeon, damage_low)
 						return 1
 
-					//path for kidneys
-					else if (surgeon.a_intent == INTENT_DISARM)
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut just below [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] ribcage with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You make a cut just below [surgeon == patient ? "your" : "[patient]'s"] ribcage with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut just below your ribcage with [src]!</span>")
 
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.chest.op_stage = 6.0
 
-						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
-							patient.TakeDamage("chest", damage_low, 0)
-							take_bleeding_damage(patient, surgeon, damage_low)
-							return 1
-
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> makes a cut in preparation to access  [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] kidneys with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You make a cut in preparation to access  [surgeon == patient ? "your" : "[patient]'s"] kidneys with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You make" : "<b>[surgeon]</b> makes"] a cut in preparation to access your kidneys with [src]!</span>")
-
-						patient.TakeDamage("chest", damage_low, 0)
-						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-							take_bleeding_damage(patient, surgeon, damage_low)
-						else
-							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-						patient.updatehealth()
-						patient.organHolder.chest.op_stage = 7.0
-
-						return 1
+					return 1
 
 				//remove pancreas
 				if (6.0)
+					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-					if (surgeon.a_intent == INTENT_GRAB)
+					if (!patient.organHolder.pancreas)
+						src.surgeryConfusion(patient, surgeon, damage_low)
+						return 1
+
+					if (prob(screw_up_prob))
+						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
+						patient.TakeDamage("chest", damage_low, 0)
+						take_bleeding_damage(patient, surgeon, damage_low)
+						return 1
+
+
+					patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] pancreas out with [src]!</span>",\
+					surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] pancreas out with [src]!</span>",\
+					patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your pancreas out with [src]!</span>")
+
+					patient.TakeDamage("chest", damage_low, 0)
+					if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+						take_bleeding_damage(patient, surgeon, damage_low)
+					else
+						surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+					patient.updatehealth()
+					patient.organHolder.drop_organ("pancreas")
+
+					return 1
+
+				//remove kidneys
+				if (7.0)
+					//remove left kidney
+					if (surgeon.find_in_hand(src) == surgeon.l_hand)
 						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-						if (!patient.organHolder.pancreas)
+						if (!patient.organHolder.left_kidney)
 							src.surgeryConfusion(patient, surgeon, damage_low)
 							return 1
-
 						if (prob(screw_up_prob))
-							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
+							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
 							patient.TakeDamage("chest", damage_low, 0)
 							take_bleeding_damage(patient, surgeon, damage_low)
 							return 1
 
 
-						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] pancreas out with [src]!</span>",\
-						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] pancreas out with [src]!</span>",\
-						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your pancreas out with [src]!</span>")
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] left kidney with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] left kidney with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your left kidney with [src]!</span>")
 
 						patient.TakeDamage("chest", damage_low, 0)
 						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
@@ -2385,69 +1971,38 @@
 						else
 							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
 						patient.updatehealth()
-						patient.organHolder.drop_organ("pancreas")
+						logTheThing("combat", surgeon, patient, "removed %target%'s left kidney with [src].")
+						patient.organHolder.drop_organ("left_kidney")
 
 						return 1
+					//remove right kidney
+					else if (surgeon.find_in_hand(src) == surgeon.r_hand)
+						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
 
-				//remove kidneys
-				if (7.0)
-					if (surgeon.a_intent == INTENT_GRAB)
-						//remove left kidney
-						if (surgeon.find_in_hand(src) == surgeon.l_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.left_kidney)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_low, 0)
-								take_bleeding_damage(patient, surgeon, damage_low)
-								return 1
-
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] left kidney with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] left kidney with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your left kidney with [src]!</span>")
-
-							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							logTheThing("combat", surgeon, patient, "removed %target%'s left kidney with [src].")
-							patient.organHolder.drop_organ("left_kidney")
-
+						if (!patient.organHolder.right_kidney)
+							src.surgeryConfusion(patient, surgeon, damage_low)
 							return 1
-						//remove right kidney
-						else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-							playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
-
-							if (!patient.organHolder.right_kidney)
-								src.surgeryConfusion(patient, surgeon, damage_low)
-								return 1
-							if (prob(screw_up_prob))
-								surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
-								patient.TakeDamage("chest", damage_low, 0)
-								take_bleeding_damage(patient, surgeon, damage_low)
-								return 1
-
-
-							patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right kidney with [src]!</span>",\
-							surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right kidney with [src]!</span>",\
-							patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right kidney with [src]!</span>")
-							logTheThing("combat", surgeon, patient, "removed %target%'s right kidney with [src].")
-
+						if (prob(screw_up_prob))
+							surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff2]!</b></span>")
 							patient.TakeDamage("chest", damage_low, 0)
-							if (!surgeon.find_type_in_hand(/obj/item/hemostat))
-								take_bleeding_damage(patient, surgeon, damage_low)
-							else
-								surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
-							patient.updatehealth()
-							patient.organHolder.drop_organ("right_kidney")
-
+							take_bleeding_damage(patient, surgeon, damage_low)
 							return 1
+
+
+						patient.tri_message("<span style=\"color:red\"><b>[surgeon]</b> cuts [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] right kidney with [src]!</span>",\
+						surgeon, "<span style=\"color:red\">You cut [surgeon == patient ? "your" : "[patient]'s"] right kidney with [src]!</span>",\
+						patient, "<span style=\"color:red\">[patient == surgeon ? "You cut" : "<b>[surgeon]</b> cuts"] your right kidney with [src]!</span>")
+						logTheThing("combat", surgeon, patient, "removed %target%'s right kidney with [src].")
+
+						patient.TakeDamage("chest", damage_low, 0)
+						if (!surgeon.find_type_in_hand(/obj/item/hemostat))
+							take_bleeding_damage(patient, surgeon, damage_low)
+						else
+							surgeon.show_text("You clamp the bleeders with the hemostat.", "blue")
+						patient.updatehealth()
+						patient.organHolder.drop_organ("right_kidney")
+
+						return 1
 				else
 					src.surgeryConfusion(patient, surgeon, damage_high)
 					return 1
@@ -2456,3 +2011,5 @@
 		else
 			return 0
 
+//sound for snip surgery
+		// playsound(src.loc, "sound/items/Scissor.ogg", 100, 1)
