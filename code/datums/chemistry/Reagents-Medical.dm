@@ -1002,6 +1002,7 @@ datum
 					if(M.get_toxin_damage())
 						M.take_toxin_damage(-3)
 					M.HealDamage("All", 12, 12)
+					H.organHolder.heal_organs(1, 1, 1, 60,  list("liver", "left_kidney", "right_kidney", "stomach", "intestines","spleen", "left_lung", "right_lung","appendix", "pancreas"))
 
 				M.updatehealth()
 				if(prob(25)) M.UpdateDamageIcon() // gonna leave this one on for now, but only call it a quarter of the time
