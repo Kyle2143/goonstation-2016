@@ -166,13 +166,13 @@
 		advance_prob = max(0,min(advance_prob,100))
 
 		if (prob(advance_prob))
-			if (state == "Remissive")
+			if (state == "Remissive" && (prob(50) && count))	//added this so that it's less likely to cure immediately due to the now counter
 				stage--
 				if (stage < 1)
 					affected_mob.cure_disease(src)
 				return 1
 			else if (stage < master.max_stages)
-				if (count >= min_time)
+				if (cycles == 0 && count >= min_time)	//only get this on the first cycle
 					stage++
 					count = 0
 
