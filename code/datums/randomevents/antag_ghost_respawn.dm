@@ -227,7 +227,7 @@
 				var/mob/living/R2 = M3.humanize()
 				if (R2 && istype(R2))
 					M3 = R2
-					R2.make_werewolf()
+					R2.make_werewolf(1)
 					role = "werewolf"
 					objective_path = /datum/objective_set/werewolf
 				else

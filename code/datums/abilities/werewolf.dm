@@ -3,7 +3,39 @@
 
 //////////////////////////////////////////// Setup //////////////////////////////////////////////////
 
-/mob/proc/make_werewolf()
+//force. If an admin makes you a werewolf or you're infected mid round, you become one immediately, no muss no fuss
+/mob/proc/make_werewolf(var/force=0)
+	//if force, you get werewolf abilities immediately. ie
+	if (force)
+		src.grant_werewolf_abilities()
+
+	else
+		spawn(rand(7, 14)*100)
+			src.grant_werewolf_abilities()
+			src.emote("shiver")
+			boutput(src, "<span style=\"color:red\">You feel feral!</span>")
+
+			sleep(20)
+
+			if (!src.weakened && !src.paralysis)
+				boutput(src, "<span style=\"color:red\">You suddenly feel very weak.</span>")
+				src.emote("collapse")
+
+			spawn(80)
+				if (!src.weakened && !src.paralysis)
+					src.emote("collapse")
+
+				boutput(src, "<span style=\"color:red\">Your body feels as if it's on fire! You think it's... IT'S CHANGING! You should probably get somewhere private!</span>")
+
+				spawn(rand(100, 200))
+					src.emote("scream")
+					if (!src.weakened && !src.paralysis)
+						src.emote("collapse")
+
+					src.grant_werewolf_abilities()
+
+
+/mob/proc/grant_werewolf_abilities()
 	if (ishuman(src))
 		var/datum/abilityHolder/werewolf/A = src.get_ability_holder(/datum/abilityHolder/werewolf)
 		if (A && istype(A))
@@ -12,6 +44,8 @@
 		var/datum/abilityHolder/werewolf/W = src.add_ability_holder(/datum/abilityHolder/werewolf)
 		W.addAbility(/datum/targetable/werewolf/werewolf_transform)
 		W.addAbility(/datum/targetable/werewolf/werewolf_feast)
+		W.addAbility(/datum/targetable/werewolf/werewolf_spread_affliction)
+		W.addAbility(/datum/targetable/werewolf/werewolf_pounce)
 
 		src.resistances += /datum/ailment/disease/lycanthropy
 
@@ -173,6 +207,36 @@
 
 			else // Can't feast on people if they're moving around too much.
 				return 0
+		if ("spread")
+			var/mob/living/carbon/human/HH = target
+
+			if (!HH || !ishuman(HH))
+				return 0
+
+			if (!HH.canmove)
+				damage += rand(5,15)
+				healing = damage - 5
+
+				if (prob(40))
+					HH.spread_blood_clothes(HH)
+					M.spread_blood_hands(HH)
+
+					var/obj/decal/cleanable/blood/gibs/G = null // For forensics.
+					G = new /obj/decal/cleanable/blood/gibs(HH.loc)
+					if (HH.bioHolder && HH.bioHolder.Uid && HH.bioHolder.bloodType)
+						G.blood_DNA = HH.bioHolder.Uid
+						G.blood_type = HH.bioHolder.bloodType
+
+					M.visible_message("<span style=\"color:red\"><B>[M] messily [pick("rips", "tears")] out and [pick("eats", "devours", "wolfs down", "chows on")] some of [HH]'s [pick("guts", "intestines", "entrails")]!</B></span>")
+
+
+				HH.add_fingerprint(M) // Just put 'em on the mob itself, like pulling does. Simplifies forensic analysis a bit.
+				M.werewolf_audio_effects(HH, "feast")
+
+				HH.weakened = max(HH.weakened, rand(3,6))
+				if (prob(33) && HH.stat != 2)
+					HH.emote("scream")
+
 		else
 			return 0
 
