@@ -847,3 +847,31 @@ BODY BAG
 		if (H.bleeding)
 			repair_bleeding_damage(H, 50, rand(2,5))
 		return
+
+/* ================================================== */
+/* -------------- Surgical Scissors ----------------- */
+/* ================================================== */
+
+/obj/item/surgical_scissors
+	name = "Garden Snips"
+	desc = "Used for precicely cutting up people in surgery. I guess you could use them on paper too."
+	icon = 'icons/obj/surgery.dmi'
+	icon_state = "surgical_scissors"
+	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
+	item_state = "surgical_scissors"
+
+	flags = FPRINT | TABLEPASS | CONDUCT
+	force = 8.0
+	stamina_damage = 5
+	stamina_cost = 5
+	stamina_crit_chance = 35
+	w_class = 1.0
+	hit_type = DAMAGE_STAB
+	hitsound = 'sound/weapons/slashcut.ogg'
+
+	throwforce = 5.0
+	throw_speed = 3
+	throw_range = 5
+	m_amt = 10000
+	g_amt = 5000
+	module_research = list("tools" = 3, "medicine" = 3, "weapons" = 0.25)
