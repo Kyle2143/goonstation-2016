@@ -20,6 +20,8 @@
 
 	else // if all else fails?
 		return 0 // surgery is not okay
+		boutput(M, "<span style=\"color:blue\">[user] begins cutting your hair.</span>")
+		playsound(src.loc, "sound/items/Scissor.ogg", 100, 1)
 
 /proc/headSurgeryCheck(var/mob/living/carbon/human/patient as mob)
 	if (!patient) // did we not get passed a patient?

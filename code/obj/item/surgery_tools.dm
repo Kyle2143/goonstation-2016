@@ -414,6 +414,8 @@ BODY BAG
 						if (zone == "chest")
 							if (H.organHolder.heart)
 								H.organHolder.heart.op_stage = 0.0
+							if (H.organHolder.chest)
+								H.organHolder.chest.op_stage = 0.0
 							if (H.butt_op_stage)
 								H.butt_op_stage = 0.0
 							H.TakeDamage("chest", 2, 0)
@@ -854,7 +856,7 @@ BODY BAG
 
 /obj/item/surgical_scissors
 	name = "Garden Snips"
-	desc = "Used for precicely cutting up people in surgery. I guess you could use them on paper too."
+	desc = "Used for precisely cutting up people in surgery. I guess you could use them on paper too."
 	icon = 'icons/obj/surgery.dmi'
 	icon_state = "surgical_scissors"
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
@@ -872,6 +874,15 @@ BODY BAG
 	throwforce = 5.0
 	throw_speed = 3
 	throw_range = 5
-	m_amt = 10000
-	g_amt = 5000
+	var/mob/Poisoner = null
 	module_research = list("tools" = 3, "medicine" = 3, "weapons" = 0.25)
+
+	attack(mob/living/carbon/M as mob, mob/user as mob)
+		if (src.reagents && src.reagents.total_volume)
+			logTheThing("combat", user, M, "used [src] on %target% (<b>Intent</b>: <i>[user.a_intent]</i>) (<b>Targeting</b>: <i>[user.zone_sel.selecting]</i>) [log_reagents(src)]")
+			src.reagents.trans_to(M,5)
+		else
+			logTheThing("combat", user, M, "used [src] on %target% (<b>Intent</b>: <i>[user.a_intent]</i>) (<b>Targeting</b>: <i>[user.zone_sel.selecting]</i>)")
+		if (!snip_surgery(M, user))
+			return ..()
+		else return
