@@ -119,3 +119,19 @@
 	vending = 2
 	genome = 1
 	assoc_reagents = list("catonium")
+
+/datum/plant/aconite
+	name = "aconite"
+	category = "Herb"
+	seedcolor = "#00CA70"
+	crop = /obj/item/plant/herb/aconite
+	starthealth = 10
+	growtime = 30
+	harvtime = 80
+	cropsize = 2
+	harvests = 1
+	endurance = 0
+	isgrass = 1
+	vending = 2
+	genome = 1
+	assoc_reagents = list("catonium")

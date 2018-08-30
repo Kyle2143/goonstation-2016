@@ -248,6 +248,38 @@
 				logTheThing("combat", user, null, "poisoned [I] [log_reagents(I)] with reagents from [src] [log_reagents(src)] at [log_loc(user)].") // Added location (Convair880).
 				user.visible_message("<span style=\"color:red\"><b>[user]</b> dips the blade of [I] into [src]!</span>")
 				return
+		
+		//Hacky thing to make silver bullets
+		else if (istype(I, /obj/item/ammo/bullets/bullet_22) || (istype(I, /obj/item/ammo/bullets/a38) && !istype(I, /obj/item/ammo/bullets/a38/stun)) || istype(I, /obj/item/ammo/bullets/custom))
+			if (src.reagents && src.reagents.has_reagent("silver", 5))
+				var/obj/item/ammo/bullets/bullet_holder = I
+				var/obj/item/implant/projectile/P = bullet_holder.ammo_type.implanted
+				//change the implanted material to be silver
+				P.setMaterial(getCachedMaterial("silver"))
+				
+				src.reagents.remove_reagent("silver", 5)
+				logTheThing("combat", user, null, "poisoned [I] [log_reagents(I)] with reagents from [src] [log_reagents(src)] at [log_loc(user)].") // Added location (Convair880).
+				user.visible_message("<span style=\"color:red\"><b>[user]</b> dips the bullet into [src] coating it in silver. Watch out evil creatures!</span>")
+				else 
+					boutput(user, "<span style=\"color:blue\">These bullets are already silver, coating it in more silver won't do any good.</span>")
+			else
+				boutput(user, "<span style=\"color:blue\">[src] doesn't have enough silver in it to coat [I].</span>")
+
+		//make silver handcuffs from only regular handcuffs
+		else if (I == /obj/item/handcuffs)
+			if (src.reagents && src.reagents.has_reagent("silver", 50))
+				if (!I.material)
+					src.reagents.remove_reagent("silver", 50)
+					
+					logTheThing("combat", user, null, "poisoned [I] [log_reagents(I)] with reagents from [src] [log_reagents(src)] at [log_loc(user)].") // Added location (Convair880).
+					user.visible_message("<span style=\"color:red\"><b>[user]</b> dips [I] into [src] coating them in silver!</span>")
+					user.u_equip(I)
+					qdel(I)
+					user.put_in_hand_or_drop(new/obj/item/handcuffs/silver)
+				else 
+					boutput(user, "<span style=\"color:blue\">This bullet already is silver, coating it in more silver won't do any good.</span>")
+			else
+				boutput(user, "<span style=\"color:blue\">[src] doesn't have enough silver in it to coat [I].</span>")
 		else
 			..()
 		return

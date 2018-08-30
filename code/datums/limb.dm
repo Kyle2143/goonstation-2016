@@ -416,6 +416,10 @@
 			var/obj/critter/victim = target
 
 			if (src.weak == 1)
+				var/mob/living/carbon/human/H = user
+				if (ishuman(H))
+					H.werewolf_tainted_bite_transfer(target)
+
 				spawn (0)
 					step_away(victim, user, 15)
 
@@ -626,6 +630,10 @@
 			if (send_flying == 2)
 				msgs.base_attack_message = "<span style=\"color:red\"><B>[user] delivers a supernatural punch, sending [target] flying!</b></span>"
 			else
+				var/mob/living/carbon/human/H = user
+				if (ishuman(H))
+					H.werewolf_tainted_bite_transfer(target)
+			
 				if (prob(25))
 					msgs.base_attack_message = "<span style=\"color:red\"><B>[user] mauls [target] viciously[send_flying == 0 ? "" : ", forcing them to the ground"]!</B></span>"
 				else

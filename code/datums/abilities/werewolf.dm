@@ -3,49 +3,30 @@
 
 //////////////////////////////////////////// Setup //////////////////////////////////////////////////
 
-//force. If an admin makes you a werewolf or you're infected mid round, you become one immediately, no muss no fuss
 /mob/proc/make_werewolf(var/force=0)
-	//if force, you get werewolf abilities immediately. ie
-	if (force)
-		src.grant_werewolf_abilities()
-
-	else
-		spawn(rand(7, 14)*100)
-			src.grant_werewolf_abilities()
-			src.emote("shiver")
-			boutput(src, "<span style=\"color:red\">You feel feral!</span>")
-
-			sleep(20)
-
-			if (!src.weakened && !src.paralysis)
-				boutput(src, "<span style=\"color:red\">You suddenly feel very weak.</span>")
-				src.emote("collapse")
-
-			spawn(80)
-				if (!src.weakened && !src.paralysis)
-					src.emote("collapse")
-
-				boutput(src, "<span style=\"color:red\">Your body feels as if it's on fire! You think it's... IT'S CHANGING! You should probably get somewhere private!</span>")
-
-				spawn(rand(100, 200))
-					src.emote("scream")
-					if (!src.weakened && !src.paralysis)
-						src.emote("collapse")
-
-					src.grant_werewolf_abilities()
-
-
-/mob/proc/grant_werewolf_abilities()
 	if (ishuman(src))
 		var/datum/abilityHolder/werewolf/A = src.get_ability_holder(/datum/abilityHolder/werewolf)
 		if (A && istype(A))
 			return
 
 		var/datum/abilityHolder/werewolf/W = src.add_ability_holder(/datum/abilityHolder/werewolf)
-		W.addAbility(/datum/targetable/werewolf/werewolf_transform)
 		W.addAbility(/datum/targetable/werewolf/werewolf_feast)
-		W.addAbility(/datum/targetable/werewolf/werewolf_spread_affliction)
 		W.addAbility(/datum/targetable/werewolf/werewolf_pounce)
+		W.addAbility(/datum/targetable/werewolf/werewolf_thrash)
+		W.addAbility(/datum/targetable/werewolf/werewolf_throw)
+		W.addAbility(/datum/targetable/werewolf/werewolf_tainted_saliva)
+		W.addAbility(/datum/targetable/werewolf/werewolf_defense)
+		// W.addAbility(/datum/targetable/werewolf/werewolf_spread_affliction)	//not using for now, but could be fun later ish.
+
+		// if (src.bioHolder)
+		// 	src.bioHolder.AddEffect("regenerator")
+		// 	boutput(src, "<span style=\"color:red\">added regenerator effect!</span>")
+
+		if (force)
+			W.addAbility(/datum/targetable/werewolf/werewolf_transform)
+		else
+			spawn(W.awaken_time)
+				handle_natural_werewolf(W)
 
 		src.resistances += /datum/ailment/disease/lycanthropy
 
@@ -53,6 +34,31 @@
 			src << browse(grabResource("html/traitorTips/werewolfTips.html"),"window=antagTips;titlebar=1;size=600x400;can_minimize=0;can_resize=0")
 
 	else return
+
+/mob/proc/handle_natural_werewolf(var/datum/abilityHolder/werewolf/W)
+	src.emote("shiver")
+	boutput(src, "<span style=\"color:red\">You feel feral!</span>")
+
+	sleep(50)
+
+	if (!src.weakened && !src.paralysis)
+		boutput(src, "<span style=\"color:red\">You suddenly feel very weak.</span>")
+		src.emote("collapse")
+
+	spawn(80)
+		if (!src.weakened && !src.paralysis)
+			src.emote("collapse")
+
+		boutput(src, "<span style=\"color:red\">Your body feels as if it's on fire! You think it's... IT'S CHANGING! You should probably get somewhere private!</span>")
+
+		spawn(rand(100, 200))
+			src.emote("scream")
+			if (!src.weakened && !src.paralysis)
+				src.emote("collapse")
+
+			W.addAbility(/datum/targetable/werewolf/werewolf_transform)
+			src.werewolf_transform(0, 0) // Not really a fan of this. I wish werewolves all suffered from lycanthropy and that should be how you pass it on, but w/e
+
 
 ////////////////////////////////////////////// Helper procs //////////////////////////////
 
@@ -73,10 +79,13 @@
 			M.drowsyness = 0
 
 			if (M.handcuffed)
-				M.visible_message("<span style=\"color:red\"><B>[M] rips apart the handcuffs with pure brute strength!</b></span>")
-				qdel(M.handcuffed)
-				M.handcuffed = null
-			M.buckled = null
+				if (istype(M.handcuffed, /obj/item/handcuffs/silver))
+					boutput(M, __red("<h3>You can't seem to break free from these silver handcuffs.</h3>"))
+				else
+					M.visible_message("<span style=\"color:red\"><B>[M] rips apart the handcuffs with pure brute strength!</b></span>")
+					qdel(M.handcuffed)
+					M.handcuffed = null
+				M.buckled = null
 
 			playsound(M.loc, 'sound/effects/blobattack.ogg', 50, 1, -1)
 			spawn (5)
@@ -96,7 +105,15 @@
 			M.set_body_icon_dirty()
 			M.update_clothing()
 
+			//when in werewolf form, get more max health/regenerate
+			// M.maxhealth = 200
+			// M.health = 
+			if (src.bioHolder)
+				src.bioHolder.AddEffect("regenerator")
+				boutput(src, "<span style=\"color:red\">added regenerator effect!</span>")
+
 			which_way = 0
+
 
 		else
 			if (source_is_lycanthrophy == 1) // Werewolf disease is human -> WW only.
@@ -108,6 +125,10 @@
 			M.set_face_icon_dirty()
 			M.set_body_icon_dirty()
 			M.update_clothing()
+
+			if (src.bioHolder)
+				src.bioHolder.RemoveEffect("regenerator")
+				boutput(src, "<span style=\"color:red\">removed regenerator effect!</span>")
 
 			which_way = 1
 
@@ -132,6 +153,12 @@
 	if (check_target_immunity(target) == 1)
 		target.visible_message("<span style=\"color:red\"><B>[M]'s swipe bounces off of [target] uselessly!</B></span>")
 		return 0
+
+	// var/datum/abilityHolder/werewolf/W = src.get_ability_holder(/datum/abilityHolder/werewolf)
+	// if (istype(W) && W.tainted_saliva_active)
+	// 	// logTheThing("combat", user, M, "werewolf attacked %target% [log_reagents(src)]")
+	// 	src.reagents.trans_to(M,10)
+	M.werewolf_tainted_bite_transfer(target)
 
 	var/damage = 0
 	var/send_flying = 0 // 1: a little bit | 2: across the room
@@ -207,6 +234,7 @@
 
 			else // Can't feast on people if they're moving around too much.
 				return 0
+
 		if ("spread")
 			var/mob/living/carbon/human/HH = target
 
@@ -215,7 +243,6 @@
 
 			if (!HH.canmove)
 				damage += rand(5,15)
-				healing = damage - 5
 
 				if (prob(40))
 					HH.spread_blood_clothes(HH)
@@ -227,15 +254,39 @@
 						G.blood_DNA = HH.bioHolder.Uid
 						G.blood_type = HH.bioHolder.bloodType
 
-					M.visible_message("<span style=\"color:red\"><B>[M] messily [pick("rips", "tears")] out and [pick("eats", "devours", "wolfs down", "chows on")] some of [HH]'s [pick("guts", "intestines", "entrails")]!</B></span>")
+					M.visible_message("<span style=\"color:red\"><B>[M] sinks its teeth into [target]! !</B></span>")
 
 
 				HH.add_fingerprint(M) // Just put 'em on the mob itself, like pulling does. Simplifies forensic analysis a bit.
 				M.werewolf_audio_effects(HH, "feast")
 
 				HH.weakened = max(HH.weakened, rand(3,6))
-				if (prob(33) && HH.stat != 2)
+				if (prob(70) && HH.stat != 2)
 					HH.emote("scream")
+
+		if ("pounce")
+			wrestler_knockdown(M, target, 1)
+			M.visible_message("<span style=\"color:red\"><B>[M] barrels through the air, slashing [target]!</B></span>")
+			damage += rand(2,8)
+			playsound(M.loc, pick('sound/misc/werewolf_attack1.ogg', 'sound/misc/werewolf_attack2.ogg', 'sound/misc/werewolf_attack3.ogg'), 50, 1)
+			if (prob(33) && target.stat != 2)
+				target.emote("scream")
+
+		if ("thrash")
+			if (prob(75))
+				wrestler_knockdown(M, target, 1)
+				damage += rand(2,8)
+
+			else
+				wrestler_backfist(M, target)
+				damage += rand(5,15)
+			
+			if (prob(60)) playsound(M.loc, pick('sound/misc/werewolf_attack1.ogg', 'sound/misc/werewolf_attack2.ogg', 'sound/misc/werewolf_attack3.ogg'), 50, 1)
+
+			if (prob(75)) target.weakened+=3
+
+			if (prob(33) && target.stat != 2)
+				target.emote("scream")
 
 		else
 			return 0
@@ -251,7 +302,7 @@
 		random_brute_damage(target, damage)
 		target.updatehealth()
 		target.UpdateDamageIcon()
-		target.set_clothing_icon_dirty()
+		target.set_clothing_icon_dirty()			
 
 	return 1
 
@@ -326,6 +377,13 @@
 	tabName = "Werewolf"
 	notEnoughPointsMessage = "<span style=\"color:red\">You aren't strong enough to use this ability.</span>"
 	var/datum/objective/specialist/werewolf/feed/feed_objective = null
+	var/tainted_saliva_active = 0
+
+	var/awaken_time		//don't really need this here, but admins might want to know when the werewolf's awaken time is.
+
+	New()
+		..()
+		awaken_time = rand(8, 13)*1000
 
 	onAbilityStat() // In the 'Werewolf' tab.
 		..()
@@ -342,7 +400,7 @@
 /////////////////////////////////////////////// Werewolf spell parent ////////////////////////////
 
 /datum/targetable/werewolf
-	icon = 'icons/mob/critter_ui.dmi'
+	icon = 'icons/mob/werewolf_ui.dmi'
 	icon_state = "template"  // No custom sprites yet.
 	cooldown = 0
 	last_cast = 0
@@ -353,6 +411,7 @@
 	var/werewolf_only = 0
 
 	New()
+		..()
 		var/obj/screen/ability/werewolf/B = new /obj/screen/ability/werewolf(null)
 		B.icon = src.icon
 		B.icon_state = src.icon_state
@@ -439,3 +498,4 @@
 		. = ..()
 		actions.interrupt(holder.owner, INTERRUPT_ACT)
 		return
+

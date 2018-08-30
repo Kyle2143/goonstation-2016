@@ -1,6 +1,7 @@
 /datum/targetable/werewolf/werewolf_transform
 	name = "Transform"
 	desc = "Switch between human and wolf form, Takes a couple seconds to complete."
+	icon_state = "transform"  // No custom sprites yet.
 	targeted = 0
 	target_nodamage_check = 0
 	max_range = 0

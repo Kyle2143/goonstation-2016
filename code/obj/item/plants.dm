@@ -198,3 +198,71 @@
 	brew_result = "catdrugs"
 	module_research = list("vice" = 3)
 	module_research_type = /obj/item/plant/herb/cannabis
+
+/obj/item/plant/herb/aconite
+	name = "aconite"
+	desc = "\"What is the difference, Mr. Potter, between monkshood and wolfsbane?\" A teacher once asked. \"Aconite\", answered Hermione. And all was well."
+	icon_state = "aconite"
+	module_research = list("vice" = 3)
+	// module_research_type = /obj/item/plant/herb/cannabis
+
+	attack_hand(var/mob/user as mob)
+		if (iswerewolf(user))
+			user.weakened  += 8
+			user.take_toxin_damage(-10)
+			boutput(user, "<span style=\"color:red\">You try to pick up [src], but it hurts and you fall over!</span>")
+			return
+		else ..()
+
+	//stolen from glass shard
+	HasEntered(AM as mob|obj)
+		if(ismob(AM))
+			var/mob/M = AM
+			if(iswerewolf(M))
+				M.weakened += 20
+				M.take_toxin_damage(-10)
+				return
+		..()
+
+	attack(mob/M as mob, mob/user as mob)
+		//if a wolf attacks with this, which they shouldn't be able to, they'll just drop it
+		if (iswerewolf(user))
+			user.u_equip(src)
+			user.drop_item()
+			boutput(user, "<span style=\"color:red\">You drop the aconite, you don't think it's a good idea to hold it!</span>")
+			return
+
+		if (iswerewolf(M))
+			M.take_toxin_damage(-10)
+			user.visible_message("[user] attacks [M] with [src]! It's super effective!")
+
+			if (prob(50))
+				//Wraith does stamina damage this way, there is probably a better way, but I can't find it
+				M:stamina -= 40
+			return
+		..()
+		return
+
+	//stolen from dagger, not much too it
+	throw_impact(atom/A)
+		if(iswerewolf(A))
+			if (istype(usr, /mob))
+				A:lastattacker = usr
+				A:lastattackertime = world.time
+			A:weakened += 15
+
+	pull()
+		set src in oview(1)
+		set category = "Local"
+
+		var/mob/living/user = usr
+		if (!istype(user))
+			return
+
+		if (!iswerewolf(user))
+			return ..()
+		else
+			boutput(user, "<span style=\"color:red\">You can't drag that aconite! It burns!</span>")
+			user.take_toxin_damage(-10)
+
+			return

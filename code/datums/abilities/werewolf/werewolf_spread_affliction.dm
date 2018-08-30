@@ -53,7 +53,6 @@
 	var/mob/living/target
 	var/datum/targetable/werewolf/werewolf_spread_affliction/spread
 	var/last_complete = 0
-	var/do_we_get_points = 0 // For the specialist objective. Did we feed on the target long enough?
 
 	New(Target, Spread)
 		target = Target
@@ -154,14 +153,14 @@
 			else if (ishuman(HH))
 				if (isturf(M.loc) && isturf(HH.loc))
 					if (!HH.disease_resistance_check("/datum/ailment/disease/lycanthropy","Lycanthropy"))
-					HH.make_werewolf(1)
-					HH.full_heal()
-					HH.weakened = max(15, H.weakened)
-					H.werewolf_transform(0, 0) // Not really a fan of this. I wish werewolves all suffered from lycanthropy and that should be how you pass it on, but w/e
+						HH.make_werewolf(1)
+						HH.full_heal()
+						HH.weakened = max(15, HH.weakened)
+						HH.werewolf_transform(0, 0) // Not really a fan of this. I wish werewolves all suffered from lycanthropy and that should be how you pass it on, but w/e
 
-					remove_antag(M, null, 0, 1)
-					boutput(W, __red("You passed your terribly affliction onto [HH]! You are no longer a werewolf!"))
-					logTheThing("combat", M, target, "turns %target% into a werewolf at [log_loc(M)].")
+						remove_antag(M, null, 0, 1)
+						boutput(W, __red("You passed your terribly affliction onto [HH]! You are no longer a werewolf!"))
+						logTheThing("combat", M, target, "turns %target% into a werewolf at [log_loc(M)].")
 
 		if (A && istype(A))
 			A.locked = 0

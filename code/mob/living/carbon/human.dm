@@ -2938,6 +2938,13 @@
 				M.stun_glove_attack(src)
 				return
 
+			if (src.stance == "defensive" && iswerewolf(src))
+				src.visible_message("<span style=\"color:red\"><B>[M] attempts to attack [src]!</B></span>")
+				playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
+				sleep(2)
+				if (prob(40))
+					src.parry(M)
+				return
 			M.melee_attack(src)
 
 	return
@@ -3187,7 +3194,7 @@
 					W.dropped(src.target)
 					W.layer = initial(W.layer)
 					W.add_fingerprint(src.source)
-			else if (istype(src.item, /obj/item/handcuffs/tape_roll))
+			else if (istype(src.item, /obj/item/handcuffs/tape_roll) || istype(src.item, /obj/item/handcuffs/silver))
 				src.target.drop_from_slot(src.target.r_hand)
 				src.target.drop_from_slot(src.target.l_hand)
 				src.target.drop_juggle()
@@ -5998,7 +6005,7 @@
 				src.handcuffed = null
 				src.update_clothing()
 				return
-			if (ispredator(src) || iswerewolf(src))
+			if (ispredator(src))
 				for (var/mob/O in AIviewers(src))
 					O.show_message(text("<span style=\"color:red\"><B>[] rips apart the handcuffs with pure brute strength!</B></span>", src), 1)
 				boutput(src, "<span style=\"color:blue\">You rip apart your handcuffs.</span>")
@@ -6010,6 +6017,30 @@
 				src.handcuffed = null
 				src.update_clothing()
 				return
+			if (iswerewolf(src))
+				if (istype(src.handcuffed, /obj/item/handcuffs/silver))
+					boutput(src, __red("<h3>You can't seem to rip apart these silver handcuffs. They burn!</h3>"))
+					src.TakeDamage("l_arm", 0, 2, 0, DAMAGE_BURN)
+					src.TakeDamage("r_arm", 0, 2, 0, DAMAGE_BURN)
+				else
+					src.visible_message("<span style=\"color:red\"><B>[src] rips apart the handcuffs with pure brute strength!</b></span>")
+					qdel(src.handcuffed)
+					src.handcuffed = null
+
+					for (var/mob/O in AIviewers(src))
+						O.show_message(text("<span style=\"color:red\"><B>[] rips apart the handcuffs with pure brute strength!</B></span>", src), 1)
+					boutput(src, "<span style=\"color:blue\">You rip apart your handcuffs.</span>")
+
+					if (src.handcuffed:material) //This is a bit hacky.
+						src.handcuffed:material:triggerOnAttacked(src.handcuffed, src, src, src.handcuffed)
+
+					qdel(src.handcuffed)
+					src.handcuffed = null
+					src.update_clothing()
+
+					return
+
+
 		if (src.bioHolder.HasEffect("hulk"))
 			for (var/mob/O in AIviewers(src))
 				O.show_message(text("<span style=\"color:red\"><B>[] rips apart the handcuffs with pure brute strength!</B></span>", src), 1)
@@ -6464,3 +6495,13 @@
 	if (src.sims) // saaaaame with sims motives
 		src.sims.updateHudIcons(new_style)
 	return
+
+/mob/living/carbon/human/attackby(obj/item/W, mob/M)
+	if (src.stance == "defensive" && iswerewolf(src))
+		src.visible_message("<span style=\"color:red\"><B>[M] swings at [src] with the [W.name]!</B></span>")
+		playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
+		sleep(2)
+		if (prob(40))
+			src.parry(M, W)
+		return
+	..()

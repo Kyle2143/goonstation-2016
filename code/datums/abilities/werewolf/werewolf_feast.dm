@@ -1,6 +1,7 @@
 /datum/targetable/werewolf/werewolf_feast
 	name = "Maul victim"
 	desc = "Feast on the target to quell your hunger."
+	icon_state = "feast"
 	targeted = 1
 	target_nodamage_check = 1
 	max_range = 1

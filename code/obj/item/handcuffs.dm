@@ -63,6 +63,20 @@
 	desc = "These seem to be made of tape"
 	strength = 1
 
+
+/obj/item/handcuffs/silver
+	name = "Silver Handcuffs"
+	icon_state = "handcuff-silver"
+	amount = 2
+	delete_on_last_use = 1
+
+	desc = "These handcuffs are perfect for containing evil creatures, but they're fragile otherwise as a result."
+	strength = 2
+
+	New()
+		..()
+		src.setMaterial(getCachedMaterial("silver"))
+
 /obj/item/handcuffs/guardbot
 	name = "ziptie cuffs"
 	desc = "A wrist-binding tie made from a durable synthetic material.  Weaker than traditional handcuffs, but much more comfortable."

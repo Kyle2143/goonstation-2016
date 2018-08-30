@@ -599,6 +599,12 @@ IMPLANT GUN
 		if(prob(4))
 			boutput(C, "<span style=\"color:red\">You feel a [pick("sharp", "stabbing", "startling", "worrying")] pain in your chest![pick("", " It feels like there's something lodged in there!", " There's gotta be something stuck in there!", " You feel something shift around painfully!")]</span>")
 
+
+		if (prob(40) && iswerewolf(C) && istype(src:material, /datum/material/metal/silver))
+			random_burn_damage(C, rand(2,6))
+			boutput(C, "<span style=\"color:red\">You feel a [pick("sharp", "stabbing", "startling", "worrying")] pain in your chest![pick("", " It feels like there's something lodged in there!", " There's gotta be something stuck in there!", " You feel something shift around painfully!")]</span>")
+			
+
 	spawn(rand(40,70))
 		src.bleed_loop()
 	return
