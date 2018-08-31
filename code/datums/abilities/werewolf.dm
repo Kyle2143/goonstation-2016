@@ -297,11 +297,9 @@
 	switch (send_flying)
 		if (1)
 			wrestler_knockdown(M, target)
-			M.visible_message("<span style=\"color:red\"><B>[M] SNED FLYING 1111!</B></span>")
 
 		if (2)
 			wrestler_backfist(M, target)
-			M.visible_message("<span style=\"color:red\"><B>[M] SNED FLYING 22222!</B></span>")
 
 	if (damage > 0)
 		random_brute_damage(target, damage)

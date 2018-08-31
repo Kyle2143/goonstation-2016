@@ -103,7 +103,6 @@
 						//extra damage from silver for werewolves
 						if (istype(implanted, /datum/material/metal/silver) && iswerewolf(src))
 							src.TakeDamage("chest", 0, (damage/armor_value_bullet), 0, DAMAGE_BURN)
-							src.visible_message("<b><span style=\"color:red\">...extra damage, for wolves kinetic!</span></b>")
 
 						//implanted.implanted(src, null, min(20, max(0, round(damage / 10) ) ))
 		if (D_PIERCING)
@@ -145,7 +144,6 @@
 					//extra damage from silver for werewolves
 					if (istype(implanted, /datum/material/metal/silver) && iswerewolf(src))
 						src.TakeDamage("chest", 0, (damage/armor_value_bullet), 0, DAMAGE_BURN)
-						src.visible_message("<b><span style=\"color:red\">...extra damage, for wolves pierce!</span></b>")
 
 		if (D_SLASHING)
 			src.remove_stamina(min(round(stun/armor_value_bullet) * 30, 125)) //thanks to the odd scaling i have to cap this.
