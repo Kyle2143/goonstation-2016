@@ -599,7 +599,7 @@ IMPLANT GUN
 		if(prob(4))
 			boutput(C, "<span style=\"color:red\">You feel a [pick("sharp", "stabbing", "startling", "worrying")] pain in your chest![pick("", " It feels like there's something lodged in there!", " There's gotta be something stuck in there!", " You feel something shift around painfully!")]</span>")
 
-
+		//werewolf silver implants handling
 		if (prob(60) && iswerewolf(C) && istype(src:material, /datum/material/metal/silver))
 			random_burn_damage(C, rand(5,10))
 			C.take_toxin_damage(rand(1,3))

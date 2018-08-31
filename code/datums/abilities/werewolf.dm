@@ -113,7 +113,6 @@
 
 			which_way = 0
 
-
 		else
 			if (source_is_lycanthrophy == 1) // Werewolf disease is human -> WW only.
 				return
@@ -155,7 +154,7 @@
 
 	if (!target || !ismob(target))
 		return 0
- 
+
 	if (target == M)
 		return 0
 

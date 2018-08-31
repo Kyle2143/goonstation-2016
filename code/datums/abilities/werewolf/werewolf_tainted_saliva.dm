@@ -23,9 +23,7 @@
 			return 1
 
 		M.visible_message("<span style=\"color:red\"><B>[M] starts salivating a disgusting amount!</B></span>")
-		
 		W.tainted_saliva_active = 1
-
 
 		spawn(300)
 			W.tainted_saliva_active = 0

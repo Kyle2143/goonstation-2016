@@ -631,7 +631,6 @@
 			if (send_flying == 2)
 				msgs.base_attack_message = "<span style=\"color:red\"><B>[user] delivers a supernatural punch, sending [target] flying!</b></span>"
 			else
-			
 				if (prob(25))
 					msgs.base_attack_message = "<span style=\"color:red\"><B>[user] mauls [target] viciously[send_flying == 0 ? "" : ", forcing them to the ground"]!</B></span>"
 				else

@@ -63,7 +63,6 @@
 	desc = "These seem to be made of tape"
 	strength = 1
 
-
 /obj/item/handcuffs/silver
 	name = "Silver Handcuffs"
 	icon_state = "handcuff-silver"

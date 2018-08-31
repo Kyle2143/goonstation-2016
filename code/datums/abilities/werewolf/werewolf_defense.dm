@@ -30,7 +30,6 @@
 		//Do some howling
 		H.emote("howl")
 
-
 		if (H.burning)
 			H.burning = 0
 			H.visible_message("<span style=\"color:red\"><B>[H] deafening howl completely extinguishes the fire on it!</B></span>")

@@ -29,9 +29,6 @@
 			boutput(usr, "<span style=\"color:red\">You can't jump right now!</span>")
 			return 1
 
-		// actions.start(new/datum/action/bar/private/icon/werewolf_pounce(src, target), M)
-
-
 		var/jump_tiles = get_dist(M, target)
 		var/pixel_move = round((8/7)*jump_tiles)
 		var/sleep_time = 1

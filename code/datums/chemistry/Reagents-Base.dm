@@ -401,7 +401,6 @@ datum
 			fluid_b = 200
 			transparency = 255
 			taste = "metallic"
-			// depletion_rate = 0.1
 
 		sulfur
 			name = "sulfur"

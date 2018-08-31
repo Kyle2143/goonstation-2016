@@ -6037,9 +6037,7 @@
 					qdel(src.handcuffed)
 					src.handcuffed = null
 					src.update_clothing()
-
 					return
-
 
 		if (src.bioHolder.HasEffect("hulk"))
 			for (var/mob/O in AIviewers(src))
