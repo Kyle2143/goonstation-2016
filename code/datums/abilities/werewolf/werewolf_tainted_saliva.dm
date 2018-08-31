@@ -5,11 +5,11 @@
 	targeted = 0
 	target_nodamage_check = 0
 	max_range = 0
-	cooldown = 300//2000
+	cooldown = 2000
 	pointCost = 0
 	when_stunned = 1
 	not_when_handcuffed = 0
-	werewolf_only = 0
+	werewolf_only = 1
 
 
 	cast(mob/target)

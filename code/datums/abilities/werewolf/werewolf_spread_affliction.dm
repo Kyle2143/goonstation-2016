@@ -4,7 +4,7 @@
 	targeted = 1
 	target_nodamage_check = 1
 	max_range = 1
-	cooldown = 300
+	cooldown = 2000
 	pointCost = 0
 	when_stunned = 0
 	not_when_handcuffed = 1
@@ -21,7 +21,7 @@
 			return 1
 
 		if (M == target)
-			boutput(M, __red("Why would you want to afflict yourself with your own affliction?"))
+			boutput(M, __red("How could you afflict yourself with your own affliction?"))
 			return 1
 
 		if (get_dist(M, target) > src.max_range)

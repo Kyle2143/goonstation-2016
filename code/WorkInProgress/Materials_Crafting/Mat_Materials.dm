@@ -308,6 +308,7 @@
 		setProperty(new/datum/material_property/hardness{ value = 15 }())
 		setProperty(new/datum/material_property/toughness{ value = 5 }())
 		setProperty(new/datum/material_property/electrical{ value = 75 }())
+		// addDelegate(triggersOnAdd, new /datum/materialProc/silver_touch_werewolf())	//this might be the way to go instead of handling it in onj/item/implent/projectile, but w/e
 		return ..()
 
 // Special Metals

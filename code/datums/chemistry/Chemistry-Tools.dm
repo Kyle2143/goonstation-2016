@@ -251,15 +251,16 @@
 		
 		//Hacky thing to make silver bullets
 		else if (istype(I, /obj/item/ammo/bullets/bullet_22) || (istype(I, /obj/item/ammo/bullets/a38) && !istype(I, /obj/item/ammo/bullets/a38/stun)) || istype(I, /obj/item/ammo/bullets/custom))
-			if (src.reagents && src.reagents.has_reagent("silver", 5))
+			if (src.reagents && src.reagents.has_reagent("silver", 20))
+
 				var/obj/item/ammo/bullets/bullet_holder = I
-				var/obj/item/implant/projectile/P = bullet_holder.ammo_type.implanted
-				//change the implanted material to be silver
-				P.setMaterial(getCachedMaterial("silver"))
-				
-				src.reagents.remove_reagent("silver", 5)
-				logTheThing("combat", user, null, "poisoned [I] [log_reagents(I)] with reagents from [src] [log_reagents(src)] at [log_loc(user)].") // Added location (Convair880).
-				user.visible_message("<span style=\"color:red\"><b>[user]</b> dips the bullet into [src] coating it in silver. Watch out evil creatures!</span>")
+				var/datum/projectile/ammo_type = bullet_holder.ammo_type
+				if (ammo_type && !ammo_type.material)
+					ammo_type.material = (getCachedMaterial("silver"))
+					
+					src.reagents.remove_reagent("silver", 20)
+					logTheThing("combat", user, null, "poisoned [I] [log_reagents(I)] with reagents from [src] [log_reagents(src)] at [log_loc(user)].") // Added location (Convair880).
+					user.visible_message("<span style=\"color:red\"><b>[user]</b> dips the bullet into [src] coating it in silver. Watch out evil creatures!</span>")
 				else 
 					boutput(user, "<span style=\"color:blue\">These bullets are already silver, coating it in more silver won't do any good.</span>")
 			else

@@ -9,7 +9,7 @@
 	pointCost = 0
 	when_stunned = 2
 	not_when_handcuffed = 1
-	werewolf_only = 0
+	werewolf_only = 1
 
 	cast(mob/target)
 		if (!holder)

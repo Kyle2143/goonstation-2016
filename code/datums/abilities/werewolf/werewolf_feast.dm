@@ -5,7 +5,7 @@
 	targeted = 1
 	target_nodamage_check = 1
 	max_range = 1
-	cooldown = 0
+	cooldown = 300
 	pointCost = 0
 	when_stunned = 0
 	not_when_handcuffed = 1

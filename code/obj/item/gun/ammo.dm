@@ -213,10 +213,12 @@
 	update_icon()
 		if (src.amount_left < 0)
 			src.amount_left = 0
+			src.ammo_type && src.ammo_type.material == (getCachedMaterial("silver"))
 
-		src.desc = text("There are [] bullet\s left!", src.amount_left)
+		// src.desc = text("There are [] [] bullet\s left!", src.amount_left, (ammo_type.material && istype(ammo_type, /datum/material/metal/silver)))
+		src.desc = "There are [src.amount_left][ammo_type.material && istype(ammo_type, /datum/material/metal/silver) ? " silver " : " "]bullet\s left!"
 
-		if (src.amount_left > 0)
+		if (src.amount_left > 0) 
 			if (src.icon_dynamic && src.icon_short)
 				src.icon_state = text("[src.icon_short]-[src.amount_left]")
 		else

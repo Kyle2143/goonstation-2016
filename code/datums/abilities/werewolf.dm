@@ -105,7 +105,8 @@
 			M.set_body_icon_dirty()
 			M.update_clothing()
 
-			//when in werewolf form, get more max health/regenerate
+
+			//when in werewolf form, get more max health or regenerate
 			// M.maxhealth = 200
 			// M.health = 
 			if (src.bioHolder)
@@ -129,6 +130,16 @@
 			if (src.bioHolder)
 				src.bioHolder.RemoveEffect("regenerator")
 				boutput(src, "<span style=\"color:red\">removed regenerator effect!</span>")
+			
+
+			//Changing back removes all the implants in you, wolves should have a non-surgery way to remove bullets. considering silver is so harmful
+			for(var/obj/item/implant/I in M)
+				// if (istype(I, /obj/item/implant/projectile))
+				boutput(M, "<span style=\"color:red\">\an [I] falls out of your abdomen.</span>")
+				I.on_remove(M)
+				M.implant.Remove(I)
+				I.set_loc(M.loc)
+				continue
 
 			which_way = 1
 
@@ -146,19 +157,14 @@
 
 	if (!target || !ismob(target))
 		return 0
-
+ 
 	if (target == M)
 		return 0
 
 	if (check_target_immunity(target) == 1)
 		target.visible_message("<span style=\"color:red\"><B>[M]'s swipe bounces off of [target] uselessly!</B></span>")
 		return 0
-
-	// var/datum/abilityHolder/werewolf/W = src.get_ability_holder(/datum/abilityHolder/werewolf)
-	// if (istype(W) && W.tainted_saliva_active)
-	// 	// logTheThing("combat", user, M, "werewolf attacked %target% [log_reagents(src)]")
-	// 	src.reagents.trans_to(M,10)
-	M.werewolf_tainted_bite_transfer(target)
+	M.werewolf_tainted_saliva_transfer(target)
 
 	var/damage = 0
 	var/send_flying = 0 // 1: a little bit | 2: across the room
@@ -294,9 +300,11 @@
 	switch (send_flying)
 		if (1)
 			wrestler_knockdown(M, target)
+			M.visible_message("<span style=\"color:red\"><B>[M] SNED FLYING 1111!</B></span>")
 
 		if (2)
 			wrestler_backfist(M, target)
+			M.visible_message("<span style=\"color:red\"><B>[M] SNED FLYING 22222!</B></span>")
 
 	if (damage > 0)
 		random_brute_damage(target, damage)

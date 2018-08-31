@@ -201,7 +201,7 @@
 
 /obj/item/plant/herb/aconite
 	name = "aconite"
-	desc = "\"What is the difference, Mr. Potter, between monkshood and wolfsbane?\" A teacher once asked. \"Aconite\", answered Hermione. And all was well."
+	desc = "A professor once asked, \"What is the difference, Mr. Potter, between monkshood and wolfsbane?\"\n  \"Aconite\", answered Hermione. And all was well."
 	icon_state = "aconite"
 	module_research = list("vice" = 3)
 	// module_research_type = /obj/item/plant/herb/cannabis
@@ -221,6 +221,8 @@
 			if(iswerewolf(M))
 				M.weakened += 20
 				M.take_toxin_damage(-10)
+				M.visible_message("<span style=\"color:red\">The [M] steps too close to [src] and falls down!</span>")
+
 				return
 		..()
 

@@ -2943,7 +2943,7 @@
 				playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
 				sleep(2)
 				if (prob(40))
-					src.parry(M)
+					src.parry_or_dodge(M)
 				return
 			M.melee_attack(src)
 
@@ -6502,6 +6502,6 @@
 		playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
 		sleep(2)
 		if (prob(40))
-			src.parry(M, W)
+			src.parry_or_dodge(M, W)
 		return
 	..()

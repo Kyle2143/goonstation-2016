@@ -349,6 +349,15 @@ triggerOnEntered(var/atom/owner, var/atom/entering)
 		M.irradiate(10)
 		return
 
+// /datum/materialProc/silver_touch_werewolf
+// 	id = "silver_touch_werewolf"
+
+// 	execute(var/mob/M)
+// 		random_burn_damage(M, rand(10,20))
+// 		M.take_toxin_damage(rand(1,3))
+// 		if (prob(60)) M.emote("twitch")
+// 		return
+
 /datum/materialProc/erebite_flash
 	id = "erebite_flash"
 

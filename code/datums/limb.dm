@@ -416,10 +416,6 @@
 			var/obj/critter/victim = target
 
 			if (src.weak == 1)
-				var/mob/living/carbon/human/H = user
-				if (ishuman(H))
-					H.werewolf_tainted_bite_transfer(target)
-
 				spawn (0)
 					step_away(victim, user, 15)
 
@@ -613,7 +609,9 @@
 
 		if (target.canmove && !target.anchored && !target.lying)
 			if (prob(50))
-				if (prob(60))
+				if (src.weak == 1 && prob(40))	//make werewolf punches a bit weaker to compensate for new abilities.
+					send_flying = 1
+				else if (prob(60))
 					target.stuttering += 2
 					send_flying = 1
 				else
@@ -627,12 +625,12 @@
 			target.stuttering += 1
 
 		if (src.weak == 1)
+			//needed so tainted saliva can transfer on regular attacks
+			user.werewolf_tainted_saliva_transfer(target)
+
 			if (send_flying == 2)
 				msgs.base_attack_message = "<span style=\"color:red\"><B>[user] delivers a supernatural punch, sending [target] flying!</b></span>"
 			else
-				var/mob/living/carbon/human/H = user
-				if (ishuman(H))
-					H.werewolf_tainted_bite_transfer(target)
 			
 				if (prob(25))
 					msgs.base_attack_message = "<span style=\"color:red\"><B>[user] mauls [target] viciously[send_flying == 0 ? "" : ", forcing them to the ground"]!</B></span>"

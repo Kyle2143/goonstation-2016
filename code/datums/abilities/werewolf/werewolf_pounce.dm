@@ -6,7 +6,7 @@
 	target_nodamage_check = 1
 	target_anything = 1	
 	max_range = 10
-	cooldown = 0
+	cooldown = 100
 	pointCost = 0
 	when_stunned = 0
 	not_when_handcuffed = 1
@@ -18,9 +18,9 @@
 			return 1
 		var/mob/living/M = holder.owner
 
-		// if (get_dist(M, target) < src.min_range)
-		// 	boutput(M, __red("[target] is too close to leap, it would be more of a hop."))
-		// 	return 1
+		if (M == target)
+			boutput(M, __red("Why would you want to pounce on yourself?"))
+			return 1
 
 		if (get_dist(M, target) > src.max_range)
 			boutput(M, __red("[target] is too far away."))

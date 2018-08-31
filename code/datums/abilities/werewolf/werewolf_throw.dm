@@ -23,11 +23,10 @@
 		if (!M || !HH)
 			return 1
 
-		// var/obj/item/grab/G = src.grab_check(null, 1, 1)
-		// if (!G || !istype(G))
-		// 	return 1
+		if (M == target)
+			boutput(M, __red("You can't throw yourself."))
+			return 1
 
-		// var/mob/living/HH = G.affecting
 		HH.set_loc(M.loc)
 		HH.dir = get_dir(HH, M)
 

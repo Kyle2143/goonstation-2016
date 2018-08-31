@@ -121,17 +121,17 @@
 	assoc_reagents = list("catonium")
 
 /datum/plant/aconite
-	name = "aconite"
+	name = "Aconite"
 	category = "Herb"
-	seedcolor = "#00CA70"
+	seedcolor = "#990099"
 	crop = /obj/item/plant/herb/aconite
 	starthealth = 10
-	growtime = 30
+	growtime = 60
 	harvtime = 80
 	cropsize = 2
 	harvests = 1
 	endurance = 0
-	isgrass = 1
-	vending = 2
+	isgrass = 0
+	vending = 1
 	genome = 1
-	assoc_reagents = list("catonium")
+	assoc_reagents = list("wolfsbane")

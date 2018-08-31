@@ -928,34 +928,31 @@
 			sims.affectMotive("fun", 2.5)
 
 //Stolen from macho man for use by werewolves. Removes macho sounds and not much else
-/mob/living/carbon/human/proc/parry(mob/M, obj/item/W)
+/mob/living/carbon/human/proc/parry_or_dodge(mob/M, obj/item/W)
 	if (M)
 		src.dir = get_dir(src, M)
-		if (W)
-			W.cant_self_remove = 0
-			W.set_loc(src)
-			M.u_equip(W)
-			W.layer = HUD_LAYER
-			src.visible_message("<span style=\"color:red\"><B>[src] knocks the [W.name] out of [M]'s hands, shoving [M] to the ground!</B></span>")
+		//dodge more likely, we're more agile than macho
+		if (prob(60))
+			src.visible_message("<span style=\"color:red\"><B>[src] dodges the blow by [M]!</B></span>")
 		else
-			src.visible_message("<span style=\"color:red\"><B>[src] parries [M]'s attack, knocking them to the ground!</B></span>")
+			if (W)
+				W.cant_self_remove = 0
+				W.set_loc(src)
+				M.u_equip(W)
+				W.layer = HUD_LAYER
+				src.visible_message("<span style=\"color:red\"><B>[src] knocks the [W.name] out of [M]'s hands, shoving [M] to the ground!</B></span>")
+			else
+				src.visible_message("<span style=\"color:red\"><B>[src] parries [M]'s attack, knocking them to the ground!</B></span>")
 
-		if (prob(50))
-			step_away(M, src, 15)
-		else
-			M.weakened = max(4, M.weakened)
+			if (prob(50))
+				step_away(M, src, 15)
+			else
+				M.weakened = max(4, M.weakened)
 		playsound(src.loc, "sound/weapons/thudswoosh.ogg", 65, 1)
 	return
 
-/mob/living/carbon/human/proc/werewolf_tainted_bite_transfer(var/mob/target)
-	src.visible_message("<span style=\"color:red\"><B>[src] parries  111111!</B></span>")
+/mob/living/proc/werewolf_tainted_saliva_transfer(var/mob/target)
 	if (iswerewolf(src))
-		src.visible_message("<span style=\"color:red\"><B>[src] parries 2222222!</B></span>")
 		var/datum/abilityHolder/werewolf/W = src.get_ability_holder(/datum/abilityHolder/werewolf)
-		src.visible_message("<span style=\"color:red\"><B>[ismob(target)] parries 333!</B></span>")
-		src.visible_message("<span style=\"color:red\"><B>[istype(W)] parries 4444!</B></span>")
-		src.visible_message("<span style=\"color:red\"><B>[W.tainted_saliva_active] parries 55555!</B></span>")
-
 		if (ismob(target) && W && W.tainted_saliva_active)
-			src.visible_message("<span style=\"color:red\"><B>[src] parries 66666!</B></span>")
 			src.reagents.trans_to(target,10)
