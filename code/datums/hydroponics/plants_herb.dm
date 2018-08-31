@@ -132,6 +132,6 @@
 	harvests = 1
 	endurance = 0
 	isgrass = 0
-	vending = 1
+	vending = 2
 	genome = 1
 	assoc_reagents = list("wolfsbane")

@@ -235,7 +235,7 @@
 			return
 
 		if (iswerewolf(M))
-			M.take_toxin_damage(-10)
+			M.take_toxin_damage(rand(5,10))
 			user.visible_message("[user] attacks [M] with [src]! It's super effective!")
 
 			if (prob(50))

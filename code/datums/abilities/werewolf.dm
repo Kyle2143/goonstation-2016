@@ -18,12 +18,10 @@
 		W.addAbility(/datum/targetable/werewolf/werewolf_defense)
 		// W.addAbility(/datum/targetable/werewolf/werewolf_spread_affliction)	//not using for now, but could be fun later ish.
 
-		// if (src.bioHolder)
-		// 	src.bioHolder.AddEffect("regenerator")
-		// 	boutput(src, "<span style=\"color:red\">added regenerator effect!</span>")
-
 		if (force)
 			W.addAbility(/datum/targetable/werewolf/werewolf_transform)
+			boutput(src, "<span style=\"color:red\">You are a full werewolf, you can transform immediately!</span>")
+
 		else
 			spawn(W.awaken_time)
 				handle_natural_werewolf(W)
