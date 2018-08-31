@@ -28,16 +28,16 @@
 		H.visible_message("<span style=\"color:red\"><B>[H] shifts to a defensive stance and starts to howl!</B></span>")
 
 		//Do some howling
-		H.emote("howl")
+		playsound(H.loc, 'sound/vox/scream.ogg', 80, 0, 0, 0.7)
 
 		if (H.burning)
 			H.burning = 0
 			H.visible_message("<span style=\"color:red\"><B>[H] deafening howl completely extinguishes the fire on it!</B></span>")
 
 		spawn(rand(30,50))
-			H.emote("howl")
+		playsound(H.loc, 'sound/vox/scream.ogg', 80, 0, 0, 0.7)
 		spawn(rand(80,120))
-			H.emote("howl")
+		playsound(H.loc, 'sound/vox/scream.ogg', 80, 0, 0, 0.7)
 
 		H.stance = "defensive"
 		spawn(150)
