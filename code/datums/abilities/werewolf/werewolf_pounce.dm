@@ -36,15 +36,7 @@
 		if (istype(M.loc,/turf/))
 			playsound(M.loc, "sound/weapons/thudswoosh.ogg", 50, 1)
 
-			//Can pounce at any turf, but if there is a mob on it, you get text that has the target's name for flavour.
-			//maybe there's a better way to do this, but changing the argument for cast to atom didn't seem to do it so I'm not going to fret over it - Kyle
-			var/mob_found = 0
-			for (var/mob/T in get_turf(target).contents)
-				usr.visible_message("<span style=\"color:red\"><b>[M]</b> pounces at [M]!</span>")
-				mob_found = 1
-				break
-			if (!mob_found)
-				usr.visible_message("<span style=\"color:red\"><b>[M]</b> pounces at [target]!</span>")
+			usr.visible_message("<span style=\"color:red\"><b>[M]</b> pounces at [target]!</span>")
 			var/prevLayer = M.layer
 			M.layer = EFFECTS_LAYER_BASE
 
