@@ -174,6 +174,9 @@
 						if (!W.feed_objective.mobs_fed_on.Find(HH.bioHolder.Uid))
 							W.feed_objective.mobs_fed_on.Add(HH.bioHolder.Uid)
 							W.feed_objective.feed_count++
+							M.add_stam_mod_regen("feast-[W.feed_objective.feed_count]", 7)
+							M.add_stam_mod_max("feast-[W.feed_objective.feed_count]", 40)
+							W.lower_cooldowns(0.10)
 							boutput(M, __blue("You finish chewing on [HH], but what a feast it was!"))
 						else
 							boutput(M, __red("You've mauled [HH] before and didn't like the aftertaste. Better find a different prey."))
@@ -185,6 +188,7 @@
 				boutput(M, __red("You finish chewing on [HH]."))
 		else
 			boutput(M, __red("You finish chewing on [HH]."))
+
 
 		if (A && istype(A))
 			A.locked = 0
@@ -204,6 +208,9 @@
 						if (!W.feed_objective.mobs_fed_on.Find(HH.bioHolder.Uid))
 							W.feed_objective.mobs_fed_on.Add(HH.bioHolder.Uid)
 							W.feed_objective.feed_count++
+							M.add_stam_mod_regen("feast-[W.feed_objective.feed_count]", 7)
+							M.add_stam_mod_max("feast-[W.feed_objective.feed_count]", 40)
+							W.lower_cooldowns(0.10)
 							boutput(M, __blue("Your feast was interrupted, but it satisfied your hunger for the time being."))
 						else
 							boutput(M, __red("You've mauled [HH] before and didn't like the aftertaste. Better find a different prey."))
@@ -218,3 +225,4 @@
 
 		if (A && istype(A))
 			A.locked = 0
+

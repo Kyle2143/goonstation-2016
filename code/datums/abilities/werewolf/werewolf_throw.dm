@@ -8,7 +8,6 @@
 	target_selection_check = 0
 	max_range = 1
 	cooldown = 300
-	start_on_cooldown = 1
 	pointCost = 0
 	when_stunned = 0
 	not_when_handcuffed = 1

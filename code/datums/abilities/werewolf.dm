@@ -233,6 +233,7 @@
 				M.remove_stamina(60) // Werewolves have a very large stamina and stamina regen boost.
 				if (healing > 0)
 					M.HealDamage("All", healing, healing)
+					M.add_stamina(healing)
 					M.updatehealth()
 
 			else // Can't feast on people if they're moving around too much.
@@ -380,13 +381,14 @@
 	tabName = "Werewolf"
 	notEnoughPointsMessage = "<span style=\"color:red\">You aren't strong enough to use this ability.</span>"
 	var/datum/objective/specialist/werewolf/feed/feed_objective = null
-	var/tainted_saliva_active = 0
+	var/datum/reagents/tainted_saliva_reservior = null
 
 	var/awaken_time		//don't really need this here, but admins might want to know when the werewolf's awaken time is.
 
 	New()
 		..()
-		awaken_time = rand(8, 13)*1000
+		awaken_time = rand(5, 10)*100
+		src.tainted_saliva_reservior = new/datum/reagents(500)
 
 	onAbilityStat() // In the 'Werewolf' tab.
 		..()
@@ -399,6 +401,10 @@
 				stat("No. of victims:", src.feed_objective.feed_count)
 
 		return
+//percent, give number 0.0-1.0
+/datum/abilityHolder/proc/lower_cooldowns(var/percent)
+	for (var/datum/targetable/werewolf/A in src.abilities)
+		A.cooldown = A.cooldown * (1-percent)
 
 /////////////////////////////////////////////// Werewolf spell parent ////////////////////////////
 

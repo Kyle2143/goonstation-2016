@@ -2916,6 +2916,9 @@
 			if (M == src)
 				M.grab_self()
 				return
+			if (src.parry_or_dodge(M))
+				return
+
 			var/datum/limb/L = M.equipped_limb()
 			if (!L)
 				return
@@ -2938,12 +2941,7 @@
 				M.stun_glove_attack(src)
 				return
 
-			if (src.stance == "defensive" && iswerewolf(src))
-				src.visible_message("<span style=\"color:red\"><B>[M] attempts to attack [src]!</B></span>")
-				playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
-				sleep(2)
-				if (prob(40))
-					src.parry_or_dodge(M)
+			if (src.parry_or_dodge(M))
 				return
 			M.melee_attack(src)
 
@@ -6495,11 +6493,7 @@
 	return
 
 /mob/living/carbon/human/attackby(obj/item/W, mob/M)
-	if (src.stance == "defensive" && iswerewolf(src))
-		src.visible_message("<span style=\"color:red\"><B>[M] swings at [src] with the [W.name]!</B></span>")
-		playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
-		sleep(2)
-		if (prob(40))
-			src.parry_or_dodge(M, W)
+	if (src.parry_or_dodge(M))
 		return
 	..()
+

@@ -928,31 +928,39 @@
 			sims.affectMotive("fun", 2.5)
 
 //Stolen from macho man for use by werewolves. Removes macho sounds and not much else
+//return 1 on successful dodge or parry, 0 on fail
 /mob/living/carbon/human/proc/parry_or_dodge(mob/M, obj/item/W)
-	if (M)
-		src.dir = get_dir(src, M)
-		//dodge more likely, we're more agile than macho
-		if (prob(60))
-			src.visible_message("<span style=\"color:red\"><B>[src] dodges the blow by [M]!</B></span>")
-		else
-			if (W)
-				W.cant_self_remove = 0
-				W.set_loc(src)
-				M.u_equip(W)
-				W.layer = HUD_LAYER
-				src.visible_message("<span style=\"color:red\"><B>[src] knocks the [W.name] out of [M]'s hands, shoving [M] to the ground!</B></span>")
-			else
-				src.visible_message("<span style=\"color:red\"><B>[src] parries [M]'s attack, knocking them to the ground!</B></span>")
 
-			if (prob(50))
-				step_away(M, src, 15)
+	if (src.stance == "defensive" && iswerewolf(src) && src.stat)
+		if (prob(60))
+			return 0
+		if (M)
+			src.visible_message("<span style=\"color:red\"><B>[M] attempts to attack [src]!</B></span>")
+			playsound(src.loc, "sound/weapons/punchmiss.ogg", 50, 1)
+			sleep(2)
+			src.dir = get_dir(src, M)
+			//dodge more likely, we're more agile than macho
+			if (prob(60))
+				src.visible_message("<span style=\"color:red\"><B>[src] dodges the blow by [M]!</B></span>")
 			else
-				M.weakened = max(4, M.weakened)
-		playsound(src.loc, "sound/weapons/thudswoosh.ogg", 65, 1)
-	return
+				if (W)
+					W.cant_self_remove = 0
+					W.set_loc(src)
+					M.u_equip(W)
+					W.layer = HUD_LAYER
+					src.visible_message("<span style=\"color:red\"><B>[src] knocks the [W.name] out of [M]'s hands, shoving [M] to the ground!</B></span>")
+				else
+					src.visible_message("<span style=\"color:red\"><B>[src] parries [M]'s attack, knocking them to the ground!</B></span>")
+
+				if (prob(50))
+					step_away(M, src, 15)
+				else
+					M.weakened = max(4, M.weakened)
+			playsound(src.loc, "sound/weapons/thudswoosh.ogg", 65, 1)
+			return 1
 
 /mob/living/proc/werewolf_tainted_saliva_transfer(var/mob/target)
 	if (iswerewolf(src))
 		var/datum/abilityHolder/werewolf/W = src.get_ability_holder(/datum/abilityHolder/werewolf)
-		if (ismob(target) && W && W.tainted_saliva_active)
-			src.reagents.trans_to(target,10)
+		if (ismob(target) && W && W.tainted_saliva_reservior.total_volume > 1)
+			W.tainted_saliva_reservior.trans_to(target,5, 2)
