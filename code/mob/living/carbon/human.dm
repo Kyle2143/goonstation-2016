@@ -4295,8 +4295,11 @@
 			return
 
 		if (src.blood_volume < 500 && src.blood_volume > 0) // if we're full or empty, don't bother v
-			if (prob(66) && src.organHolder.spleen && src.organHolder.spleen.get_damage() < 100)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
-				src.blood_volume ++ // maybe get a little blood back ^
+			if (src.organHolder.spleen && src.organHolder.spleen.get_damage() < 100)		//might just want to make a var for this an set it in handle_organs, but in the interest of making little changes, here this is
+				if (prob(66))
+					src.blood_volume++ //chance for blood from organic spleen
+				else if (src.organHolder.spleen.robotic)
+					src.blood_volume+=2 // garuanteed extra blood with robotic spleen
 
 		if (src.bleeding)
 			var/fluff = pick("better", "like they're healing a bit", "a little better", "itchy", "less tender", "less painful", "like they're closing", "like they're closing up a bit", "like they're closing up a little")

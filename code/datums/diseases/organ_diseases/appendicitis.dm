@@ -56,10 +56,31 @@
 
 			//human's appendix burst, and add a load of toxic chemicals or bacteria to the person.
 			if (prob(5))
-				H.reagents.add_reagent("toxin", 40)
 				H.cure_disease(D)
 				H.organHolder.appendix.take_damage(200,200,200)
-				H.organHolder.drop_organ("appendix")
+				// H.organHolder.drop_organ("appendix")
+				H.emote("collapse")
+				H.weakened = max(H.weakened, 30)
+
+				if (prob(20))
+					H.reagents.add_reagent("toxin", 20)
+				add_pathogens(H, 30)
+
+				boutput(H, "<span style=\"color:red\">Your appendix has burst! Seek medical help!</span>")
 
 			H.take_toxin_damage(1)
 			H.updatehealth()
+
+//stolen from the admin button because I know fuck all about pathogens - Kyle
+/datum/ailment/disease/appendicitis/proc/add_pathogens(var/mob/living/A, var/amount)
+	if (!A || !A.reagents) 
+		return 0
+
+	A.reagents.add_reagent("pathogen", amount)
+	var/datum/reagent/blood/pathogen/R = A.reagents.get_reagent("pathogen")
+	var/datum/pathogen/P = unpool(/datum/pathogen)
+	P.setup(1)
+	R.pathogens += P.pathogen_uid
+	R.pathogens[P.pathogen_uid] = P
+
+	return 1

@@ -921,6 +921,10 @@
 		..() // call your goddamn parents
 
 	proc/on_life()
+		//if exposed to warm open air, have a chance to lose health 
+		// if (prob(20))
+		// 	if (!istype(src.loc,/obj/))
+
 		return
 
 	proc/on_transplant(var/mob/M as mob)
@@ -1000,9 +1004,19 @@
 	get_damage()
 		return src.brute_dam + src.burn_dam	+ src.tox_dam
 
-	emp_act()
+	emp_act(severity)
 		if (robotic)
 			src.take_damage(20, 20, 20)
+			// switch (severity)
+			// 	if (1.0)
+
+			// 		checkhealth()
+			// 	if(2.0)
+					
+			// 		checkhealth()
+			// 	if(3.0)
+			// 		src.health -= 25
+			// 		checkhealth()
 
 /*=========================*/
 /*----------Brain----------*/
