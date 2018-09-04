@@ -1719,8 +1719,9 @@
 
 	var/screw_up_prob = calc_screw_up_prob(patient, surgeon)
 
-	var/damage_low = calc_surgery_damage(surgeon, screw_up_prob, rand(5,15)/*, src.adj1, src.adj2*/)
-	var/damage_high = calc_surgery_damage(surgeon, screw_up_prob, rand(15,25)/*, src.adj1, src.adj2*/)
+	//Snipping is a lot safer than other types of surgery. Is it because snips are the One True Surgery Tool? Maybe, maybe not. Who can say.
+	var/damage_low = calc_surgery_damage(surgeon, screw_up_prob, rand(1,5)/*, src.adj1, src.adj2*/)
+	var/damage_high = calc_surgery_damage(surgeon, screw_up_prob, rand(5,15)/*, src.adj1, src.adj2*/)
 
 	DEBUG_MESSAGE("<b>[patient]'s surgery (performed by [surgeon]) damage_low is [damage_low], damage_high is [damage_high]</b>")
 
@@ -1729,7 +1730,7 @@
 		if (patient.organHolder.chest)
 			switch (patient.organHolder.chest.op_stage)
 				if (0.0)
-					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 					if (prob(screw_up_prob))
 						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
@@ -1753,7 +1754,7 @@
 
 				//second cut, path for appendix/liver
 				if (1.0)
-					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 					if (prob(screw_up_prob))
 						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
@@ -1778,7 +1779,7 @@
 				if (2.0)
 					//remove left lung
 					if (surgeon.find_in_hand(src) == surgeon.l_hand)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.left_lung)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1806,7 +1807,7 @@
 						return 1
 					//remove right lung
 					else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.right_lung)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1836,7 +1837,7 @@
 				//remove appendix or liver
 				if (3.0)
 					//remove appendix with this cut
-					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 					if (!patient.organHolder.appendix)
 						src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1865,7 +1866,7 @@
 				//path for stomach and intestines
 				if (4.0)
 					//remove stomach with this cut
-					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 					if (!patient.organHolder.stomach)
 						src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1894,7 +1895,7 @@
 				//paths for pancreas and kidneys
 				if (5.0)
 					//path for pancreas
-					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 					if (prob(screw_up_prob))
 						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
@@ -1918,7 +1919,7 @@
 
 				//remove pancreas
 				if (6.0)
-					playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 					if (!patient.organHolder.pancreas)
 						src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1949,7 +1950,7 @@
 				if (7.0)
 					//remove left kidney
 					if (surgeon.find_in_hand(src) == surgeon.l_hand)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.left_kidney)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1977,7 +1978,7 @@
 						return 1
 					//remove right kidney
 					else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-						playsound(get_turf(patient), "sound/weapons/squishcut.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.right_kidney)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -2010,6 +2011,3 @@
 			src.surgeryConfusion(patient, surgeon, damage_low)
 		else
 			return 0
-
-//sound for snip surgery
-		// playsound(src.loc, "sound/items/Scissor.ogg", 100, 1)

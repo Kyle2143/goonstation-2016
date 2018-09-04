@@ -921,9 +921,10 @@
 		..() // call your goddamn parents
 
 	proc/on_life()
-		//if exposed to warm open air, have a chance to lose health 
-		// if (prob(20))
-		// 	if (!istype(src.loc,/obj/))
+		//if exposed to open air, have a chance to lose health. Wanted to force it to be refridgerated, but I can't find that code for food --Kyle
+		if (prob(10) && ((synthetic == 0) && (robotic == 0)))		//Only meat organs spoil
+			if (!istype(src.loc,/obj/))
+				src.take_damage(brute, burn, tox, damage_type)
 
 		return
 
@@ -1004,19 +1005,9 @@
 	get_damage()
 		return src.brute_dam + src.burn_dam	+ src.tox_dam
 
-	emp_act(severity)
+	emp_act()
 		if (robotic)
 			src.take_damage(20, 20, 20)
-			// switch (severity)
-			// 	if (1.0)
-
-			// 		checkhealth()
-			// 	if(2.0)
-					
-			// 		checkhealth()
-			// 	if(3.0)
-			// 		src.health -= 25
-			// 		checkhealth()
 
 /*=========================*/
 /*----------Brain----------*/
