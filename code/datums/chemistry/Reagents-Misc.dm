@@ -2161,6 +2161,17 @@ datum
 					holder.del_reagent(id)
 				return
 
+		blood/bloodw
+			id = "bloodw"
+			value = 3
+			hygiene_value = -4
+
+			reaction_obj(var/obj/O, var/volume)
+				if (O && istype(O, /obj/item/plant/herb/aconite))
+					qdel(O)
+					for (var/mob/M in AIviewers(get_turf(holder.my_atom), null))
+						boutput(M, "<span style=\"color:red\">The blood touches the aconite and begins sizzling away!</span>")
+
 		vomit
 			name = "vomit"
 			id = "vomit"

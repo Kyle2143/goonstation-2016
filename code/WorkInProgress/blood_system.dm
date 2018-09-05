@@ -447,6 +447,9 @@ this is already used where it needs to be used, you can probably ignore it.
 	if (ischangeling(some_idiot))
 		A.reagents.add_reagent("bloodc", blood_to_transfer, bloodHolder)
 		R = A.reagents.get_reagent("bloodc")
+	else if (iswolfhuman(some_idiot))
+		A.reagents.add_reagent("bloodw", blood_to_transfer, bloodHolder)
+		R = A.reagents.get_reagent("bloodw")
 	else
 		A.reagents.add_reagent(some_idiot.blood_id, blood_to_transfer, bloodHolder)
 		R = A.reagents.get_reagent(some_idiot.blood_id)
