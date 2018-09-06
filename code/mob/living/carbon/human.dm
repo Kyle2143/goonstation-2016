@@ -4513,10 +4513,16 @@
 
 		// appendix 
 		if (!src.nodamage)
-			if (src.organHolder.appendix && src.organHolder.appendix.get_damage() >= 100)
-				src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
-			else if (src.organHolder.appendix.get_damage() >= 65 && prob(src.organHolder.appendix.get_damage() * 0.2))
-				src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
+
+			if (src.organHolder.appendix)
+				if (src.organHolder.appendix.get_damage() >= 100)
+					src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
+				else if (src.organHolder.appendix.get_damage() >= 65 && prob(src.organHolder.appendix.get_damage() * 0.2))
+					src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
+				
+				if (src.organHolder.appendix.robotic && src.health < 10 && prob(10))
+					src.reagents.add_reagent(pick("saline", "salbutamol", "salicylic_acid", "synthflesh"), 4)
+
 
 		// spleen  if there's no spleen don't let the user regen blood naturally
 			// if (src.organHolder.spleen && (src.organHolder.spleen.get_damage() >= 100))

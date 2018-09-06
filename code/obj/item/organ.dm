@@ -921,11 +921,6 @@
 		..() // call your goddamn parents
 
 	proc/on_life()
-		//if exposed to open air, have a chance to lose health. Wanted to force it to be refridgerated, but I can't find that code for food --Kyle
-		if (prob(10) && ((synthetic == 0) && (robotic == 0)))		//Only meat organs spoil
-			if (!istype(src.loc,/obj/))
-				src.take_damage(brute, burn, tox, damage_type)
-
 		return
 
 	proc/on_transplant(var/mob/M as mob)
@@ -985,6 +980,7 @@
 		src.burn_dam += burn
 		src.tox_dam += tox
 
+		//I don't think this is used at all, but I'm afraid to get rid of it - Kyle
 		if (ishuman(donor))
 			var/mob/living/carbon/human/H = donor
 			// H.hit_twitch()	//no
