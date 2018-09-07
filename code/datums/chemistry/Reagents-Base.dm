@@ -174,8 +174,11 @@ datum
 				var/mob/living/carbon/human/H = M
 				if (istype(H) && !H.bioHolder.HasEffect("resist_alcohol"))
 					if (prob(25))
-						if (H.organHolder.liver && !H.organHolder.liver.robotic)
-							H.organHolder.liver.take_damage(0, 0, rand(1,2))
+						if (H.organHolder.liver)
+							if (!H.organHolder.liver.robotic)
+								H.organHolder.liver.take_damage(0, 0, rand(1,2))
+							else 
+								H.organHolder.liver.heal_damage(0, 0, rand(1,2))
 				..()
 
 		hydrogen

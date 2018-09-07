@@ -87,7 +87,7 @@
 		var/data = null
 		for (var/obj/health_scanner/floor/myPartner in src.partners)
 			for (var/mob/M in get_turf(myPartner))
-				data += "<br>[scan_health(M, src.reagent_scan)]"
+				data += "<br>[scan_health(M, src.reagent_scan, 1, 1)]"
 		return data
 
 	get_desc(dist)

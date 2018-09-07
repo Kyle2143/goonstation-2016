@@ -1,5 +1,5 @@
 
-/proc/scan_health(var/mob/M as mob, var/verbose_reagent_info = 0, var/disease_detection = 1)
+/proc/scan_health(var/mob/M as mob, var/verbose_reagent_info = 0, var/disease_detection = 1, var/organ_scan = 0)
 	if (!M)
 		return "<span style='color:red'>ERROR: NO SUBJECT DETECTED</span>"
 
@@ -131,7 +131,7 @@
 				brain_data = "<span style='color:red'>Subject has no brain.</span>"
 
 
-			if (verbose_reagent_info && !isvampire(H))
+			if (organ_scan && !isvampire(H))
 				var/organ_data1 = null
 								
 				organ_data1 += organ_health_scan("left_lung", H)
@@ -149,6 +149,8 @@
 				if (organ_data1)
 					organ_data = "<span style='color:purple'><b>Scans Indicate Organ Damage:</b></span>"
 					organ_data += organ_data1
+				else
+					organ_data = "<span style='color:purple'><b>Scans Indicate organs are in perfect health.</b></span>"
 
 		else
 			organ_data = "<span style='color:red'>Subject has no organs.</span>"
@@ -204,7 +206,7 @@
 	var/obj/item/organ/O = H.organHolder.organ_list[input]
 	if (O && istype(O, /obj/item/organ))
 		if (O.get_damage() > 0)
-			return "<br><span style='color:purple'><b>[input]</b> - [O.get_damage()]</span>"
+			return "<br><span style='color:[O.get_damage() >= 75 ? "red" : "purple"]'><b>[input]</b> - [O.get_damage()]</span>"
 		else
 			return null
 	else
