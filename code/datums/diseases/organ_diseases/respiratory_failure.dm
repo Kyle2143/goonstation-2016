@@ -10,8 +10,13 @@
 	affected_species = list("Human")
 	stage_prob = 1
 	var/robo_restart = 0
+	var/failing_organ = null	//which lung got damaged enough that it trigged the lung failure disease. Acceptable values "l", "r"
 
-	on_remove()
+//these seemed like the cleanest way to allow you to cure an organfailure by removing only a single organ
+/datum/ailment/disease/respiratory_failure/left
+	failing_organ = "l"
+/datum/ailment/disease/respiratory_failure/right
+	failing_organ = "r"
 
 /datum/ailment/disease/respiratory_failure/stage_act(var/mob/living/affected_mob,var/datum/ailment_data/D)
 	if (..())
@@ -21,8 +26,12 @@
 		return
 	var/mob/living/carbon/human/H = affected_mob
 
-	//to cure, gotta remove BOTH lungs. Don't want to make it too easy for ya
 	if (!H.organHolder|| (!H.organHolder.left_lung && !H.organHolder.right_lung))
+		H.cure_disease(D)
+		return
+
+	//so you only need to remove the one lung to cure the disease. 
+	if ((failing_organ == "l" && !H.organHolder.left_lung) || (failing_organ == "r" && !H.organHolder.right_lung))
 		H.cure_disease(D)
 		return
 

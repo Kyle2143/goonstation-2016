@@ -8,6 +8,7 @@ SUTURE
 BANDAGE
 BLOOD BAG (unused)
 BODY BAG
+SURGICAL SCISSORS
 */
 
 /* ================================================= */
@@ -880,6 +881,8 @@ BODY BAG
 	New()
 		..()
 		src.create_reagents(5)
+		icon_state = pick("surgical_scissors-r", "surgical_scissors-g", "surgical_scissors-b", "surgical_scissors-v", "surgical_scissors-d", "surgical_scissors-g")
+
 
 	attack(mob/living/carbon/M as mob, mob/user as mob)
 		if (src.reagents && src.reagents.total_volume)

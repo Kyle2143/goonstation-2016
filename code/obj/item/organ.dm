@@ -64,7 +64,7 @@
 					return 1
 		return 0
 
-	//organs should not perform their functions if they have 0 health
+	//organs should not perform their functions if they have 100 damage
 	proc/get_working_kidney_amt()
 		var/count = 0
 		if (left_kidney && left_kidney.get_damage() < 100)
@@ -1241,12 +1241,20 @@
 /obj/item/organ/lung/cyber
 	name = "cyberlung"
 	desc = "A fancy electronic eye to replace one that someone's lost. Kinda fragile, but better than nothing!"
-	icon_state = "lung-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-lung-L"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
 
+	New()
+		if (prob(50))
+			body_side = L_ORGAN
+			icon_state = "cyber-lung-L"
+
+		else
+			body_side = R_ORGAN
+			icon_state = "cyber-lung-R"
 
 /*========================*/
 /*----------Eyes----------*/
@@ -2141,8 +2149,8 @@
 /obj/item/organ/liver/cyber
 	name = "cyberliver"
 	desc = "A fancy robotic liver to replace one that someone's lost!"
-	icon_state = "liver-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-liver"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
@@ -2221,11 +2229,20 @@
 /obj/item/organ/kidney/cyber
 	name = "cyberkidney"
 	desc = "A fancy robotic kidney to replace one that someone's lost!"
-	icon_state = "kidney-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-kidney-L"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
+
+	New()
+		if (prob(50))
+			body_side = L_ORGAN
+			icon_state = "cyber-kidney-L"
+
+		else
+			body_side = R_ORGAN
+			icon_state = "cyber-kidney-R"
 
 /obj/item/organ/stomach
 	name = "stomach"
@@ -2275,8 +2292,8 @@
 /obj/item/organ/stomach/cyber
 	name = "cyberstomach"
 	desc = "A fancy robotic stomach to replace one that someone's lost!"
-	icon_state = "stomach-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-stomach"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
@@ -2329,8 +2346,8 @@
 /obj/item/organ/intestines/cyber
 	name = "cyberintestines"
 	desc = "A fancy robotic intestines to replace one that someone's lost!"
-	icon_state = "intestines-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-intestines"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
@@ -2383,8 +2400,8 @@
 /obj/item/organ/spleen/cyber
 	name = "cyberspleen"
 	desc = "A fancy robotic spleen to replace one that someone's lost!"
-	icon_state = "spleen-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-spleen"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
@@ -2437,8 +2454,8 @@
 /obj/item/organ/pancreas/cyber
 	name = "cyberpancreas"
 	desc = "A fancy robotic pancreas to replace one that someone's lost!"
-	icon_state = "pancreas-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-pancreas"
+	// item_state = "heart_robo1"
 	robotic = 1
 	edible = 0
 	mats = 6
@@ -2490,8 +2507,8 @@
 /obj/item/organ/appendix/cyber
 	name = "cyberappendix"
 	desc = "A fancy robotic appendix to replace one that someone's lost!"
-	icon_state = "appendix-cyber"
-	item_state = "heart_robo1"
+	icon_state = "cyber-appendix"
+	// item_state = "cyber-"
 	robotic = 1
 	edible = 0
 	mats = 6

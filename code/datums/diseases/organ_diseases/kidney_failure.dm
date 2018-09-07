@@ -10,6 +10,13 @@
 	affected_species = list("Human")
 	stage_prob = 1
 	var/robo_restart = 0
+	var/failing_organ = null	//which kidney got damaged enough that it trigged the kidney failure disease. Acceptable values "l", "r"
+
+//these seemed like the cleanest way to allow you to cure an organfailure by removing only a single organ
+/datum/ailment/disease/kidney_failure/left
+	failing_organ = "l"
+/datum/ailment/disease/kidney_failure/right
+	failing_organ = "r"
 
 /datum/ailment/disease/kidney_failure/stage_act(var/mob/living/affected_mob,var/datum/ailment_data/D)
 	if (..())
@@ -21,6 +28,11 @@
 	var/mob/living/carbon/human/H = affected_mob
 		
 	if (!H.organHolder || (!H.organHolder.left_kidney && !H.organHolder.right_kidney))
+		H.cure_disease(D)
+		return
+
+	//so you only need to remove the one kidney to cure the disease. 
+	if ((failing_organ == "l" && !H.organHolder.left_kidney) || (failing_organ == "r" && !H.organHolder.right_kidney))
 		H.cure_disease(D)
 		return
 

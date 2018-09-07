@@ -4479,17 +4479,27 @@
 		// lungs 
 		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) aren't just checked once, but OK
 			src.organHolder.handle_lungs_stamina()
-			if (src.organHolder.get_working_lung_amt() == 1)
-				if ((src.organHolder.left_lung && src.organHolder.left_lung.get_damage() > 65) || (src.organHolder.right_lung && src.organHolder.right_lung.get_damage() > 65))
-					src.contract_disease(/datum/ailment/disease/respiratory_failure,null,null,1)
+			// if (src.organHolder.get_working_lung_amt() == 1)
+			// if ((src.organHolder.left_lung && src.organHolder.left_lung.get_damage() > 65) || (src.organHolder.right_lung && src.organHolder.right_lung.get_damage() > 65))
+			// 	src.contract_disease(/datum/ailment/disease/respiratory_failure,null,null,1)
+			
+			if (src.organHolder.left_lung && src.organHolder.left_lung.get_damage() > 65)
+				src.contract_disease(/datum/ailment/disease/respiratory_failure/left,null,null,1)
 
-		// kdineys
+			else if (src.organHolder.right_lung && src.organHolder.right_lung.get_damage() > 65)
+				src.contract_disease(/datum/ailment/disease/respiratory_failure/right,null,null,1)
+
+
+		// kidneys
 		if (!src.nodamage)
 			if (src.organHolder.get_working_kidney_amt() == 0)
 				src.take_toxin_damage(2, 1)
-			else if (src.organHolder.get_working_kidney_amt() == 1)
-				if ((src.organHolder.left_kidney && src.organHolder.left_kidney.get_damage() > 65) || (src.organHolder.right_kidney && src.organHolder.right_kidney.get_damage() > 65))
-					src.contract_disease(/datum/ailment/disease/kidney_failure,null,null,1)
+			// else if (src.organHolder.get_working_kidney_amt() == 1)
+			if (src.organHolder.left_kidney && src.organHolder.left_kidney.get_damage() > 65)
+				src.contract_disease(/datum/ailment/disease/kidney_failure/left,null,null,1)
+
+			else if (src.organHolder.right_kidney && src.organHolder.right_kidney.get_damage() > 65)
+				src.contract_disease(/datum/ailment/disease/kidney_failure/right,null,null,1)
 
 		// liver
 		if (!src.nodamage)
@@ -4521,7 +4531,7 @@
 					src.contract_disease(/datum/ailment/disease/appendicitis,null,null,1)
 				
 				if (src.organHolder.appendix.robotic && src.health < 10 && prob(10))
-					src.reagents.add_reagent(pick("saline", "salbutamol", "salicylic_acid", "synthflesh"), 4)
+					src.reagents.add_reagent(pick("saline", "salbutamol", "salicylic_acid", "charcoal"), 4)
 
 
 		// spleen  if there's no spleen don't let the user regen blood naturally

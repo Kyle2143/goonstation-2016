@@ -65,7 +65,6 @@
 				if (prob(20))
 					H.reagents.add_reagent("toxin", 20)
 				add_pathogens(H, 30)
-
 				boutput(H, "<span style=\"color:red\">Your appendix has burst! Seek medical help!</span>")
 
 			H.take_toxin_damage(1)

@@ -36,10 +36,6 @@
 			if (prob(5))
 				boutput(H, "<span style=\"color:red\">Your abdomen area hurts!</span>")
 		if (2)
-			if (prob(1) && prob(10))
-				H.cure_disease(D)
-				boutput(H, "<span style=\"color:blue\">You feel better.</span>")
-				return
 			if (prob(8)) H.emote(pick("pale", "groan"))
 			if (prob(5))
 				boutput(H, "<span style=\"color:red\">Your back aches terribly!</span>")
@@ -49,9 +45,6 @@
 
 			if (prob(5)) H.emote(pick("faint", "collapse", "groan"))
 		if (3)
-			if (prob(1) && prob(10))
-				boutput(H, "<span style=\"color:blue\">You feel better.</span>")
-				H.cure_disease(D)
 			if (prob(20))
 				H.emote(pick("pale", "groan"))
 				H.organHolder.pancreas.take_damage(0, 0, 3)

@@ -1730,7 +1730,7 @@
 		if (patient.organHolder.chest)
 			switch (patient.organHolder.chest.op_stage)
 				if (0.0)
-					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 					if (prob(screw_up_prob))
 						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
@@ -1754,7 +1754,7 @@
 
 				//second cut, path for appendix/liver
 				if (1.0)
-					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 					if (prob(screw_up_prob))
 						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
@@ -1779,7 +1779,7 @@
 				if (2.0)
 					//remove left lung
 					if (surgeon.find_in_hand(src) == surgeon.l_hand)
-						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.left_lung)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1807,7 +1807,7 @@
 						return 1
 					//remove right lung
 					else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.right_lung)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1837,7 +1837,7 @@
 				//remove appendix or liver
 				if (3.0)
 					//remove appendix with this cut
-					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 					if (!patient.organHolder.appendix)
 						src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1866,7 +1866,7 @@
 				//path for stomach and intestines
 				if (4.0)
 					//remove stomach with this cut
-					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 					if (!patient.organHolder.stomach)
 						src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1895,7 +1895,7 @@
 				//paths for pancreas and kidneys
 				if (5.0)
 					//path for pancreas
-					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 					if (prob(screw_up_prob))
 						surgeon.visible_message("<span style=\"color:red\"><b>[surgeon][fluff]!</b></span>")
@@ -1919,7 +1919,7 @@
 
 				//remove pancreas
 				if (6.0)
-					playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+					playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 					if (!patient.organHolder.pancreas)
 						src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1950,7 +1950,7 @@
 				if (7.0)
 					//remove left kidney
 					if (surgeon.find_in_hand(src) == surgeon.l_hand)
-						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.left_kidney)
 							src.surgeryConfusion(patient, surgeon, damage_low)
@@ -1978,7 +1978,7 @@
 						return 1
 					//remove right kidney
 					else if (surgeon.find_in_hand(src) == surgeon.r_hand)
-						playsound(get_turf(patient), "sound/items/scissor.ogg", 50, 1)
+						playsound(get_turf(patient), "sound/items/Scissor.ogg", 50, 1)
 
 						if (!patient.organHolder.right_kidney)
 							src.surgeryConfusion(patient, surgeon, damage_low)
