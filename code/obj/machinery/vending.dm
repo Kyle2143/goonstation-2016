@@ -216,6 +216,7 @@
 		product_list += new/datum/data/vending_product("/obj/item/bandage", 4)
 		product_list += new/datum/data/vending_product("/obj/item/device/healthanalyzer", 4)
 		product_list += new/datum/data/vending_product("/obj/item/device/healthanalyzer_upgrade", 4)
+		product_list += new/datum/data/vending_product("/obj/item/device/healthanalyzer_organ_upgrade", 3)
 
 		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/sulfonal", rand(1, 2), hidden=1)
 		product_list += new/datum/data/vending_product("/obj/item/reagent_containers/glass/bottle/pancuronium", 1, hidden=1)

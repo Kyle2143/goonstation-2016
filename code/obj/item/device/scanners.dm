@@ -127,17 +127,43 @@ Contains:
 	var/disease_detection = 1
 	var/reagent_upgrade = 0
 	var/reagent_scan = 0
+	var/organ_upgrade = 0
+	var/organ_scan = 0
 	module_research = list("analysis" = 2, "medicine" = 2, "devices" = 1)
 	module_research_type = /obj/item/device/healthanalyzer
 
 	attack_self(mob/user as mob)
-		if (!src.reagent_upgrade)
-			boutput(user, "<span style=\"color:red\">No reagent scan upgrade detected!</span>")
-			return
-		else
+		if (!src.reagent_upgrade && !src.organ_upgrade)
+			boutput(user, "<span style=\"color:red\">No upgrades detected!</span>")
+
+		else if (src.reagent_upgrade && src.organ_upgrade)
+			if (src.reagent_scan && src.organ_scan)				//if both active, make both off
+				src.reagent_scan = 0
+				src.organ_scan = 0
+				boutput(user, "<span style=\"color:red\">All upgrades disabled.</span>")
+			
+			else if (!src.reagent_scan && !src.organ_scan)		//if both inactive, turn reagent on
+				src.reagent_scan = 1
+				src.organ_scan = 0
+				boutput(user, "<span style=\"color:red\">Reagent scanner enabled.</span>")
+
+			else if (src.reagent_scan)							//if reagent active, turn reagent off, turn organ on
+				src.reagent_scan = 0
+				src.organ_scan = 1
+				boutput(user, "<span style=\"color:red\">Reagent scanner disabled. Organ scanner enabled.</span>")
+
+			else if (src.organ_scan)							//if organ active, turn BOTH on
+				src.reagent_scan = 1
+				src.organ_scan = 1
+				boutput(user, "<span style=\"color:red\">All upgrades enabled.</span>")
+
+		else if (src.reagent_upgrade)
 			src.reagent_scan = !(src.reagent_scan)
 			boutput(user, "<span style=\"color:blue\">Reagent scanner [src.reagent_scan ? "enabled" : "disabled"].</span>")
-			return
+		
+		else if (src.organ_upgrade)
+			src.organ_scan = !(src.organ_scan)
+			boutput(user, "<span style=\"color:blue\">Organ scanner [src.organ_scan ? "enabled" : "disabled"].</span>")
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if (istype(W, /obj/item/device/healthanalyzer_upgrade))
@@ -147,9 +173,31 @@ Contains:
 			else
 				src.reagent_upgrade = 1
 				src.reagent_scan = 1
-				src.icon_state = "health"
+				if (src.organ_upgrade)
+					src.icon_state = "health"
+				else
+					src.icon_state = "health-r-up"
 				src.item_state = "healthanalyzer"
 				boutput(user, "<span style=\"color:blue\">Reagent scan upgrade installed.</span>")
+				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
+				user.u_equip(W)
+				qdel(W)
+				return
+
+		else if (istype(W, /obj/item/device/healthanalyzer_organ_upgrade))
+			if (src.organ_upgrade)
+				boutput(user, "<span style=\"color:red\">This analyzer already has an internal organ scan upgrade!</span>")
+				return
+			else
+				src.organ_upgrade = 1
+				src.organ_scan = 1
+				if (src.reagent_upgrade)
+					src.icon_state = "health"
+				else
+					src.icon_state = "health-o-up"
+
+				src.item_state = "healthanalyzer"
+				boutput(user, "<span style=\"color:blue\">Internal organ scan upgrade installed.</span>")
 				playsound(src.loc ,"sound/items/Deconstruct.ogg", 80, 0)
 				user.u_equip(W)
 				qdel(W)
@@ -168,7 +216,7 @@ Contains:
 
 		user.visible_message("<span style=\"color:red\"><b>[user]</b> has analyzed [M]'s vitals.</span>",\
 		"<span style=\"color:red\">You have analyzed [M]'s vitals.</span>")
-		boutput(user, scan_health(M, src.reagent_scan, src.disease_detection))
+		boutput(user, scan_health(M, src.reagent_scan, src.disease_detection, src.organ_scan))
 		update_medical_record(M)
 
 		if (M.stat > 1)
@@ -179,6 +227,8 @@ Contains:
 	icon_state = "health"
 	reagent_upgrade = 1
 	reagent_scan = 1
+	organ_upgrade = 1
+	organ_scan = 1
 
 /obj/item/device/healthanalyzer/vr
 	icon = 'icons/effects/VR.dmi'
@@ -187,6 +237,17 @@ Contains:
 	name = "health analyzer upgrade"
 	desc = "A small upgrade card that allows standard health analyzers to detect reagents present in the patient, and ProDoc Healthgoggles to scan patients' health from a distance."
 	icon_state = "health_upgr"
+	flags = FPRINT | TABLEPASS | CONDUCT
+	throwforce = 0
+	w_class = 1.0
+	throw_speed = 5
+	throw_range = 10
+	mats = 2
+
+/obj/item/device/healthanalyzer_organ_upgrade
+	name = "health analyzer organ scan upgrade"
+	desc = "A small upgrade card that allows standard health analyzers to detect the health of induvidual organs in the patient."
+	icon_state = "organ_health_upgr"
 	flags = FPRINT | TABLEPASS | CONDUCT
 	throwforce = 0
 	w_class = 1.0
