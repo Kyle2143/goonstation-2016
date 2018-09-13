@@ -4518,7 +4518,7 @@
 					if (prob(25))
 						src.organHolder.pancreas.take_damage(0, 0, 3)
 
-				if (src.organHolder.pancreas.get_damage() >= 65 && (prob(src.organHolder.pancreas.get_damage() * 0.2) || src.organHolder.liver.get_damage() > 100))
+				if (src.organHolder.pancreas.get_damage() >= 65 && (prob(src.organHolder.pancreas.get_damage() * 0.2) || src.organHolder.pancreas.get_damage() > 100))
 					src.contract_disease(/datum/ailment/disease/pancreatitis,null,null,1)
 
 		// appendix 

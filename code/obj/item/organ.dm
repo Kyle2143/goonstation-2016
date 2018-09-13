@@ -897,9 +897,17 @@
 	attackby(obj/item/W as obj, mob/user as mob)
 		if (istype(W, /obj/item/device/healthanalyzer))
 			var/obj/item/device/healthanalyzer/HA = W
-			if(HA.reagent_upgrade)
+
+			if(HA.organ_scan)
 				boutput(user, "<br><span style='color:purple'><b>[src]</b> - [src.get_damage()]</span>")
 				return
+			if (HA.organ_upgrade && !HA.organ_scan)
+				boutput(user, "<br><span style='color:purple'><b>You need to turn on the organ scan function to get a reading.</span>")
+				return
+			else 
+				boutput(user, "<br><span style='color:purple'><b>This device is not equipped to scan organs.</span>")
+				return
+
 		else
 			src.take_damage(W.force, 0, 0, W.hit_type)
   
@@ -1229,11 +1237,13 @@
 /obj/item/organ/lung/left
 	name = "left lung"
 	desc = "Inflating meat airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a left lung, since it has three lobes. Hopefully whoever used to have this one doesn't need it anymore."
+	organ_name = "lung_L"
 	icon_state = "lung_L"
 	body_side = L_ORGAN
 
 /obj/item/organ/lung/right
 	name = "right lung"
+	organ_name = "lung_R"
 	desc = "Inflating meat airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a right lung, since it has two lobes and a cardiac notch, where the heart would be. Hopefully whoever used to have this one doesn't need it anymore."
 	icon_state = "lung_R"
 	body_side = R_ORGAN

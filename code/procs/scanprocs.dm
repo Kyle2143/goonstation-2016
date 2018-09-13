@@ -133,18 +133,22 @@
 
 			if (organ_scan && !isvampire(H))
 				var/organ_data1 = null
-								
-				organ_data1 += organ_health_scan("left_lung", H)
-				organ_data1 += organ_health_scan("right_lung", H)
+				var/obfuscate = (disease_detection != 255 ? 1 : 0)		//this is so admin check_health verb see exact numbs, scanners don't. Can remove, not exactly necessary, but thought they might want it.
+				
+				organ_data1 += organ_health_scan("heart", H, obfuscate)
+				// organ_data1 += organ_health_scan("brain", H, obfuscate) //Might want, might not. will be slightly more accurate than current brain damage scan
 
-				organ_data1 += organ_health_scan("left_kidney", H)
-				organ_data1 += organ_health_scan("right_kidney", H)
-				organ_data1 += organ_health_scan("liver", H)
-				organ_data1 += organ_health_scan("stomach", H)
-				organ_data1 += organ_health_scan("intestines", H)
-				organ_data1 += organ_health_scan("spleen", H)
-				organ_data1 += organ_health_scan("pancreas", H)
-				organ_data1 += organ_health_scan("appendix", H)
+				organ_data1 += organ_health_scan("left_lung", H, obfuscate)
+				organ_data1 += organ_health_scan("right_lung", H, obfuscate)
+
+				organ_data1 += organ_health_scan("left_kidney", H, obfuscate)
+				organ_data1 += organ_health_scan("right_kidney", H, obfuscate)
+				organ_data1 += organ_health_scan("liver", H, obfuscate)
+				organ_data1 += organ_health_scan("stomach", H, obfuscate)
+				organ_data1 += organ_health_scan("intestines", H, obfuscate)
+				organ_data1 += organ_health_scan("spleen", H, obfuscate)
+				organ_data1 += organ_health_scan("pancreas", H, obfuscate)
+				organ_data1 += organ_health_scan("appendix", H, obfuscate)
 
 				if (organ_data1)
 					organ_data = "<span style='color:purple'><b>Scans Indicate Organ Damage:</b></span>"
@@ -202,15 +206,37 @@
 	return data
 
 //takes string input, for name in organholder.organ_list and checks if the organholder has anything
-/proc/organ_health_scan(var/input, var/mob/living/carbon/human/H)
+//obfuscate, if true then don't show the exact organ health amount. Minor damage, moderate damage, severe damage, critical damage
+/proc/organ_health_scan(var/input, var/mob/living/carbon/human/H, var/obfuscate = 0)
 	var/obj/item/organ/O = H.organHolder.organ_list[input]
 	if (O && istype(O, /obj/item/organ))
-		if (O.get_damage() > 0)
-			return "<br><span style='color:[O.get_damage() >= 75 ? "red" : "purple"]'><b>[input]</b> - [O.get_damage()]</span>"
+		obfuscate_organ_health(O)
+		var/damage = O.get_damage()
+		if (obfuscate)
+			return obfuscate_organ_health(var/input, O)
 		else
-			return null
+			if (damage > 0)
+				return "<br><span style='color:[damage >= 65 ? "red" : "purple"]'><b>[input]</b> - [O.get_damage()]</span>"
+			else
+				return null
+
 	else
 		return "<br><span style='color:purple'><b>The patient's [input]</b> is missing!</span>"
+
+//Using input here because it get's the organs name in an easy and clear way. using name or organ_name in obj/item/organ is not any better really
+/proc/obfuscate_organ_health(var/input, var/obj/item/organ/O)
+	var/damage = O.get_damage()
+
+	if (damage < 10)
+		return "<br><span style='color:purple'><b>[input]</b> - Minor damage</span>"
+	else if (damage < 30)
+		return "<br><span style='color:purple'><b>[input]</b> - Moderate damage</span>"
+	else if (damage < 65)
+		return "<br><span style='color:red'><b>[input]</b> - Significant damage</span>"
+	else if (damage < 90)
+		return "<br><span style='color:red'><b>[input]</b> - Critical damage</span>"
+	else 
+		return null
 
 /proc/update_medical_record(var/mob/living/carbon/human/M)
 	if (!M || !ishuman(M))

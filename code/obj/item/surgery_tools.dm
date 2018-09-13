@@ -881,7 +881,12 @@ SURGICAL SCISSORS
 	New()
 		..()
 		src.create_reagents(5)
-		icon_state = pick("surgical_scissors-r", "surgical_scissors-g", "surgical_scissors-b", "surgical_scissors-v", "surgical_scissors-d", "surgical_scissors-g")
+		if (prob(1) && prob(10))	// 1:1000 chance
+			icon_state = "surgical_scissors-"
+			desc = "Used for precisely cutting up people in surgery. I guess you could use them on paper too... There's something off about this pair."
+
+		else
+			icon_state = pick("surgical_scissors-r", "surgical_scissors-g", "surgical_scissors-b", "surgical_scissors-v", "surgical_scissors-dr", "surgical_scissors-g", "surgical_scissors-gr", "surgical_scissors-gf", "surgical_scissors-c", "surgical_scissors-pi", "surgical_scissors-y")
 
 
 	attack(mob/living/carbon/M as mob, mob/user as mob)
@@ -893,4 +898,3 @@ SURGICAL SCISSORS
 		if (!snip_surgery(M, user))
 			return ..()
 		else return
-

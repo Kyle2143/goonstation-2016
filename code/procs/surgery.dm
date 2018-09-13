@@ -13,7 +13,7 @@
 		return 1 // surgery is okay
 	else if (locate(/obj/stool/bed, patient.loc) && patient.lying) // is the patient on a bed and lying?
 		return 1 // surgery is okay
-	else if (locate(/obj/table, patient.loc) && (patient.paralysis || patient.stat)) // is the patient on a table and paralyzed or dead?
+	else if (locate(/obj/table, patient.loc) && (patient.paralysis || patient.stat || (patient.lying && patient.reagents.get_reagent_amount("ethanol") > 40))) // is the patient on a table and paralyzed or dead? Or is it lyind on the talbe and has a good bit of ethanol in it?
 		return 1 // surgery is okay
 	else if (patient.reagents && patient.reagents.get_reagent_amount("ethanol") > 100 && patient == surgeon) // is the patient really drunk and also the surgeon?
 		return 1 // surgery is okay
@@ -1321,7 +1321,7 @@
 /* ---------- SUTURE - CHEST ---------- */
 
 	else if (surgeon.zone_sel.selecting == "chest")
-
+		//Leaving this in just in case. I'm like 99% sure that it won't get triggered since the heart surgery op_stage has been moved to chest.
 		if (patient.organHolder && patient.organHolder.heart && patient.organHolder.heart.op_stage > 0.0)
 			patient.tri_message("<span style=\"color:blue\"><b>[surgeon]</b> sews the incision on [patient == surgeon ? "[his_or_her(patient)]" : "[patient]'s"] chest closed with [src].</span>",\
 			surgeon, "<span style=\"color:blue\">You sew the incision on [surgeon == patient ? "your" : "[patient]'s"] chest closed with [src].</span>",\
