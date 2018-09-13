@@ -1496,10 +1496,9 @@ globules of this sludge can be harvested from the plant however - with proper pr
 	info = {"<h1>Trent's Anatomy</h1>
 		<p><i>Disclaimer: At the time of writing, all information in this book is correct. However, over time, the information may become out of date. But that doesn't make this information any less correct.</i></p>
 		<h2><b>FOREWARD</b></h2>
-		<p><i>by Dorothy "Dotty" Spud</i>
-		<br>
-		While snails share many organs in common with the human body, they have no sense of hearing.</p>
-		<br>---------------------------------------------------------------------------------------------<br>
+		<p>While snails share many organs in common with the human body, they have no sense of hearing.<br>
+		<i>by Dorothy "Dotty" Spud</i></p>
+		---------------------------------------------------------------------------------------------<br>
 
 		<h3>Index</h3>
 		<li><a href="#introduction">Introduction</a>
@@ -1696,8 +1695,7 @@ globules of this sludge can be harvested from the plant however - with proper pr
 
 		</div>
 <h6>by Trent Durinste</h6>
-<h6>2143 C.E.</h6>
-"}
+<h6>2143 C.E.</h6>"}
 
 /obj/item/paper/book/minerals
 	name = "Mineralogy 101"
