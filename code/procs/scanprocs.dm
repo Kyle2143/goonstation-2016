@@ -213,7 +213,7 @@
 		obfuscate_organ_health(O)
 		var/damage = O.get_damage()
 		if (obfuscate)
-			return obfuscate_organ_health(var/input, O)
+			return obfuscate_organ_health(input, O)
 		else
 			if (damage > 0)
 				return "<br><span style='color:[damage >= 65 ? "red" : "purple"]'><b>[input]</b> - [O.get_damage()]</span>"
