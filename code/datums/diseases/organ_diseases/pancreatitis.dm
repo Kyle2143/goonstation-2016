@@ -34,7 +34,7 @@
 				return
 			if (prob(8)) H.emote(pick("pale", "shudder"))
 			if (prob(5))
-				boutput(H, "<span style=\"color:red\">Your abdomen area hurts!</span>")
+				boutput(H, "<span style=\"color:red\">Your abdomen hurts!</span>")
 		if (2)
 			if (prob(8)) H.emote(pick("pale", "groan"))
 			if (prob(5))

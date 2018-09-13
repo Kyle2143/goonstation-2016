@@ -55,17 +55,18 @@
 				H.organHolder.appendix.take_damage(0, 0, 3)
 
 			//human's appendix burst, and add a load of toxic chemicals or bacteria to the person.
-			if (prob(5))
-				H.cure_disease(D)
-				H.organHolder.appendix.take_damage(200,200,200)
-				// H.organHolder.drop_organ("appendix")
-				H.emote("collapse")
-				H.weakened = max(H.weakened, 30)
+			if (prob(10))
+				if (H.organHolder.appendix.get_damage() >= 90)
+					H.cure_disease(D)
+					H.organHolder.appendix.take_damage(200,200,200)
+					// H.organHolder.drop_organ("appendix")
+					H.emote("collapse")
+					H.weakened = max(H.weakened, 30)
 
-				if (prob(20))
-					H.reagents.add_reagent("toxin", 20)
-				add_pathogens(H, 30)
-				boutput(H, "<span style=\"color:red\">Your appendix has burst! Seek medical help!</span>")
+					if (prob(20))
+						H.reagents.add_reagent("toxin", 20)
+					add_pathogens(H, 30)
+					boutput(H, "<span style=\"color:red\">Your appendix has burst! Seek medical help!</span>")
 
 			H.take_toxin_damage(1)
 			H.updatehealth()
