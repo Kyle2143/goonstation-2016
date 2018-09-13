@@ -19,7 +19,7 @@
 
 	var/mob/living/carbon/human/H = affected_mob
 		
-	if (!H.organHolder || !H.organHolder.appendix)
+	if (!H.organHolder || !H.organHolder.appendix || H.organHolder.appendix.robotic)
 		H.cure_disease(D)
 		return
 
