@@ -1489,6 +1489,216 @@ globules of this sludge can be harvested from the plant however - with proper pr
 		<i>This is not a complete list of all available medications. Further research and development efforts by NT Medical and Science divisions are strongly encouraged.</i>
 		"}
 
+/obj/item/paper/book/medical_surgery_guide
+	name = "Trent's Anatomy"
+	desc = "The inane ramblings of the first madman who bothered writing a textbook on the spaceman anatomy and surgical practices."
+	icon_state = "book8"
+	info = {"<h1>Trent's Anatomy</h1>
+		<p><i>Disclaimer: At the time of writing, all information in this book is correct. However, over time, the information may become out of date. But that doesn't make this information any less correct.</i></p>
+		<h2><b>FOREWARD</b></h2>
+		<p><i>by Dorothy "Dotty" Spud</i>
+		<br>
+		While snails share many organs in common with the human body, they have no sense of hearing.</p>
+		<br>---------------------------------------------------------------------------------------------<br>
+
+		<h3>Index</h3>
+		<li><a href="#introduction">Introduction</a>
+		<li><a href="#tools">Tools</a>
+		<li><a href="#surgery">Surgery</a>
+		<li><a href="#functions">Organ Functions</a>
+		<li><a href="#diseases">Organ Diseases</a>
+		<li><a href="#treatment">Treatments</a>
+
+		<h3>Introduction</h3>
+
+		<p>Every spaceman and spacewoman has several internal organs that allow they to live, this textbook will seek to inform you about some of them and how to do surgery. The most important organ of the body is a hotly disputed topic among Nanotrasen employees and regular people. Most Nanotrasen experts agree that it is the butt, as the humiliation of losing a butt is considered worse than death. Others say that it's the brain, who can say for sure? Not I.</p>
+
+		<h3>The spaceman body and you</h3>
+		<div id ="introduction">
+		<p>Here are all the important organs and their main functions:</p>
+		<li><b>Brain</b> - Needed for thinking.
+		<li><b>Butt</b> - Needed for thinking.
+		<li><b>Heart</b> - Pumps life giving blood around your body. If you remove this, you should replace it very quickly.
+		<li><b>Eyes</b> - You see out of these.
+		<li><b>Lungs</b> - These steal Oxygen from the air on space stations and give it to you to use for respiration. Atmos engineers hate em!
+		<li><b>Kidneys</b> - These filter out "toxins" or "thetans" as I like to call them from your blood and turn them into pee.
+		<li><b>Liver</b> - This is basically the same as kidneys, but looks different, has a different name, and does some different things. 
+		<li><b>Stomach</b> - This digests all the food you eat orally. If this is empty, you will not be able to puke, be very careful.
+		<li><b>Intestines</b> - This is the glorious organ that turns food into poo. Rather it did, until something catastrophic happened a few years ago and now nobody's makes poo anymore.
+		<li><b>Spleen</b> - This has some function. Mainly it is involved in making blood in spacemen, maybe it does something else too.
+		<li><b>Pancreas</b> - This makes insulin in response to sugar in your bloodstream
+		<li><b>Appendix</b> - What does this do? Nobody knows, and if they ever did, they were lying. It does have a "fun" ability to attempt to kill you at random so there's that.
+		<br>
+		<p>Those are all the organs that will be discussed in this book. Some say there are more organs, but I don't care about those so I won't write a book about them.</p>
+
+
+		</div>
+
+		<h3>The Tools</h3>
+		<div id ="tools">
+
+		<p>There are several tools involved in surgery, some of them are even listed here:</p>
+		<li>Scalpel - Used for cutting.
+		<li>Circular Saw - Used for sawing.
+		<li>Enucleation Spoon  - Used melon-balling eye's out of a patients head.
+		<li>Hemostat - Used for clamping down bleeders. Hold this in your off hand to make most surgery cause less bleeding.
+		<li>Garden Snips - Used for snipping.
+		<br>
+
+		<li>Health Analyzer Organ Upgrade - Until now, it was only possible for health analyzers to crudely detect brain damage in a subject. With this upgrade, health analyzers will be able to crudely detect the health of ANY organ! 
+
+		<li>The last tool, if it can be called such, is the operating table or bed. For some reason that still has medical scientists baffled, the type of surface that the patient is placed on in surgery is important for being able to perform surgery. Operating tables are the gold standard for surgery, next comes regular beds, these work just as well. Finally you can perform surgery on any old table, provided the patient is knocked out, stunned, or otherwise sufficiently anesthetized/drunk.
+
+		</div>
+
+		<h3>Doing Surgery</h3>
+		<div id ="surgery">
+
+		<p>Everybody knows how to perform brain surgery, the basest form of surgery that even a staff assistant manage, so I won't bore you with how to perform it here. Instead here are some revolutionary new surgery practices <i>invented</i> by me to get at all those tantalizing organs inside of your fellow spaceman:</p>
+		<br>
+		<li>Scalpel =		cut
+		<li>Circular Saw = 	saw
+		<li>Garden Snips = 	snips
+		<br>
+
+		<li>lungs = 		snip -> saw -> snip - w/ Right/Left hands for removing R/L lungs -
+		<li>appendix = 		snip -> snip -> snip -
+		<li>liver = 		snip -> snip -> cut -
+		<li>stomach = 		snip -> cut -> snip -
+		<li>intestines = 	snip -> cut -> cut -
+		<li>pancreas = 		cut -> snip -> snip - 
+		<li>spleen = 		cut -> snip -> cut - 
+		<li>kidneys = 		cut -> cut -> snip w/ Right/Left hands for removing R/L kidneys -
+		<li>heart = 		cut -> saw -> cut -> sawing	*on "help" intent
+		<br>
+		<p>After each successful organ removal or replacement, the surgeon must close up so they can take the correct pathway to the next organ they want to locate. The simplest way to do so would be to suture the chest close with regular a old medical suture.</p>
+		<br>
+
+		<p>As an afterthought, for the sake of completeness I <b>will</b> bother bore you with how to do some of the "lesser" surgeries, here are the steps for most other common surgical procedures:</p>
+
+		<li>brain = cut -> saw -> cut -> saw - Target HEAD on "HELP" intent (*note - Performing this surgery on "HARM" intent can decapitate the head)
+		<li>eyes = L/R spoon -> L/R cut -> L/R spoon - 	in order to remove a specific eye, you must only hold a tool in the corresponding hand R/L
+		<li>limbs = cut -> saw -> cut -> saw - 	while targeting the appropriate limb. Replacing a limb only requires you to target the correct limb, and then staple it firmly to the stump
+		<li>butt = I do not know how to remove butts, and if I did I wouldn't spread that knowledge for it is a cruel and inhumane practice to remove a butt from anyone
+		</div>
+
+		<h3>Organ Functions</h3> 
+		<div id ="functions">
+
+		<h5>Brain</h5>
+		<p>This organ takes damage in a number of ways, through concussions, oxygen loss, or neurotoxins. That's pretty much it actually.</p>
+		<br>
+
+		<h5>Butt</h5>
+		<p>This is needed for farting, I think, I've never removed mine so I wouldn't know. Presumably it has some medical function. It can be worn as a hat.</p>
+		<br>
+
+		<h5>Heart</h5>
+		<p>This terrible organ is really awful, it breaks down more than any other organ and when it does, you're as good as dead. So many things can cause it to fail, such as not breathing for a minute or two. Silly things like that.</p>
+		<br>
+
+		<h5>Eyes</h5>
+		<p>Without these, you'll be blind. I've heard it said that sometimes blind people sometimes see more than all of us normal spacemen. Anyway, these take damage from numerous sources, like getting stabbed in the eye. They can be repaired with oculine. Strangely, you eyes can be in perfect health and you can go blind.</p>
+		<br>
+
+		<h5>Lungs</h5>
+		<p>Basically the most important organs for swimmers, runners, and players of sportsball. You can get by without em, but you probably won't want to. Smoking is the number one enemy of the noble Lung, they don't mind your drinking or gambling, but smoking is where they draw the line.</p>
+		<br>
+
+		<h5>Kidneys</h5>
+		<p>These filter out all the toxins your inject/ingest on a daily basis. Any time you get injured by toxins, these babies are gonna take the hit for you and be right there with you. </p>
+		<br>
+
+		<h5>Liver</h5>
+		<p>Ethanol is the worst enemy/best friend of the Liver. The liver is a powerful and resilient organ, but ethanol is super effective against it. If you want to drink yourself to death, but not to a death from liver failure, you'd better swap out your good ole liver for a brand new cyber liver. Those like ethanol so much, it makes them run even better!</p>
+		<br>
+
+		<h5>Stomach</h5>
+		<p>Nothing to see here it digests food, what else is there to know?</p>
+		<br>
+
+		<h5>Intestines</h5>
+		<p>Intestines suck all the nutrients out of your food and put them into your body. And before I get a letter in the space-mail about this, there is no such thing as a "small" or "large" intestines, there is just one.</p>
+		<br>
+
+		<h5>Spleen</h5>
+		<p>The spleen has several functions, I assume. The only one I have discovered is it's ability to help the spaceman body produce blood. If there are more, then I take credit for their discovery by virtue of discovering the Spleen.</p>
+		<br>
+
+		<h5>Pancreas</h5>
+		<p>When you eat the sugar, the mighty pancreas attempts to produce insulin in order to help you metabolize it. So that you can keep eating sugar forever until you die..</p>
+		<br>
+
+		</div>
+
+		<h3>Organ Diseases</h3>
+		<div id ="diseases">
+
+		<p>Some diseases affect specific organs when that organ has taken enough damage to start to fail, for that reason I have decided to call this class of diseases "Organ Diseases". Most of these are fairly manageable, and you won't suffer any debilitating effects until you the disease does enough damage to your organ and it shuts down.</p>
+
+		<h5>Appendicitis</h5>
+		<p>This disease is very, very deadly. If left untreated, your appendix will explode violently, spraying gross toxins and pathogens all throughout the inside of your body. It can happen anywhere or anytime, the only thing that will stop it is a simple surgery to remove the appendix. While there, you might as well ask around to see if you can have it replaced with the much more stylish cyber-kidney.</p>
+		<br>
+
+		<h5>Pancreatitis</h5>
+		<p>This is a nasty disease, as insidious as Darth Sidious and as fun sounding as fudge. But that is where the fun ends. Think you can eat all the sugar you want forever with no consequences other than hypoglycemic shock? Think again. That insulin your poor poor pancreas is producing to keep you chugging along doesn't come free, take care of your pancreas or risk losing the ability to enjoy your favorite brand of space cola and bars of chocolate.</p>
+		<br>
+
+		<h5>Liver Failure</h5>
+		<p>This is probably the worst disease I made up, I mean discovered. Your liver is a fantastic organ, without it, you would be hard pressed to enjoy all that alcohol you always drink since you'd probably die pretty quick.</p>
+		<br>
+
+		<h5>Kidney Failure</h5>
+		<p>This is basically the same as liver failure, but your kidneys are the ones failing, good thing you got two of em. Just remove or replace the failing one and you'll be good to go. That is, unless it gets too severe.</p>
+		<br>
+
+		<h5>Respiratory Failure</h5>
+		<p>Basically, your lungs are failing, or one of them is at least, and it's bringing the other one along for the ride. It can be caused by a number of things, like smoking. Or breathing scalding hot air. Or smoking. Did I mention smoking can cause this?</p>
+		<br>
+
+		<h4>Treating Organ Diseases</h4>
+		<p>In most cases, removal/replacement of the organ in failure will cure the disease. Certain reagents can be effective at healing organ damage, and curing their respective diseases.</p>
+		<br>
+		
+
+		</div>
+
+		<h3>Organ Damage Treatment</h3>
+		<div id ="treatment">
+
+		<p>Presently there are only a few known ways to treat organ damage, this "chapter" will discuss the most common ways.</p>
+		<br>
+		<p>There are 3 different classifications of organ drugs that are effective at facilitating the curing diseased/healing organs, provided they are not damaged too extensively.</p>
+
+		<h5>Organ Drugs Class I</h5>
+		<p>This class specifically targets the spleen and lungs to promote healing.</p>
+		<br>
+
+		<h5>Organ Drugs Class II</h5>
+		<p>This class specifically targets the liver, kidneys, stomach, and intestines to promote healing.</p>
+		<br>
+
+		<h5>Organ Drugs Class III</h5>
+		<p>This class specifically targets the appendix and pancreas to promote healing.</p>
+		<br>
+
+		<p>Two other reagents that can be used for more general treatment.</p>
+		
+		<h5>Cryoxadone</h5>
+		<p>Capable of healing all organs in the body, just rather slowly and coldly.</p>
+		<br>
+
+		<h5>Omnizine</h5>
+		<p>Is there anything this stuff can't do? There is, but in the context of healing organs omnizine is pretty good at it.</p>
+		<br>
+
+		<p>It's been theorized that gene therapies are also capable to healing internal organs over time. Though I have not collected any solid data on this to date.</p>
+
+		</div>
+<h6>by Trent Durinste</h6>
+<h6>2143 C.E.</h6>
+"}
+
 /obj/item/paper/book/minerals
 	name = "Mineralogy 101"
 	icon_state = "book5"
