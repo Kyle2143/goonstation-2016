@@ -142,10 +142,11 @@ datum
 				var/mob/living/carbon/human/H = M
 				if(H.traitHolder.hasTrait("slowmetabolism"))
 					deplRate /= 2
-				if (H.organHolder && (!H.organHolder.liver || H.organHolder.liver.get_damage() >= 100))
-					deplRate /= 2
-				if (H.organHolder && (H.organHolder.get_working_kidney_amt() == 0))
-					deplRate /= 2
+				if (H.organHolder)
+					if (!H.organHolder.liver || H.organHolder.liver.get_damage() >= 100)	//if no liver or liver is dead, deplete slower
+						deplRate /= 2
+					if (H.organHolder.get_working_kidney_amt() == 0)	//same with kidneys
+						deplRate /= 2
 
 			holder.remove_reagent(src.id, deplRate) //By default it slowly disappears.
 
