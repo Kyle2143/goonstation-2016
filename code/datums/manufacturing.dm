@@ -761,7 +761,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/appendix/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -771,7 +771,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/pancreas/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -781,7 +781,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/spleen/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -791,7 +791,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/intestines/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -801,7 +801,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/stomach/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -811,7 +811,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/kidney/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -821,7 +821,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/liver/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
@@ -831,7 +831,7 @@
 	item_names = list("Metal","Conductive Material","Any Material")
 	item_amounts = list(1,1,1)
 	item_outputs = list(/obj/item/organ/lung/cyber)
-	time = 25
+	time = 15
 	create = 1
 	category = "Component"
 
