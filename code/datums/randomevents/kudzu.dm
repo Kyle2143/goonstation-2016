@@ -57,7 +57,7 @@
 		if (istype(O, /obj/machinery/door/))
 			if (istype(src, /obj/machinery/door/airlock))	//pretty sure you can only weld airlocks, but they are most of the doors anyway
 				var/obj/machinery/door/airlock/AL = src
-				if (AL.welded)
+				if (AL.welded && AL.locked)
 					dogrowth = 0
 
 			if(O:p_open == 0 && prob(50)) O:open()
