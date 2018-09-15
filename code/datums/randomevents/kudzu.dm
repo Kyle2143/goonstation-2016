@@ -55,6 +55,11 @@
 	for(var/obj/O in Vspread)
 		if (istype(O, /obj/window) || istype(O, /obj/forcefield) || istype(O, /obj/blob) || istype(O, /obj/spacevine)) dogrowth = 0
 		if (istype(O, /obj/machinery/door/))
+			if (istype(src, /obj/machinery/door/airlock))	//pretty sure you can only weld airlocks, but they are most of the doors anyway
+				var/obj/machinery/door/airlock/AL = src
+				if (AL.welded)
+					dogrowth = 0
+
 			if(O:p_open == 0 && prob(50)) O:open()
 			else dogrowth = 0
 	if (dogrowth == 1)
