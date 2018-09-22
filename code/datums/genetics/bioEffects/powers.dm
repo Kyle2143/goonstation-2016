@@ -99,7 +99,7 @@
 	probability = 5
 	blockCount = 3
 	blockGaps = 2
-	stability_loss = 10
+	stability_loss = 15
 	using = 0
 	safety = 0
 	power = 0
@@ -112,35 +112,14 @@
 	icon_state = "apparition"
 	targeted = 0
 	target_anything = 0
-	var/first_cast = 1		//first cast sets the teleport location
-	var/turf/destination
-
-	New()
-		..()
-
-		src.object.verbs+=/datum/targetable/geneticsAbility/apparition/verb/reset_dest
-
-	verb/reset_dest()
-		if (istype(src,/obj/screen/ability/topBar/genetics))
-			if (!istype(src.owner,/datum/targetable/geneticsAbility/apparition))
-				boutput(usr, "You decide you no longer want to be prepared to apparate to [destination].AAAAAAAAAAAAA")
-				src.owner.first_cast = 1
-				src.owner.destination = null
-		else
-			boutput(usr, "You decide you no longer want to be prepared to apparate to [destination].BBBBBBBBB")
-			first_cast = 1
-			destination = null
+	var/turf/destination = null
 
 	cast(atom/target)
 		if (..())
 			return 1
 
-
-		//first time its used it will set the place to return to
-		if (first_cast)
-			// destinations += get_turf(owner)
+		if (!destination)
 			destination = get_turf(owner)
-			first_cast = 0
 			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
 			return
 
@@ -158,17 +137,15 @@
 
 			var/turf/T = pick(possible_destinations)
 			owner.set_loc(T)
+			do_teleport(owner, T, 0) ///You will appear at the spot
 
 			//ability to teleport more than one person
 			if (linked_power.power)
-				//loop to determine possible locations for others to end up within one tile of the where the caster will end up
-				var/turf/list/other_destinations = new/list()
-				for (var/turf/adj in orange(1, T))
-					if (adj.density == 0)
-						other_destinations += adj
 				//loop through mobs grabbed by caster and place them 
 				for (var/obj/item/grab/G in owner.contents)
-					G.affecting.set_loc(pick(other_destinations))
+					G.state = 2	//aggressive grab
+					G.affecting.set_loc(T)
+					do_teleport(owner, T, 1) ///You will appear adjacent to the beacon
 
 			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
@@ -176,6 +153,9 @@
 			//no chance to splinch if synchronized
 			if (!linked_power.safety && prob(10))
 				splinch(owner)
+
+			destination = null
+			boutput(usr, "/blue You decide that [destination.name] not where you want to apparate to.")
 
 		return
 	
@@ -192,14 +172,9 @@
 			else if (prob(50))
 				part_splinched = pick("l_arm", "r_arm", "l_leg", "l_leg")
 				H.sever_limb(part_splinched)
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and [part_splinched] goes flying off!</span>")			
 
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and their [part_splinched] falls off!</span>")			
 
-	verb/forget_destination()
-		first_cast = 1
-		destination = null
-		// destinations = list()
-		boutput(usr, "/blue You decide that [destination.name] not where you want to apparate to.")
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
