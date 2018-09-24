@@ -99,7 +99,7 @@
 	probability = 5
 	blockCount = 3
 	blockGaps = 2
-	stability_loss = 15
+	stability_loss = 10
 	using = 0
 	safety = 0
 	power = 0
@@ -137,15 +137,18 @@
 
 			var/turf/T = pick(possible_destinations)
 			owner.set_loc(T)
-			do_teleport(owner, T, 0) ///You will appear at the spot
+			animate_blink(owner)
+			do_teleport(owner, T, 0, 1, 0) ///You will appear at the spot
+			animate_blink(owner)
 
 			//ability to teleport more than one person
 			if (linked_power.power)
 				//loop through mobs grabbed by caster and place them 
 				for (var/obj/item/grab/G in owner.contents)
-					G.state = 2	//aggressive grab
-					G.affecting.set_loc(T)
-					do_teleport(owner, T, 1) ///You will appear adjacent to the beacon
+					if (G.state == G.state)	//aggressive grab. Not sure if this is stil used
+						animate_blink(G.affecting)
+						do_teleport(G.affecting, get_turf(owner), 1, 1, 0) ///You will appear adjacent to the beacon
+						animate_blink(G.affecting)
 
 			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
