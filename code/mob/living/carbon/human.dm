@@ -2742,6 +2742,21 @@
 		last_move_trigger = ticker.round_elapsed_ticks
 		deliver_move_trigger(m_intent)
 
+	if (istype(src.glasses, /obj/item/clothing/glasses/sunglasses/camera))
+		var/obj/item/clothing/glasses/sunglasses/camera/g = src.glasses
+
+		if (g.pair)
+			//delete vis_contents contents
+			g.pair.vis_contents = null
+
+			//populate vis_contents
+			for (var/i in orange(1, src.loc))
+				if (istype(i, /mob) || istype(i, /obj)) 
+					continue
+				g.pair.vis_contents += i
+
+
+
 	if ((t7 && (src.pulling && ((get_dist(src, src.pulling) <= 1 || src.pulling.loc == src.loc) && (src.client && src.client.moving)))))
 		var/turf/T = src.loc
 		. = ..()

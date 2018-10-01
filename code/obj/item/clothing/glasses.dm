@@ -50,6 +50,13 @@
 	protective_temperature = 1300
 	var/already_worn = 0
 
+/obj/item/clothing/glasses/sunglasses/camera
+	name = "camera sunglasses"
+	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Enhanced shielding blocks many flashes."
+	icon_state = "sun"
+	item_state = "sunglasses"
+
+
 /obj/item/clothing/glasses/sunglasses/equipped(var/mob/user, var/slot)
 	var/mob/living/carbon/human/H = user
 	if(istype(H) && slot == "eyes")
