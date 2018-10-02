@@ -1,8 +1,17 @@
+//This is the base stuff. the actual interaction with the attached computer, and the physical monitor
 /obj/machinery/security_monitor
 	name = "Security Monitor"
-	icon = 'icons/obj/stationobjs.dmi'
-	icon_state = "hologram0"
+	icon = 'icons/obj/sec_TV.dmi'
+	icon_state = "monitor"
 	anchored = 1.0
+
+
+
+//The image displayed on the "screen". Takes input from the "camera"
+/datum/monitor_screen
+	name = "Monitor Screen"
+	icon = 'icons/obj/sec_TV.dmi'
+	icon_state = "screen"
 	appearance_flags = KEEP_TOGETHER 
 	// layer = FLOAT_LAYER
 	// layer = LAYER_PLANE
@@ -11,11 +20,11 @@
 	var/icon/full_icon
 	var/obj/item/clothing/glasses/sunglasses/camera/pair = null
 	var/count = 1
+
 	New()
 		src.Scale(0.4, 0.4)
-		src.pixel_x = -11
-		src.pixel_y = -11
-		// src.overlays += image('shirt.dmi',icon_state = "red")
+		// src.pixel_x = -11
+		// src.pixel_y = -11
 
 
 	attack_hand(mob/user as mob)
