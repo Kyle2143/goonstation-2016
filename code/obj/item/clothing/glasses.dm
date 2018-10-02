@@ -55,6 +55,7 @@
 	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Enhanced shielding blocks many flashes."
 	icon_state = "sun"
 	item_state = "sunglasses"
+	var/obj/machinery/security_monitor/pair = null
 
 
 /obj/item/clothing/glasses/sunglasses/equipped(var/mob/user, var/slot)

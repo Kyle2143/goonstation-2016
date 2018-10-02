@@ -3,25 +3,69 @@
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "hologram0"
 	anchored = 1.0
-	var/obj/item/clothing/glasses/sunglasses/camera/glasses = null
+	appearance_flags = KEEP_TOGETHER 
+	// layer = FLOAT_LAYER
+	// layer = LAYER_PLANE
+
+	var/image/full_image
+	var/icon/full_icon
+	var/obj/item/clothing/glasses/sunglasses/camera/pair = null
+	var/count = 1
+	New()
+		src.Scale(0.4, 0.4)
+		src.pixel_x = -11
+		src.pixel_y = -11
+		// src.overlays += image('shirt.dmi',icon_state = "red")
+
 
 	attack_hand(mob/user as mob)
-		pair
+		if (count)
+			pair()
+		else
+			pair = null
+		// thing()
 
 	proc/pair()
-		for (var/obj/item/clothing/glasses/sunglasses/camera/g in orange(8, src))
-			glasses = g
+		for (var/obj/item/clothing/glasses/sunglasses/camera/g in orange(5, src))
+			pair = g
+			pair.pair = src
+
+			src.visible_message("<span style=\"color:blue\"><b>PAIREDDDD!</b></span>")
+
 			continue
 
 
-			// //delete vis_contents contents
-			// src.vis_contents = null
+		// if (src.pair)
+		// 	//delete vis_contents contents
+		// 	src.vis_contents = null
 
-			// //populate vis_contents
-			// for (var/i in orange(1, g.loc))
-			// 	if (istype(i, /mob) || istype(i, /obj)) 
-			// 		continue
-			// 	src.vis_contents += i
+		// 	//populate vis_contents
+		// 	for (var/i in view(2, src.pair.loc))
+		// 		if (istype(i, /mob) || istype(i, /obj)) 
+		// 			continue
+		// 		src.vis_contents += i
+
+	proc/thing()
+		// var/obj/item/photo/P = new/obj/item/photo( get_turf(src) )
+		// src.full_image.scale(0.5, 0.5)
+
+		// src.full_image = photo//image(photo, "")
+		// src.fullIcon = photo_icon
+
+		var/oldtransform = src.full_image.transform
+		src.full_image.transform = matrix(0.6875, 0.625, MATRIX_SCALE)
+		src.full_image.pixel_y = 1
+		src.overlays += src.full_image
+		src.full_image.transform = oldtransform
+		src.full_image.pixel_y = 0
+
+		src.overlays += src.full_image
+		//boutput(world, "[bicon(P.full_image)]")
+			
+
+			
+
+	// process()
 
 
 // /obj/machinery/hologram_ai

@@ -2742,21 +2742,6 @@
 		last_move_trigger = ticker.round_elapsed_ticks
 		deliver_move_trigger(m_intent)
 
-	if (istype(src.glasses, /obj/item/clothing/glasses/sunglasses/camera))
-		var/obj/item/clothing/glasses/sunglasses/camera/g = src.glasses
-
-		if (g.pair)
-			//delete vis_contents contents
-			g.pair.vis_contents = null
-
-			//populate vis_contents
-			for (var/i in orange(1, src.loc))
-				if (istype(i, /mob) || istype(i, /obj)) 
-					continue
-				g.pair.vis_contents += i
-
-
-
 	if ((t7 && (src.pulling && ((get_dist(src, src.pulling) <= 1 || src.pulling.loc == src.loc) && (src.client && src.client.moving)))))
 		var/turf/T = src.loc
 		. = ..()
@@ -2823,6 +2808,24 @@
 		src.pulling = null
 		hud.update_pulling()
 		. = ..()
+
+	if (istype(src.glasses, /obj/item/clothing/glasses/sunglasses/camera))
+		var/obj/item/clothing/glasses/sunglasses/camera/g = src.glasses
+
+		if (g.pair)
+			//delete vis_contents contents
+			g.pair.vis_contents = null
+
+			//populate vis_contents
+			for (var/i in view(2, src.loc))
+				if (istype(i, /mob) || istype(i, /obj)) 
+					continue
+				g.pair.vis_contents += i
+
+			// g.pair.full_image = image(g.pair.vis_contents, null, null, OBJ_LAYER, 1)
+			// g.pair.thing()
+			// g.pair.
+	// var/image/photo = image(the_turf.icon, null, the_turf.icon_state, OBJ_LAYER, the_turf.dir)
 
 /mob/living/carbon/human/UpdateName()
 	if ((src.wear_mask && !(src.wear_mask.see_face)) || (src.head && !(src.head.see_face))) // can't see the face
