@@ -2812,15 +2812,18 @@
 	if (istype(src.glasses, /obj/item/clothing/glasses/sunglasses/camera))
 		var/obj/item/clothing/glasses/sunglasses/camera/g = src.glasses
 
-		if (g.pair)
+		if (g.connected_screen && g.connected_screen.full_image)
 			//delete vis_contents contents
-			g.pair.vis_contents = null
+			g.connected_screen.full_image.vis_contents = null
+			// g.connected_screen.holder.vis_contents = null
 
 			//populate vis_contents
-			for (var/i in view(2, src.loc))
+			for (var/i in view(1, src.loc))
 				if (istype(i, /mob) || istype(i, /obj)) 
 					continue
-				g.pair.vis_contents += i
+				g.connected_screen.full_image.vis_contents += i
+				// g.connected_screen.holder.vis_contents += i
+				src.visible_message("<span style=\"color:blue\"><b>added to contents!</b></span>")
 
 			// g.pair.full_image = image(g.pair.vis_contents, null, null, OBJ_LAYER, 1)
 			// g.pair.thing()

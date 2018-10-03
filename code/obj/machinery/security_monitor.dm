@@ -4,167 +4,78 @@
 	icon = 'icons/obj/sec_TV.dmi'
 	icon_state = "monitor"
 	anchored = 1.0
+	var/obj/item/clothing/glasses/sunglasses/camera/pair = null
+
+	var/datum/monitor_screen/screen = null
+
+	New()
+		..()
+		screen = new(src)
+
+
+	attack_hand(mob/user as mob)
+		if (screen)
+			pair()
+
+	proc/pair()
+		for (var/obj/item/clothing/glasses/sunglasses/camera/g in orange(5, src))
+			// pair = g
+			pair = g
+			g.connected_screen = src.screen
+			// g.connected_screen = full_image
+			// pair.pair = src
+
+			g.visible_message("<span style=\"color:blue\"><b>PAIREDDDD!</b></span>")
+
+			continue
 
 
 
 //The image displayed on the "screen". Takes input from the "camera"
 /datum/monitor_screen
-	name = "Monitor Screen"
-	icon = 'icons/obj/sec_TV.dmi'
-	icon_state = "screen"
-	appearance_flags = KEEP_TOGETHER 
-	// layer = FLOAT_LAYER
-	// layer = LAYER_PLANE
+	var/obj/machinery/security_monitor/holder
 
-	var/image/full_image
-	var/icon/full_icon
-	var/obj/item/clothing/glasses/sunglasses/camera/pair = null
+	var/image/full_image/* = new*/
+	// var/obj/item/clothing/glasses/sunglasses/camera/pair = null
 	var/count = 1
 
-	New()
-		src.Scale(0.4, 0.4)
-		// src.pixel_x = -11
-		// src.pixel_y = -11
+	New(var/obj/machinery/security_monitor/TV)
+		src.holder = TV
+		// src.full_image = image(null, holder.loc)
+		// src.full_image = new(holder.icon, holder.icon_state )
+		src.full_image = image('icons/obj/sec_TV.dmi', "monitor")
+
+		src.holder.UpdateOverlays(src.full_image, "screen")
+
+		src.full_image.transform = matrix(src.full_image.transform, 0.4, 0.4, MATRIX_SCALE)
+
+		full_image.pixel_x = 20
+		full_image.pixel_y = 20
+
+		//// src.full_image = image('icons/obj/security_monitor.dmi', loc=holder.loc, "monitor-sw", layer=EFFECTS_LAYER_BASE)
+		src.full_image.appearance_flags = KEEP_TOGETHER 
+		// src.full_image = matrix(src.full_image, 0.4, 0.4, MATRIX_SCALE)
 
 
-	attack_hand(mob/user as mob)
-		if (count)
-			pair()
-		else
-			pair = null
-		// thing()
 
-	proc/pair()
-		for (var/obj/item/clothing/glasses/sunglasses/camera/g in orange(5, src))
-			pair = g
-			pair.pair = src
+	// proc/thing()
+	// 	// var/obj/item/photo/P = new/obj/item/photo( get_turf(src) )
+	// 	// src.full_image.scale(0.5, 0.5)
 
-			src.visible_message("<span style=\"color:blue\"><b>PAIREDDDD!</b></span>")
+	// 	// src.full_image = photo//image(photo, "")
+	// 	// src.fullIcon = photo_icon
 
-			continue
+	// 	var/oldtransform = src.full_image.transform
+	// 	src.full_image.transform = matrix(0.6875, 0.625, MATRIX_SCALE)
+	// 	src.full_image.pixel_y = 1
+	// 	src.overlays += src.full_image
+	// 	src.full_image.transform = oldtransform
+	// 	src.full_image.pixel_y = 0
 
-
-		// if (src.pair)
-		// 	//delete vis_contents contents
-		// 	src.vis_contents = null
-
-		// 	//populate vis_contents
-		// 	for (var/i in view(2, src.pair.loc))
-		// 		if (istype(i, /mob) || istype(i, /obj)) 
-		// 			continue
-		// 		src.vis_contents += i
-
-	proc/thing()
-		// var/obj/item/photo/P = new/obj/item/photo( get_turf(src) )
-		// src.full_image.scale(0.5, 0.5)
-
-		// src.full_image = photo//image(photo, "")
-		// src.fullIcon = photo_icon
-
-		var/oldtransform = src.full_image.transform
-		src.full_image.transform = matrix(0.6875, 0.625, MATRIX_SCALE)
-		src.full_image.pixel_y = 1
-		src.overlays += src.full_image
-		src.full_image.transform = oldtransform
-		src.full_image.pixel_y = 0
-
-		src.overlays += src.full_image
-		//boutput(world, "[bicon(P.full_image)]")
+	// 	src.overlays += src.full_image
+	// 	//boutput(world, "[bicon(P.full_image)]")
 			
 
 			
 
 	// process()
-
-
-// /obj/machinery/hologram_ai
-// 	name = "Hologram Projector Platform"
-// 	icon = 'icons/obj/stationobjs.dmi'
-// 	icon_state = "hologram0"
-// 	var/atom/projection = null
-// 	var/temp = null
-// 	var/lumens = 0.0
-// 	var/h_r = 245.0
-// 	var/h_g = 245.0
-// 	var/h_b = 245.0
-// 	anchored = 1.0
-
-// /obj/machinery/hologram_ai/New()
-// 	..()
-
-// /obj/machinery/hologram_ai/attack_ai(user as mob)
-// 	src.show_console(user)
-// 	return
-
-
-// /obj/machinery/hologram_ai/proc/render()
-// 	var/icon/I = new /icon('icons/mob/human.dmi', "body_m")
-
-// 	if (src.lumens >= 0)
-// 		I.Blend(rgb(src.lumens, src.lumens, src.lumens), ICON_ADD)
-// 	else
-// 		I.Blend(rgb(- src.lumens,  -src.lumens,  -src.lumens), ICON_SUBTRACT)
-
-// 	I.Blend(new /icon('icons/mob/human_underwear.dmi', "briefs_b"), ICON_OVERLAY)
-
-// 	var/icon/U = new /icon('icons/mob/human_hair.dmi', "short")
-// 	U.Blend(rgb(src.h_r, src.h_g, src.h_b), ICON_ADD)
-
-// 	I.Blend(U, ICON_OVERLAY)
-
-// 	src.projection.icon = I
-
-// /obj/machinery/hologram_ai/proc/show_console(var/mob/user as mob)
-// 	var/dat
-// 	user.machine = src
-// 	if (src.temp)
-// 		dat = text("[]<BR><BR><A href='?src=\ref[];temp=1'>Clear</A>", src.temp, src)
-// 	else
-// 		dat = text("<B>Hologram Status:</B><HR><br>Power: <A href='?src=\ref[];power=1'>[]</A><HR><br><B>Hologram Control:</B><BR><br>Color Luminosity: []/220 <A href='?src=\ref[];reset=1'>\[Reset\]</A><BR><br>Lighten: <A href='?src=\ref[];light=1'>1</A> <A href='?src=\ref[];light=10'>10</A><BR><br>Darken: <A href='?src=\ref[];light=-1'>1</A> <A href='?src=\ref[];light=-10'>10</A><BR><br><BR><br>Hair Color: ([],[],[]) <A href='?src=\ref[];h_reset=1'>\[Reset\]</A><BR><br>Red (0-255): <A href='?src=\ref[];h_r=-300'>\[0\]</A> <A href='?src=\ref[];h_r=-10'>-10</A> <A href='?src=\ref[];h_r=-1'>-1</A> [] <A href='?src=\ref[];h_r=1'>1</A> <A href='?src=\ref[];h_r=10'>10</A> <A href='?src=\ref[];h_r=300'>\[255\]</A><BR><br>Green (0-255): <A href='?src=\ref[];h_g=-300'>\[0\]</A> <A href='?src=\ref[];h_g=-10'>-10</A> <A href='?src=\ref[];h_g=-1'>-1</A> [] <A href='?src=\ref[];h_g=1'>1</A> <A href='?src=\ref[];h_g=10'>10</A> <A href='?src=\ref[];h_g=300'>\[255\]</A><BR><br>Blue (0-255): <A href='?src=\ref[];h_b=-300'>\[0\]</A> <A href='?src=\ref[];h_b=-10'>-10</A> <A href='?src=\ref[];h_b=-1'>-1</A> [] <A href='?src=\ref[];h_b=1'>1</A> <A href='?src=\ref[];h_b=10'>10</A> <A href='?src=\ref[];h_b=300'>\[255\]</A><BR>", src, (src.projection ? "On" : "Off"),  -src.lumens + 35, src, src, src, src, src, src.h_r, src.h_g, src.h_b, src, src, src, src, src.h_r, src, src, src, src, src, src, src.h_g, src, src, src, src, src, src, src.h_b, src, src, src)
-// 	user << browse(dat, "window=hologram_console")
-// 	onclose(user, "hologram_console")
-// 	return
-
-// /obj/machinery/hologram_ai/Topic(href, href_list)
-// 	..()
-// 	if (!istype(usr, /mob/living/silicon/ai))
-// 		return
-
-// 	if (href_list["power"])
-// 		if (src.projection)
-// 			src.icon_state = "hologram0"
-// 			//src.projector.projection = null
-// 			qdel(src.projection)
-// 		else
-// 			src.projection = new /obj/projection( src.loc )
-// 			src.projection.icon = 'icons/mob/human.dmi'
-// 			src.projection.icon_state = "male"
-// 			src.icon_state = "hologram1"
-// 			src.render()
-// 	else if (href_list["h_r"])
-// 		if (src.projection)
-// 			src.h_r += text2num(href_list["h_r"])
-// 			src.h_r = min(max(src.h_r, 0), 255)
-// 			render()
-// 	else if (href_list["h_g"])
-// 		if (src.projection)
-// 			src.h_g += text2num(href_list["h_g"])
-// 			src.h_g = min(max(src.h_g, 0), 255)
-// 			render()
-// 	else if (href_list["h_b"])
-// 		if (src.projection)
-// 			src.h_b += text2num(href_list["h_b"])
-// 			src.h_b = min(max(src.h_b, 0), 255)
-// 			render()
-// 	else if (href_list["light"])
-// 		if (src.projection)
-// 			src.lumens += text2num(href_list["light"])
-// 			src.lumens = min(max(src.lumens, -185.0), 35)
-// 			render()
-// 	else if (href_list["reset"])
-// 		if (src.projection)
-// 			src.lumens = 0
-// 			render()
-// 	else if (href_list["temp"])
-// 		src.temp = null
-// 	src.show_console(usr)
