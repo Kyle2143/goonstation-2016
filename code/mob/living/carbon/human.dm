@@ -2809,26 +2809,12 @@
 		hud.update_pulling()
 		. = ..()
 
+	//security monitor tracking on mob movement when worn
 	if (istype(src.glasses, /obj/item/clothing/glasses/sunglasses/camera))
 		var/obj/item/clothing/glasses/sunglasses/camera/g = src.glasses
+		if (g.connected_monitor && g.connected_monitor.current_camera == g)
+			g.connected_monitor.get_picture()
 
-		if (g.connected_screen && g.connected_screen.full_image)
-			//delete vis_contents contents
-			g.connected_screen.full_image.vis_contents = null
-			// g.connected_screen.holder.vis_contents = null
-
-			//populate vis_contents
-			for (var/i in view(1, src.loc))
-				if (istype(i, /mob) || istype(i, /obj)) 
-					continue
-				g.connected_screen.full_image.vis_contents += i
-				// g.connected_screen.holder.vis_contents += i
-				src.visible_message("<span style=\"color:blue\"><b>added to contents!</b></span>")
-
-			// g.pair.full_image = image(g.pair.vis_contents, null, null, OBJ_LAYER, 1)
-			// g.pair.thing()
-			// g.pair.
-	// var/image/photo = image(the_turf.icon, null, the_turf.icon_state, OBJ_LAYER, the_turf.dir)
 
 /mob/living/carbon/human/UpdateName()
 	if ((src.wear_mask && !(src.wear_mask.see_face)) || (src.head && !(src.head.see_face))) // can't see the face
