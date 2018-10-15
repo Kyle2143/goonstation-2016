@@ -296,19 +296,53 @@
 						continue
 					
 					if (isnull(mats_used))
-						dat += "<BR><font color = 'red'>><b><u>[A.name]</u></b></font> "		//change this name to red if can't be made
+						dat += "<BR><font color = 'red'><b><u>[A.name]</u></b></font> "		//change this name to red if can't be made
 						// dat += "<BR><font color = 'red'><A href='?src=\ref[src];disp=\ref[A]'><b><u>[A.name]</u></b></A></font> "		//change this name to red if can't be made
 					else
-						dat += "<BR><A href='?src=\ref[src];disp=\ref[A]'><b><u>[A.name]</u></b></A> "		//change this name to red if can't be made
+						dat += "<BR><A href='?src=\ref[src];disp=\ref[A]'><b><u>[A.name]</u></b></A> "		//change this name to normal if available
 
 					if (istext(A.category))
 						dat += "([A.category])"
 					dat += "<br>"
+					src.visible_message("\n[A.name]")
+					src.visible_message("mats_Used =[mats_used]")
+
+					for (var/i in mats_used)
+						src.visible_message("		=[i]")
 
 					var/list_count = 1
 					for (var/X in A.item_paths)
 						if (list_count != 1) dat += ", "
-						if(X in mats_used)
+						src.visible_message("X = [X] -------  item_name = [A.item_names[list_count]]")
+
+						var/found = 0
+
+						//we have hte MET-1 paths in X
+						var/inner_list_count = 1
+						
+						var/list/usable_materials = material_check1(A)
+						//get all mat_ids in this manufacturable	needed to get the actual material to use in the material pattern match
+
+						for (var/mat_id in usable_materials)
+							if (usable_materials[mat_id] < A.item_amounts[list_count])
+								continue
+							var/datum/material/mat = getCachedMaterial(mat_id)
+							if (match_material_pattern(X, mat))
+								found = 1
+								break
+				// var/found = 0
+				// for (var/mat_id in usable_materials)
+				// 	var/available = usable_materials[mat_id]
+				// 	if (available < amount)
+				// 		continue
+				// 	var/datum/material/mat = getCachedMaterial(mat_id)
+				// 	if (match_material_pattern(pattern, mat))
+				// 		materials[i] = mat_id
+				// 		found = 1
+				// 		break
+
+						var/datum/material/mat = getCachedMaterial(A.item_names[list_count])
+						if (found)
 							dat += "[A.item_amounts[list_count]] [A.item_names[list_count]]"		//change this line to red if mising <font color = "red">
 						else
 							dat += "<font color = 'red'>[A.item_amounts[list_count]] [A.item_names[list_count]]</font>"		//change this line to red if mising <font color = "red">					
@@ -1071,6 +1105,18 @@
 			return 1
 		return 0
 
+//////////////////////////////////////////////////
+//new get all mat_ids with which to grab /datum/materials for the match method // for a datum/manufacture
+	proc/material_check1(datum/manufacture/M)
+		var/list/usable = src.contents
+		var/list/usable_materials = cuttings.Copy()
+		for (var/obj/item/I in usable)
+			if (istype(I, src.base_material_class) && I.material)
+				usable_materials[I.material.mat_id] += 10
+
+		return usable_materials
+
+/////////////////////////////////////////////////////
 	proc/material_check(datum/manufacture/M)
 		var/list/usable = src.contents
 		var/list/materials = list()
@@ -1105,6 +1151,7 @@
 					return
 		return materials
 
+////////////////////////////////////////////////////
 
 	proc/add_and_get_similar_materials(var/obj/item/material_piece/M,var/amount_needed)
 		if (!istype(M) || !M.material || !isnum(amount_needed))
