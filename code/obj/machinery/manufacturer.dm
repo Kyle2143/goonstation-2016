@@ -320,7 +320,6 @@
 								found = 1
 								break
 
-						var/datum/material/mat = getCachedMaterial(A.item_names[list_count])
 						if (found)
 							dat += "[A.item_amounts[list_count]] [A.item_names[list_count]]"		//change this line to red if mising <font color = "red">
 						else
@@ -1097,11 +1096,8 @@
 	proc/material_check(datum/manufacture/M)
 		var/list/usable = src.contents
 		var/list/materials = list()
-		var/list/usable_materials = cuttings.Copy()
+		var/list/usable_materials = get_mat_ids(M)
 		materials.len = M.item_paths.len
-		for (var/obj/item/I in usable)
-			if (istype(I, src.base_material_class) && I.material)
-				usable_materials[I.material.mat_id] += 10
 
 		for (var/i = 1; i <= M.item_paths.len; i++)
 			var/pattern = M.item_paths[i]
