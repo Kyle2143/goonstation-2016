@@ -89,6 +89,10 @@
 //#endif
 
 /mob/dead/observer/Life(datum/controller/process/mobs/parent)
+	//if it has the ghost abilityholder regen points, all ghosts should... I assume
+	if (src.get_ability_holder(/datum/abilityHolder/ghost) != null)
+		src.abilityHolder.generatePoints()
+
 	if (..(parent))
 		return 1
 	if (src.client) //ov1
@@ -141,7 +145,7 @@
 			O.stat = 0
 		if(src.mind)
 			src.mind.transfer_to(O)
-
+		O.make_spooky()
 		src.ghost = O
 		return O
 	return null
