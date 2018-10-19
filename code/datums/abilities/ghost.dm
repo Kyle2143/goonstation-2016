@@ -11,6 +11,9 @@
 
 		var/datum/abilityHolder/ghost/G = src.add_ability_holder(/datum/abilityHolder/ghost)
 		G.addAbility(/datum/targetable/ghost/levitate)
+		G.addAbility(/datum/targetable/ghost/levitate_chair)
+		G.addAbility(/datum/targetable/ghost/summon_bat)
+		G.addAbility(/datum/targetable/ghost/spooky_sounds)
 
 
 //////////////////////////////////////////// Ability holder /////////////////////////////////////////
@@ -103,16 +106,13 @@
 		return
 
 /datum/targetable/ghost/levitate
-	name = "Levitate"
-	desc = "Drop christmas cheer via graffiti and acts of destruction."
+	name = "Levitate Item"
+	desc = "Levitate an item."
 	targeted = 1
 	target_anything = 1
 	max_range = 10
 	cooldown = 2
-	start_on_cooldown = 0
-	pointCost = 20
-	when_stunned = 0
-	not_when_handcuffed = 1
+	pointCost = 10
 
 	cast(obj/item/target)
 		if (!holder)
@@ -120,22 +120,65 @@
 
 		spawn(rand(30,60))
 		animate_levitate(target, 1, 10)
+		boutput(holder.owner, "<span style=\"color:red\">You levitate [target]!</span>")
 
 /datum/targetable/ghost/levitate_chair
-	name = "Levitate"
-	desc = "Drop christmas cheer via graffiti and acts of destruction."
+	name = "Levitate Chair"
+	desc = "Levitate a chair."
 	targeted = 1
 	target_anything = 1
 	max_range = 10
 	cooldown = 2
-	start_on_cooldown = 0
 	pointCost = 20
-	when_stunned = 0
-	not_when_handcuffed = 1
 
-	// cast(obj/item/chair/target)
-	// 	if (!holder)
-	// 		return 1
+	cast(obj/target)
+		if (!holder)
+			return 1
+		
+		//levitates the target chair, as well as any mobs mobs buckled in. Since buckled mobs are placed into the chair/bed's contents
+		//only doing chair. doing the bed levatate moves the mobs on it in a weird way, and I don't wanna spend the time to fix it
+		if (istype(target, /obj/stool/chair)/* || istype(target, /obj/stool/bed)*/)
+			for (var/mob/living/L in target.loc.contents)
+				if (L.buckled)
+					animate_levitate(L, 1, 10)
+			animate_levitate(target, 1, 10)
+		boutput(holder.owner, "<span style=\"color:red\">You levitate [target]!</span>")
 
-	// 	animate_levitate(target, 1, 10)
+/datum/targetable/ghost/summon_bat
+	name = "Summon Bat"
+	desc = "Summons a single, harmless, friendly bat for the living to enjoy."
+	targeted = 0
+	target_anything = 0
+	max_range = 0
+	cooldown = 10
+	pointCost = 30
 
+	cast()
+		if (!holder)
+			return 1
+
+		var/turf/T = get_turf(holder.owner)
+		if (!istype(T, /turf/space) && !T.density)
+			var/obj/critter/bat/b = new /obj/critter/bat(T)
+			animate_fading_leap_down(b) //maybe use that I didn't test it this bit though
+		boutput(holder.owner, "<span style=\"color:red\">You call forth a bat!</span>")
+
+
+/datum/targetable/ghost/spooky_sounds
+	name = "Make a Spooky Sound"
+	desc = "Makes a spooky sound at your location.."
+	targeted = 0
+	target_anything = 0
+	max_range = 0
+	cooldown = 10
+	pointCost = 30
+
+	cast()
+		if (!holder)
+			return 1
+
+
+		var/turf/T = get_turf(holder.owner)
+		var/sound = pick('sound/ambience/coldwind1.ogg', 'sound/ambience/coldwind2.ogg', 'sound/ambience/coldwind3.ogg','sound/ambience/biodome1.ogg', 'sound/ambience/biodome2.ogg', 'sound/ambience/biodome3.ogg', 'sound/ambience/biodome4.ogg',	'sound/ambience/biodome1.ogg', 'sound/ambience/biodome2.ogg', 'sound/ambience/biodome3.ogg', 'sound/ambience/biodome4.ogg')
+		playsound(T, sound, 10, 0, -1)
+		boutput(holder.owner, "<span style=\"color:red\">You make a spooky sound!</span>")
