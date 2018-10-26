@@ -17,6 +17,7 @@
 		src.modules += new /obj/item/crowbar(src)
 		src.modules += new /obj/item/device/multitool(src)
 		src.modules += new /obj/item/screwdriver(src)
+		src.modules += new /obj/item/robojumper(src)
 
 		var/obj/item/device/pda2/cyborg/C = new /obj/item/device/pda2/cyborg(src)
 		var/mob/living/silicon/robot/R = src.loc
@@ -34,7 +35,6 @@
 	New()
 		..()
 		src.cosmetic_mods = new /datum/robot_cosmetic/standard(src)
-		src.modules += new /obj/item/robojumper(src)
 		src.modules += new /obj/item/extinguisher(src)
 		src.modules += new /obj/item/wrench(src)
 		src.modules += new /obj/item/pen(src)
@@ -95,7 +95,6 @@
 	New()
 		..()
 		src.cosmetic_mods = new /datum/robot_cosmetic/engineering(src)
-		src.modules += new /obj/item/robojumper(src)
 		src.modules += new /obj/item/atmosporter(src)
 		src.modules += new /obj/item/extinguisher(src)
 		src.modules += new /obj/item/weldingtool(src)

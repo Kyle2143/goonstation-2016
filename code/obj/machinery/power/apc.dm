@@ -488,19 +488,41 @@ var/zapLimiter = 0
 
 	else if (istype(user, /mob/living/silicon))
 		if (istype(W, /obj/item/robojumper))
-			var/overspill = 2500 - src:cell.charge
-			if (!user:cell) boutput(user, "<span style=\"color:red\">You have no cell installed!</span>")
-			else if (!src:cell) boutput(user, "<span style=\"color:red\">[src] has no cell installed!</span>")
-			else if (src:cell.charge >= 2500) boutput(user, "<span style=\"color:blue\">The APC cell is already fully charged.</span>")
-			else if (user:cell.charge <= 250) boutput(user, "<span style=\"color:red\">You do not have enough charge left to do this!</span>")
-			else if (overspill >= 250)
-				user:cell.charge -= overspill
-				src:cell.charge += overspill
-				user.visible_message("<span style=\"color:blue\">[user] transfers some of their power to [src]!</span>", "<span style=\"color:blue\">You transfer [overspill] charge. The APC is now fully charged.</span>")
+			if (!istype(user, /mob/living/silicon/robot))
+				return
+			var/mob/living/silicon/robot/S = user
+			var/obj/item/robojumper/jumper = W
+			var/obj/item/cell/donor_cell = null
+			var/obj/item/cell/recipient_cell = null
+			if (jumper.positive)
+				donor_cell = S.cell
+				recipient_cell = src.cell
 			else
-				user:cell.charge -= 250
-				src:cell.charge += 250
-				user.visible_message("<span style=\"color:blue\">[user] transfers some of their power to [src]!</span>", "<span style=\"color:blue\">You transfer 250 charge.</span>")
+				donor_cell = src.cell
+				recipient_cell = S.cell
+
+			var/overspill = 250 - recipient_cell.charge
+			if (!donor_cell) boutput(user, "<span style=\"color:red\">You have no cell installed!</span>")
+			else if (!recipient_cell) boutput(user, "<span style=\"color:red\">[jumper.positive? "[src] has" : "you have"] no cell installed!</span>")
+			else if (recipient_cell.charge >= recipient_cell.maxcharge) boutput(user, "<span style=\"color:blue\">[jumper.positive ? "[src]" : "Your"] cell is already fully charged.</span>")
+			else if (donor_cell.charge <= 250) boutput(user, "<span style=\"color:red\">You do not have enough charge left to do this!</span>")
+			else if (overspill >= 250)
+				donor_cell.charge -= overspill
+				recipient_cell.charge += overspill
+				if (jumper.positive)
+					user.visible_message("<span style=\"color:blue\">[user] transfers some of their power to [src]!</span>", "<span style=\"color:blue\">You transfer [overspill] charge. The APC is now fully charged.</span>")
+				else
+					user.visible_message("<span style=\"color:blue\">[user] transfers some of the power from [src] to yourself!</span>", "<span style=\"color:blue\">You transfer [overspill] charge. You are now fully charged.</span>")
+
+			else
+				donor_cell.charge -= 250
+				recipient_cell.charge += 250
+				if (jumper.positive)
+					user.visible_message("<span style=\"color:blue\">[user] transfers some of their power to [src]!</span>", "<span style=\"color:blue\">You transfer 250 charge.</span>")
+				else
+					user.visible_message("<span style=\"color:blue\">[user] transfers some of the power from [src] to yourself!</span>", "<span style=\"color:blue\">You transfer 250 charge.</span>")
+
+			
 		else return src.attack_hand(user)
 
 	else if (istype(W, /obj/item/device/pda2) && W:ID_card)

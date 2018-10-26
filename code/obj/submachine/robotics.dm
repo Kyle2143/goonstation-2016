@@ -114,7 +114,13 @@
 	name = "Cell Cables"
 	desc = "Used by Engineering Cyborgs for emergency recharging of APCs."
 	icon = 'icons/obj/items.dmi'
-	icon_state = "robojumper"
+	icon_state = "robojumper-plus"
+	var/positive = 1			//boolean, if positive, then you will charge an APC with your cell, if negative, you will take charge from apc
+	
+	attack_self(var/mob/user as mob)
+		positive = !positive
+		icon_state = "robojumper-[positive? "plus": "minus"]"
+		boutput(user, "<span style=\"color:red\">Switches Cell Cables to [positive ? "Positive" : "Negative"] Mode!</span>")
 
 /obj/item/atmosporter
 	name = "Atmospherics Transporter"
