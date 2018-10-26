@@ -1881,7 +1881,10 @@ var/global/client/ff_debugger = null
 						var/pre_inertia_loc = M.loc
 
 						if(M.inertia_dir) //they keep moving the same direction
+							var/original_dir = M.dir 			//This is kinda hacky, but it's better than adding a new var to all atom/movables
 							step(M, M.inertia_dir)
+							M.dir = original_dir
+
 						else
 							M.inertia_dir = M.last_move
 							step(M, M.inertia_dir)
@@ -1897,7 +1900,11 @@ var/global/client/ff_debugger = null
 					var/pre_inertia_loc = M.loc
 
 					if(M.inertia_dir) //they keep moving the same direction
+						var/original_dir = M.dir
 						step(M, M.inertia_dir)
+						M.dir = original_dir
+						animate_float(M)
+
 					else
 						M.inertia_dir = M.last_move
 						step(M, M.inertia_dir)
