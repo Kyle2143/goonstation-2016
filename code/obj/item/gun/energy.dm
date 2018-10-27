@@ -722,3 +722,136 @@
 
 	update_icon() // Necessary. Parent's got a different sprite now (Convair880).
 		return
+
+
+///////////////////////////////////////////////////
+/obj/item/gun/energy/lawgiver
+	name = "Lawgiver"
+	icon = 'icons/obj/lawgiver.dmi'
+	item_state = "detain"
+	icon_state = "detain"
+	m_amt = 5000
+	g_amt = 2000
+	mats = 16
+	var/owner = null
+	var/list/datum/projectile/settings = list("detain" = new/datum/projectile/energy_bolt, "execute" = new/datum/projectile/bullet/rod, "smokeshot" = new/datum/projectile/bullet/smoke, "knockout" = new/datum/projectile/bullet/tranq_dart, "hotshot" = new/datum/projectile/bullet/flare, "clownshot" = new/datum/projectile/laser)
+
+	New()
+		cell = new/obj/item/ammo/power_cell/self_charging/big
+		current_projectile = new/datum/projectile/energy_bolt
+		projectiles = list(current_projectile,new/datum/projectile/bullet/rod,new/datum/projectile/bullet/smoke,new/datum/projectile/bullet/tranq_dart,new/datum/projectile/bullet/flare,new/datum/projectile/laser)
+		
+
+		// {"Detain", "Execute", "Smoke shot", "Knock out", "Hot shot", "Clown shot"}
+	
+
+	// talk_into(mob/M as mob, msg, real_name, lang_id)
+	// 	hear_talk(M, msg)
+
+	//can only handle one name at a time, if it's more id doesn't do anything
+	hear_talk(mob/M as mob, msg, real_name, lang_id)
+		var/text = msg[1]
+		src.visible_message("<span style=\"color:red\">got = [text]!</span>")
+		if (is_correct_owner(M))
+			text = sanitize_talk(text)
+			src.visible_message("<span style=\"color:red\">sanitized =  [text]!</span>")
+			if (!settings[text])
+				return
+			current_projectile = settings[text]
+
+			switch(text)
+				if ("detain")
+					playsound(M, "sound/vox/detain.ogg", 75)
+				if ("execute")
+					playsound(M, "sound/vox/exterminate.ogg", 75)
+				if ("smokeshot")
+					playsound(M, "sound/vox/smoke.ogg", 75)
+				if ("knockout")
+					playsound(M, "sound/vox/sleep.ogg", 75)
+				if ("hotshot")
+					playsound(M, "sound/vox/hot.ogg", 75)
+				if ("clownshot")
+					playsound(M, "sound/vox/clown.ogg", 75)
+
+			update_icon()
+
+	update_icon()
+		if(cell)
+			var/ratio = min(1, src.cell.charge / src.cell.max_charge)
+			ratio = round(ratio, 0.25) * 100
+			if(current_projectile.type == /datum/projectile/energy_bolt)
+				src.icon_state = "detain"//"lawgiver-d[ratio]"
+			else if (current_projectile.type == /datum/projectile/bullet/rod)
+				src.icon_state = "execute"//"lawgiver-d[ratio]"
+			else if (current_projectile.type == /datum/projectile/bullet/smoke)
+				src.icon_state = "smokeshot"//"lawgiver-d[ratio]"
+			else if (current_projectile.type == /datum/projectile/bullet/tranq_dart)
+				src.icon_state = "knockout"//"lawgiver-d[ratio]"
+			else if (current_projectile.type == /datum/projectile/bullet/flare)
+				src.icon_state = "hotshot"//"lawgiver-d[ratio]"
+			else if (current_projectile.type == /datum/projectile/laser)
+				src.icon_state = "clownshot"//"lawgiver-d[ratio]"
+			else
+				src.icon_state = "lawgiver0"//"lawgiver[ratio]"
+		else
+			src.icon_state = "lawgiver0"//"lawgiver[ratio]"
+
+
+		// var/turf/T = get_turf(src)
+		// if (M in range(1, T))
+		// 	src.talk_into(M, msg, null, real_name, lang_id)
+
+
+	//just remove all capitalization and non-letter characters
+	proc/sanitize_talk(var/msg)
+		//find all characters that are not letters and remove em
+		var/regex/r = regex("\[^a-z\]+")
+		msg = r.Replace(msg, "")
+		// msg = replacetext(msg, "(\[a-z\])\1+", )
+		//to lowercase
+		msg = lowertext(msg)
+		return msg
+
+	proc/is_correct_owner(var/mob/user)
+		if (!owner || (user == owner))
+			return 1
+
+		return 0
+
+	shoot(var/target,var/start,var/mob/user)
+		if (canshoot())
+			if (is_correct_owner(user))
+				user.shock(70)
+			// playsound(user, "sound/weapons/DSBFG.ogg", 75)
+			sleep(2)
+		return ..(target, start, user)
+
+
+	//maybe just override and negate attack_self to force you to speak it, funny.
+	attack_self()
+		return
+		// ..()
+		// boutput(user, "<span style=\"color:blue\">There don't seem to be any buttons to press that do anything.</span>")
+
+
+	examine()
+		set src in usr
+
+		src.desc = "It is set to [icon_state]"
+		if(src.cell)
+			src.desc += "[src.projectiles ? "It will use the projectile: [src.current_projectile.sname]. " : ""]There are [src.cell.charge]/[src.cell.max_charge] PUs left!"
+		else
+			src.desc += "There is no cell loaded!"
+		if(current_projectile)
+			src.desc += " Each shot will currently use [src.current_projectile.cost] PUs!"
+		else
+			src.desc += "<span style=\"color:red\">*ERROR* No output selected!</span>"
+		..()
+		return
+
+/obj/item/gun/energy/lawgiver/emag_act(var/mob/user, var/obj/item/card/emag/E)
+	if (user)
+		boutput(user, "<span style=\"color:red\">Anyone can use this gun. Be careful!</span>")
+		owner = null
+	return 0
+
