@@ -543,7 +543,7 @@
 			istate = "fire3"
 			//src.fire_standing = image('icons/mob/human.dmi', "fire3", MOB_EFFECT_LAYER)
 			//src.fire_lying = image('icons/mob/human.dmi', "fire3_l", MOB_EFFECT_LAYER)
-			//vis message
+
 		if (ismonkey(src))
 			src.fire_standing = SafeGetOverlayImage("fire", 'icons/mob/Monkeyburning.dmi', istate, MOB_EFFECT_LAYER)
 			//below is the suggested file to put the monkey fire[1-3] sprites.
