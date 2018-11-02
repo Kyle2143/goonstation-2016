@@ -777,16 +777,13 @@
 
 	//can only handle one name at a time, if it's more it doesn't do anything
 	talk_into(mob/M as mob, msg, real_name, lang_id)
-		src.visible_message("<span style=\"color:red\">talk.</span>")
 		//Do I need to check for this? I can't imagine why anyone would pass the wrong var here...
 		if (!islist(msg))
 			return
-		src.visible_message("<span style=\"color:red\">is actually a list.</span>")
 
 		//only work if the voice is the same as the voice of your owner fingerprints. 
 		if (ishuman(M))
 			var/mob/living/carbon/human/H = M
-			src.visible_message("<span style=\"color:red\">human.</span>")
 			if (owner_prints && (md5(H.bioHolder.Uid) != owner_prints))
 				are_you_the_law(M, msg[1])
 				return
@@ -831,18 +828,13 @@
 
 	//Are you really the laws? takes the mob as speaker, and the text spoken, sanitizes it. If you say "i am the law" and you in fact are NOT the law, it's gonna blow. Moved out of the switch statement because it that switch is only gonna run if the owner speaks
 	proc/are_you_the_law(mob/M as mob, text)
-		src.visible_message("<span style=\"color:red\">OOOO - [text].</span>")
 		text = sanitize_talk(text)
-		src.visible_message("<span style=\"color:red\">sssss - [text].</span>")
 		if (text == "iamthelaw")
-			src.visible_message("<span style=\"color:red\">MADE IT IN.</span>")
 			//you must be holding/wearing the weapon
 			//this check makes it so that someone can't stun you, stand on top of you and say "I am the law" to kill you
 			if (src in M.contents)
-				src.visible_message("<span style=\"color:red\">IN CONTENTS.</span>")
 				if (M.job != "Head of Security")
 					playsound(src.loc, "sound/weapons/armbomb.ogg", 75, 1, -3)
-					src.visible_message("<span style=\"color:red\">[M] entered an illegal voice command into [src].</span>")
 
 					spawn(20)
 						explosion_new(null, get_turf(src), 15)
