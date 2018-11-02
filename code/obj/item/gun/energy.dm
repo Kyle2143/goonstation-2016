@@ -728,111 +728,198 @@
 /obj/item/gun/energy/lawgiver
 	name = "Lawgiver"
 	icon = 'icons/obj/lawgiver.dmi'
-	item_state = "detain"
-	icon_state = "detain"
+	item_state = "lawgiver0"
+	icon_state = "lawgiver0"
 	m_amt = 5000
 	g_amt = 2000
 	mats = 16
-	var/owner = null
-	var/list/datum/projectile/settings = list("detain" = new/datum/projectile/energy_bolt, "execute" = new/datum/projectile/bullet/rod, "smokeshot" = new/datum/projectile/bullet/smoke, "knockout" = new/datum/projectile/bullet/tranq_dart, "hotshot" = new/datum/projectile/bullet/flare, "clownshot" = new/datum/projectile/laser)
+	var/owner_prints = null
+	var/image/indicator_display = null
+	rechargeable = 0
 
-	New()
-		cell = new/obj/item/ammo/power_cell/self_charging/big
-		current_projectile = new/datum/projectile/energy_bolt
-		projectiles = list(current_projectile,new/datum/projectile/bullet/rod,new/datum/projectile/bullet/smoke,new/datum/projectile/bullet/tranq_dart,new/datum/projectile/bullet/flare,new/datum/projectile/laser)
+	New(var/mob/M)
+		cell = new/obj/item/ammo/power_cell/self_charging/lawgiver
+		current_projectile = new/datum/projectile/energy_bolt/aoe
+		projectiles = list(current_projectile,new/datum/projectile/bullet/revolver_38,new/datum/projectile/bullet/smoke,new/datum/projectile/bullet/tranq_dart,new/datum/projectile/bullet/flare,new/datum/projectile/bullet/autocannon/lawgiver,new/datum/projectile/bullet/clownshot)
 		
+		src.indicator_display = image('icons/obj/lawgiver.dmi', "")
+		aaa(M)
 
-		// {"Detain", "Execute", "Smoke shot", "Knock out", "Hot shot", "Clown shot"}
-	
+		update_icon()
+		..()
 
-	// talk_into(mob/M as mob, msg, real_name, lang_id)
-	// 	hear_talk(M, msg)
+	disposing()
+		indicator_display = null
+		..()
 
-	//can only handle one name at a time, if it's more id doesn't do anything
+	//if it has no owner prints scanned, the next person to attack_self it is the owner. 
+	//you have to use voice activation to change modes. haha!
+	attack_self(mob/user as mob)
+		src.add_fingerprint(user)
+		if (!owner_prints)
+			boutput(user, "<span style=\"color:red\">[src] has accepted your fingerprint ID. You are its owner!</span>")
+			aaa(user)
+		else
+			boutput(user, "<span style=\"color:blue\">There don't see to be any buttons on [src] to press.</span>")
+
+	proc/aaa(var/mob/M)
+		if (ishuman(M))
+			var/mob/living/carbon/human/H = M
+			if (H.bioHolder)
+				owner_prints = md5(H.bioHolder.Uid)
+				src.name = "HoS [H.real_name]'s Lawgiver"
+
+	//stolen the heartalk of microphone. the microphone can hear you from one tile away. unless you wanna
 	hear_talk(mob/M as mob, msg, real_name, lang_id)
-		var/text = msg[1]
-		src.visible_message("<span style=\"color:red\">got = [text]!</span>")
-		if (is_correct_owner(M))
-			text = sanitize_talk(text)
-			src.visible_message("<span style=\"color:red\">sanitized =  [text]!</span>")
-			if (!settings[text])
-				return
-			current_projectile = settings[text]
+		var/turf/T = get_turf(src)
+		if (M in range(1, T))
+			src.talk_into(M, msg, null, real_name, lang_id)
 
+	//can only handle one name at a time, if it's more it doesn't do anything
+	talk_into(mob/M as mob, msg, real_name, lang_id)
+		src.visible_message("<span style=\"color:red\">talk.</span>")
+		//Do I need to check for this? I can't imagine why anyone would pass the wrong var here...
+		if (!islist(msg))
+			return
+		src.visible_message("<span style=\"color:red\">is actually a list.</span>")
+
+		//only work if the voice is the same as the voice of your owner fingerprints. 
+		if (ishuman(M))
+			var/mob/living/carbon/human/H = M
+			src.visible_message("<span style=\"color:red\">human.</span>")
+			if (owner_prints && (md5(H.bioHolder.Uid) != owner_prints))
+				are_you_the_law(M, msg[1])
+				return
+		else
+			are_you_the_law(M, msg[1])
+			return //AFAIK only humans have fingerprints/"palmprints(in judge dredd)" so just ignore any talk from non-humans arlight? it's not a big deal.
+
+
+		var/text = msg[1]
+		text = sanitize_talk(text)
+		if (fingerprints_can_shoot(M))
 			switch(text)
 				if ("detain")
+					current_projectile = new/datum/projectile/energy_bolt/aoe
 					playsound(M, "sound/vox/detain.ogg", 75)
 				if ("execute")
+					current_projectile = new/datum/projectile/bullet/revolver_38
+					current_projectile.cost = 30
 					playsound(M, "sound/vox/exterminate.ogg", 75)
 				if ("smokeshot")
+					current_projectile = new/datum/projectile/bullet/smoke
+					current_projectile.cost = 100
 					playsound(M, "sound/vox/smoke.ogg", 75)
 				if ("knockout")
+					current_projectile = new/datum/projectile/bullet/tranq_dart
+					current_projectile.cost = 150
 					playsound(M, "sound/vox/sleep.ogg", 75)
 				if ("hotshot")
+					current_projectile = new/datum/projectile/bullet/flare
+					current_projectile.cost = 60					
 					playsound(M, "sound/vox/hot.ogg", 75)
+				if ("bigshot","highexplosive","he")
+					current_projectile = new/datum/projectile/bullet/autocannon/lawgiver
+					playsound(M, "sound/vox/high.ogg", 75)
+					sleep(4)
+					playsound(M, "sound/vox/explosive.ogg", 75)
 				if ("clownshot")
+					current_projectile = new/datum/projectile/bullet/clownshot
 					playsound(M, "sound/vox/clown.ogg", 75)
 
 			update_icon()
 
+	//Are you really the laws? takes the mob as speaker, and the text spoken, sanitizes it. If you say "i am the law" and you in fact are NOT the law, it's gonna blow. Moved out of the switch statement because it that switch is only gonna run if the owner speaks
+	proc/are_you_the_law(mob/M as mob, text)
+		src.visible_message("<span style=\"color:red\">OOOO - [text].</span>")
+		text = sanitize_talk(text)
+		src.visible_message("<span style=\"color:red\">sssss - [text].</span>")
+		if (text == "iamthelaw")
+			src.visible_message("<span style=\"color:red\">MADE IT IN.</span>")
+			//you must be holding/wearing the weapon
+			//this check makes it so that someone can't stun you, stand on top of you and say "I am the law" to kill you
+			if (src in M.contents)
+				src.visible_message("<span style=\"color:red\">IN CONTENTS.</span>")
+				if (M.job != "Head of Security")
+					playsound(src.loc, "sound/weapons/armbomb.ogg", 75, 1, -3)
+					src.visible_message("<span style=\"color:red\">[M] entered an illegal voice command into [src].</span>")
+
+					spawn(20)
+						explosion_new(null, get_turf(src), 15)
+					return 0
+				else
+					return 1
+
+	//all gun modes use the same base sprite icon "lawgiver0" depending on the current projectile/current mode, we apply a coloured overlay to it.
 	update_icon()
+		src.icon_state = "lawgiver0"
+		src.overlays = null
+
 		if(cell)
 			var/ratio = min(1, src.cell.charge / src.cell.max_charge)
 			ratio = round(ratio, 0.25) * 100
-			if(current_projectile.type == /datum/projectile/energy_bolt)
-				src.icon_state = "detain"//"lawgiver-d[ratio]"
-			else if (current_projectile.type == /datum/projectile/bullet/rod)
-				src.icon_state = "execute"//"lawgiver-d[ratio]"
-			else if (current_projectile.type == /datum/projectile/bullet/smoke)
-				src.icon_state = "smokeshot"//"lawgiver-d[ratio]"
-			else if (current_projectile.type == /datum/projectile/bullet/tranq_dart)
-				src.icon_state = "knockout"//"lawgiver-d[ratio]"
-			else if (current_projectile.type == /datum/projectile/bullet/flare)
-				src.icon_state = "hotshot"//"lawgiver-d[ratio]"
-			else if (current_projectile.type == /datum/projectile/laser)
-				src.icon_state = "clownshot"//"lawgiver-d[ratio]"
+			//if we're showing zero charge, don't do any overlay, since the main image shows an empty gun anyway
+			if (ratio == 0)
+				return
+			indicator_display.icon_state = "lawgiver-d[ratio]"
+
+			if(current_projectile.type == /datum/projectile/energy_bolt/aoe)			//detain - yellow
+				indicator_display.color = "#FFFF00"
+			else if (current_projectile.type == /datum/projectile/bullet/revolver_38)			//execute - cyan
+				indicator_display.color = "#00FFFF"
+			else if (current_projectile.type == /datum/projectile/bullet/smoke)			//smokeshot - dark-blue
+				indicator_display.color = "#0000FF"
+			else if (current_projectile.type == /datum/projectile/bullet/tranq_dart)	//knockout - green
+				indicator_display.color = "#008000"
+			else if (current_projectile.type == /datum/projectile/bullet/flare)			//hotshot - red
+				indicator_display.color = "#FF0000"
+			else if (current_projectile.type == /datum/projectile/bullet/autocannon/lawgiver)	//bigshot - purple
+				indicator_display.color = "#551A8B"
+			else if (current_projectile.type == /datum/projectile/bullet/clownshot)		//clownshot - pink
+				indicator_display.color = "#FFC0CB"
 			else
-				src.icon_state = "lawgiver0"//"lawgiver[ratio]"
-		else
-			src.icon_state = "lawgiver0"//"lawgiver[ratio]"
-
-
-		// var/turf/T = get_turf(src)
-		// if (M in range(1, T))
-		// 	src.talk_into(M, msg, null, real_name, lang_id)
-
+				indicator_display.color = "#000000"				//default, should never reach make it black
+			src.overlays += indicator_display
 
 	//just remove all capitalization and non-letter characters
 	proc/sanitize_talk(var/msg)
 		//find all characters that are not letters and remove em
-		var/regex/r = regex("\[^a-z\]+")
-		msg = r.Replace(msg, "")
-		// msg = replacetext(msg, "(\[a-z\])\1+", )
-		//to lowercase
+		var/regex/r = regex("\[^a-z\]+", "g")
 		msg = lowertext(msg)
+		msg = r.Replace(msg, "")
 		return msg
 
-	proc/is_correct_owner(var/mob/user)
-		if (!owner || (user == owner))
+	// Checks if the gun can shoot based on the fingerprints of the shooter.
+	//returns true if the prints match or there are no prints stored on the gun(emagged). false if it fails
+	proc/fingerprints_can_shoot(var/mob/user)
+		if (!owner_prints || (md5(user.bioHolder.Uid) == owner_prints))
 			return 1
-
 		return 0
+
 
 	shoot(var/target,var/start,var/mob/user)
 		if (canshoot())
-			if (is_correct_owner(user))
-				user.shock(70)
-			// playsound(user, "sound/weapons/DSBFG.ogg", 75)
-			sleep(2)
+			//shock the guy who tries to use this if they aren't the proper owner. (or if the gun is not emagged)
+			if (!fingerprints_can_shoot(user))
+				// shock(user, 70)	
+				random_burn_damage(user, 50)
+				user.weakened += 4
+				var/datum/effects/system/spark_spread/s = unpool(/datum/effects/system/spark_spread)
+				s.set_up(2, 1, (get_turf(src)))
+				s.start()
+				user.visible_message("<span style=\"color:red\">[user] tries to fire [src]! The gun initiate's it's failsafe mode.</span>")
+				return
+
+			//// removed for now, but this code will allow for the projectile to detonate at the specific tile clicked by the user.
+			// if (!istype(target, /turf) || !istype(start, /turf))
+			// 	return
+			// if (current_projectile.type == /datum/projectile/energy_bolt/aoe)
+			// 	var/turf/T = target
+			// 	var/turf/S = start
+			// 	var/datum/projectile/energy_bolt/aoe/P = current_projectile
+			// 	P.distance = get_dist(T,S)
+
 		return ..(target, start, user)
-
-
-	//maybe just override and negate attack_self to force you to speak it, funny.
-	attack_self()
-		return
-		// ..()
-		// boutput(user, "<span style=\"color:blue\">There don't seem to be any buttons to press that do anything.</span>")
-
 
 	examine()
 		set src in usr
@@ -848,10 +935,10 @@
 			src.desc += "<span style=\"color:red\">*ERROR* No output selected!</span>"
 		..()
 		return
+	
 
 /obj/item/gun/energy/lawgiver/emag_act(var/mob/user, var/obj/item/card/emag/E)
 	if (user)
-		boutput(user, "<span style=\"color:red\">Anyone can use this gun. Be careful!</span>")
-		owner = null
+		boutput(user, "<span style=\"color:red\">Anyone can use this gun now. Be careful!</span>")
+		owner_prints = null
 	return 0
-
