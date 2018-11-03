@@ -899,7 +899,7 @@
 				var/datum/effects/system/spark_spread/s = unpool(/datum/effects/system/spark_spread)
 				s.set_up(2, 1, (get_turf(src)))
 				s.start()
-				user.visible_message("<span style=\"color:red\">[user] tries to fire [src]! The gun initiate's it's failsafe mode.</span>")
+				user.visible_message("<span style=\"color:red\">[user] tries to fire [src]! The gun initiates its failsafe mode.</span>")
 				return
 
 			//// removed for now, but this code will allow for the projectile to detonate at the specific tile clicked by the user.
