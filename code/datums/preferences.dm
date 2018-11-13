@@ -159,50 +159,34 @@ datum/preferences
 		user << browse_rsc(icon(cursors_selection[target_cursor]), "tcursor.png")
 		user << browse_rsc(icon(hud_style_selection[hud_style], "preview"), "hud_preview.png")
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 		var/dat = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/></head><body><title>Character Setup</title>"
 		// dat +=	"<script type='text/javascript' src='[resource('js/char-setup.js')]'></script>"
 		// dat += "<script type='text/javascript' src='[resource("js/jquery.min.js")]>"
 		////////////////////////// dat +=	"<script src=\"[resource("js/charsetup.js")]\"></script>"
-		var/script = {"<script type='text/javascript'>
-		function myfunction() {
-			document.body.style.backgroundColor = 'red';
-		}
+		var/script = {"
+		<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
+
+		<script type='text/javascript' src='[resource("js/jquery-ui.min.js")]'></script>
+		<script type='text/javascript'>
+			function myfunction() {
+				document.body.style.backgroundColor = 'red';
+			}
+$(function() {
+	$('#custom_first').change(function(){
+		// document.body.style.backgroundColor = 'blue';
+        var r = $( "#custom_first option:selected" ).text();
+
+		document.getElementById("custom_first_text").innerHTML = r;
+
+
+				});
+			});
 		</script>"}
 		dat += script
 
-// 		var/script = "<script type='text/javascript' src='[resource("js/jquery.min.js")]>"
-// 		script += {"
-// 		function myfunction() {
-// 		document.body.style.backgroundColor = 'red';
-// 		}
-// $(function() {
-// 	$('#custom_first').change(function(){
-// 		document.body.style.backgroundColor = 'blue';
-// 		alert( 'Handler called.' );
-
-// 		var r = $('#' + $(this).val()).text();
-
-//      	$('p').text(r);
-
-// 				});
-// 			});
-// 		"}
-		// script += "</script>"
-		// dat += script
-		// dat += "<a href='byond://?src=\ref[user];preferences=1;linkshairstuff=input' id = 'cust_first'></a>"
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// var r = $('#' + $(this).val()).text();
 		// 		$('p').text(r);
 			// <b><a href=\"byond://?src=\ref[user];preferences=1;linkshairstuff=1\">
-		dat += "<p>Overwrite me:</p> <br>"
 		dat += "<b>Profile Name:</b> "
 		dat += "<a href=\"byond://?src=\ref[user];preferences=1;profile_name=input\"><b>[src.profile_name ? src.profile_name : "Unnamed"]</b></a> "
 
@@ -232,6 +216,7 @@ datum/preferences
 
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
 			
+		dat += "<br><p id='custom_first_text'>appearance text</p>"
 		dat += "<br><Select id='custom_first'>"
 		for (var/i in customization_styles)
 			dat += "<option value='[customization_styles[i]]'>[i]</option>"
