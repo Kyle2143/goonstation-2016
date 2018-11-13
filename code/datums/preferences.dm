@@ -159,8 +159,50 @@ datum/preferences
 		user << browse_rsc(icon(cursors_selection[target_cursor]), "tcursor.png")
 		user << browse_rsc(icon(hud_style_selection[hud_style], "preview"), "hud_preview.png")
 
-		var/dat = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/></head><body><title>Character Setup</title>"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+		var/dat = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/></head><body><title>Character Setup</title>"
+		// dat +=	"<script type='text/javascript' src='[resource('js/char-setup.js')]'></script>"
+		// dat += "<script type='text/javascript' src='[resource("js/jquery.min.js")]>"
+		////////////////////////// dat +=	"<script src=\"[resource("js/charsetup.js")]\"></script>"
+		var/script = {"<script type='text/javascript'>
+		function myfunction() {
+			document.body.style.backgroundColor = 'red';
+		}
+		</script>"}
+		dat += script
+
+// 		var/script = "<script type='text/javascript' src='[resource("js/jquery.min.js")]>"
+// 		script += {"
+// 		function myfunction() {
+// 		document.body.style.backgroundColor = 'red';
+// 		}
+// $(function() {
+// 	$('#custom_first').change(function(){
+// 		document.body.style.backgroundColor = 'blue';
+// 		alert( 'Handler called.' );
+
+// 		var r = $('#' + $(this).val()).text();
+
+//      	$('p').text(r);
+
+// 				});
+// 			});
+// 		"}
+		// script += "</script>"
+		// dat += script
+		// dat += "<a href='byond://?src=\ref[user];preferences=1;linkshairstuff=input' id = 'cust_first'></a>"
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// var r = $('#' + $(this).val()).text();
+		// 		$('p').text(r);
+			// <b><a href=\"byond://?src=\ref[user];preferences=1;linkshairstuff=1\">
+		dat += "<p>Overwrite me:</p> <br>"
 		dat += "<b>Profile Name:</b> "
 		dat += "<a href=\"byond://?src=\ref[user];preferences=1;profile_name=input\"><b>[src.profile_name ? src.profile_name : "Unnamed"]</b></a> "
 
@@ -188,7 +230,18 @@ datum/preferences
 		dat += "<table><tr><td>"
 		dat += "<b>Appearance:</b><br>"
 
+			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
+			
+		dat += "<br><Select id='custom_first'>"
+		for (var/i in customization_styles)
+			dat += "<option value='[customization_styles[i]]'>[i]</option>"
+		dat += "</Select><br>"
+		// dat += "<a href='byond://?src=\ref[user];preferences=1;linkshairstuff=input' id = 'cust_first'></a>"
+		// dat += "<div id='cust_first'> red </div>"??????????
+
 		if (AH)
+			dat += "<button onclick='myfunction()'>Click myfunction</button>"
+
 			dat += "<a href='byond://?src=\ref[user];preferences=1;s_tone=input'><b>Skin Tone:</b></a> [-AH.s_tone + 35]/220<br>"
 
 			dat += "<a href='byond://?src=\ref[user];preferences=1;underwear=input'><b>Underwear:</b></a> [AH.underwear] "
@@ -196,7 +249,9 @@ datum/preferences
 
 			dat += "<a href='byond://?src=\ref[user];preferences=1;eyes=input'><b>Eye Color:</b> <font face=\"fixedsys\" size=\"3\" color=\"[AH.e_color]\"><b>#</b></font></a><br>"
 
+
 			dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
+
 			dat += "<a href='byond://?src=\ref[user];preferences=1;hair=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_first_color]\"><b>#</b></font></a><br>"
 
 			dat += "<a href='byond://?src=\ref[user];preferences=1;customization_second=input'><b>Mid Detail:</b></a> [AH.customization_second] "
@@ -558,6 +613,12 @@ datum/preferences
 		src.antispam = 0
 		return 1
 
+	proc/dothing(var/new_style)
+		var/new_age = input(usr, "Please select type in age: 20-80", "Character Generation")  as null|num
+
+		if (new_style)
+			AH.customization_first = new_style
+
 	proc/process_link(mob/user, list/link_tags)
 		if (!user.client)
 			return
@@ -618,6 +679,14 @@ datum/preferences
 			user << browse(null, "window=mob_occupation")
 			src.ShowChoices(user)
 			return
+
+		if (link_tags["linkshairstuff"])
+			//refresh sprite call here
+			var/new_style = link_tags["linkshairstuff"]
+			traitPreferences.showTraits(user)
+
+			if (new_style)
+				AH.customization_first = new_style
 
 		if (link_tags["resetalljobs"])
 			var/resetwhat = input("Reset all jobs to which level?","Job Preferences") as null|anything in list("Medium Priority","Low Priority","Unwanted")
