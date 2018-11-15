@@ -251,15 +251,16 @@ datum/preferences
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
 			
 		dat += "<br><p id='custom_first_text'>appearance text</p>"
-		dat += "<br><Select id='custom_first'>"
-		for (var/i in customization_styles)
-			//this is for setting the default value
-			if (i == AH.customization_first)
-				dat += "<option value='[customization_styles[i]]' selected='selected'>[i]</option>"
-			else 
-				dat += "<option value='[customization_styles[i]]'>[i]</option>"
+		dat += generate_select_table("custom_first", AH.customization_first, customization_styles)
+		// dat += "<br><Select id='custom_first'>"
+		// for (var/i in customization_styles)
+		// 	//this is for setting the default value
+		// 	if (i == AH.customization_first)
+		// 		dat += "<option value='[customization_styles[i]]' selected='selected'>[i]</option>"
+		// 	else 
+		// 		dat += "<option value='[customization_styles[i]]'>[i]</option>"
 
-		dat += "</Select><br>"
+		// dat += "</Select><br>"
 		// dat += "<a href='byond://?src=\ref[user];preferences=1;linkshairstuff=input' id = 'cust_first'></a>"
 
 		if (AH)
@@ -326,6 +327,21 @@ datum/preferences
 		traitPreferences.updateTraits(user)
 
 		user << browse(dat,"window=preferences;size=333x615")
+
+
+	//@id, The name of the Select table ID to be used.
+	//@ah_var, The var in the appearance holder we are changing with this select table
+	//@Style_list, The assoc list with the values to be used for generating this select table
+	proc/generate_select_table(var/id, var/ah_var, var/list/style_list)
+		var/select = "<br><Select id='custom_first'>"
+		for (var/i in style_list)
+			//this is for setting the default value
+			if (AH && i == ah_var)
+				select += "<option value='[style_list[i]]' selected='selected'>[i]</option>"
+			else 
+				select += "<option value='[style_list[i]]'>[i]</option>"
+		select += "</Select><br>"
+		return select
 
 	proc/ResetAllPrefsToMed(mob/user)
 		src.job_favorite = null
