@@ -82,7 +82,7 @@ datum/preferences
 			namecheck[i] = capitalize(namecheck[i])
 		real_name = jointext(namecheck, " ")
 
-	proc/update_preview_icon()
+	proc/update_preview_icon(mob/user)
 		//qdel(src.preview_icon)
 		if (!AH)
 			logTheThing("debug", usr ? usr : null, null, "a preference datum's appearence holder is null!")
@@ -147,6 +147,11 @@ datum/preferences
 
 		src.preview_icon.Blend(eyes_s, ICON_OVERLAY)
 
+
+		// user << browse_rsc(preview_icon, "previewicon1.png")							//////////////////////remove user maybeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		// user << browse_rsc(preview_icon, "previewicon.png?[rand(0,500)]")	
+		// user << browse("previewicon1.png")
+
 		facial_s = null
 		hair_s = null
 		underwear_s = null
@@ -154,35 +159,64 @@ datum/preferences
 
 	proc/ShowChoices(mob/user)
 		sanitize_null_values()
-		update_preview_icon()
+		update_preview_icon(user)
 		user << browse_rsc(preview_icon, "previewicon.png")
 		user << browse_rsc(icon(cursors_selection[target_cursor]), "tcursor.png")
 		user << browse_rsc(icon(hud_style_selection[hud_style], "preview"), "hud_preview.png")
 
-		var/dat = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/></head><body><title>Character Setup</title>"
+		var/dat = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/><meta http-equiv=\"pragma\" content=\"no-cache\" /></head><body><title>Character Setup</title>"
 		// dat +=	"<script type='text/javascript' src='[resource('js/char-setup.js')]'></script>"
 		// dat += "<script type='text/javascript' src='[resource("js/jquery.min.js")]>"
 		////////////////////////// dat +=	"<script src=\"[resource("js/charsetup.js")]\"></script>"
+		// <script src="[resource("js/jquery-migrate-1.2.1.min.js")]"></script>
+
+		// <script type='text/javascript' src='[resource("js/jquery-ui.min.js")]'></script>
 		var/script = {"
 		<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
-
-		<script type='text/javascript' src='[resource("js/jquery-ui.min.js")]'></script>
 		<script type='text/javascript'>
+			var i = 0
 			function myfunction() {
 				document.body.style.backgroundColor = 'red';
+				pick.src(image);
 			}
-$(function() {
-	$('#custom_first').change(function(){
-		// document.body.style.backgroundColor = 'blue';
-        var r = $( "#custom_first option:selected" ).text();
+		$(function() {
+			$('#custom_first').change(function(){
+		        var r = $( "#custom_first option:selected" ).text();
 
-		document.getElementById("custom_first_text").innerHTML = r;
+				document.getElementById("custom_first_text").innerHTML = r;
 
-
-				});
+				var command = encodeURIComponent("dothing");
+				var argument = encodeURIComponent(r);
+				/*window.location = 'byond://winset?command=' + command + argument;*/
+				window.location='byond://?src=\ref[src];preferences=1;customization_first_js=1;style='+argument;
+				SwitchPic("sprite_preview");
 			});
+		});
+
+
+
+		function SwitchPic(picID) {
+  			var pic = document.getElementById(picID);
+
+  			var d = new Date(); 
+  			var image='previewicon.png?'+d.getMilliseconds(); 
+  			pic.src = image;
+
+/*	  			pic.src = 'previewicon.png';*/
+
+/*			if (i == 0 ){
+	  			pic.src = 'previewicon.png';
+	  			i =1;
+	  		}
+	  		else{
+	  			pic.src = 'previewicon1.png';
+	  			i = 2;
+			}
+*/		}
+
 		</script>"}
 		dat += script
+			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
 
 		// var r = $('#' + $(this).val()).text();
 		// 		$('p').text(r);
@@ -219,10 +253,14 @@ $(function() {
 		dat += "<br><p id='custom_first_text'>appearance text</p>"
 		dat += "<br><Select id='custom_first'>"
 		for (var/i in customization_styles)
-			dat += "<option value='[customization_styles[i]]'>[i]</option>"
+			//this is for setting the default value
+			if (customization_styles[i] == AH.customization_first)
+				dat += "<option value='[customization_styles[i]]' selected='selected'>[i]</option>"
+			else 
+				dat += "<option value='[customization_styles[i]]'>[i]</option>"
+
 		dat += "</Select><br>"
 		// dat += "<a href='byond://?src=\ref[user];preferences=1;linkshairstuff=input' id = 'cust_first'></a>"
-		// dat += "<div id='cust_first'> red </div>"??????????
 
 		if (AH)
 			dat += "<button onclick='myfunction()'>Click myfunction</button>"
@@ -247,7 +285,7 @@ $(function() {
 
 			dat += "</td><td>"
 			dat += "<center><b>Preview</b>:<br>"
-			dat += "<img style=\"-ms-interpolation-mode:nearest-neighbor;\" src=previewicon.png height=64 width=64></center>"
+			dat += "<img style=\"-ms-interpolation-mode:nearest-neighbor;\" src=previewicon.png id='sprite_preview' height=64 width=64></center>"
 
 		else
 			dat += "<span color=red>ERROR:<br>PREFERENCE APPEARENCE HOLDER IS NULL<br>Please alert a coder!</span>"
@@ -598,15 +636,30 @@ $(function() {
 		src.antispam = 0
 		return 1
 
-	proc/dothing(var/new_style)
-		var/new_age = input(usr, "Please select type in age: 20-80", "Character Generation")  as null|num
-
+	proc/dothing(var/new_style = "afro")
 		if (new_style)
 			AH.customization_first = new_style
 
+	Topic(href, href_list[])
+
+		if (href_list["customization_first_js"])
+
+			var/new_style = href_list["style"]
+			world << "value of style is: [new_style]"
+			if (new_style)
+				AH.customization_first = new_style
+				world << "hit this thing1"
+				update_preview_icon()
+				world << "hit this thing2"
+				var/r = rand(0,500)
+				usr << browse_rsc(preview_icon, "previewicon.png")	
+				usr << browse("previewicon.png","display=0")	
+
+		..()
 	proc/process_link(mob/user, list/link_tags)
 		if (!user.client)
 			return
+
 
 		if (link_tags["help"])
 			var/helptext = "<html><body><title>Jobs Help</title><b><u>Job Preferences Help:</u></b><br>"
