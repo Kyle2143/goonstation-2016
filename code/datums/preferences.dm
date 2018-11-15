@@ -254,7 +254,7 @@ datum/preferences
 		dat += "<br><Select id='custom_first'>"
 		for (var/i in customization_styles)
 			//this is for setting the default value
-			if (customization_styles[i] == AH.customization_first)
+			if (i == AH.customization_first)
 				dat += "<option value='[customization_styles[i]]' selected='selected'>[i]</option>"
 			else 
 				dat += "<option value='[customization_styles[i]]'>[i]</option>"
