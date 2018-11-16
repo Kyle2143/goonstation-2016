@@ -168,8 +168,6 @@ $(function() {
         var id = document.activeElement.id
 		var r = $("#" + id + " option:selected" ).text();
 
-		/*document.getElementById("custom_first_text").innerHTML = r;*/
-
 		window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
 		SwitchPic("sprite_preview");
 
