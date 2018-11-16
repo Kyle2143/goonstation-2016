@@ -82,7 +82,7 @@ datum/preferences
 			namecheck[i] = capitalize(namecheck[i])
 		real_name = jointext(namecheck, " ")
 
-	proc/update_preview_icon(mob/user)
+	proc/update_preview_icon()
 		//qdel(src.preview_icon)
 		if (!AH)
 			logTheThing("debug", usr ? usr : null, null, "a preference datum's appearence holder is null!")
@@ -147,11 +147,6 @@ datum/preferences
 
 		src.preview_icon.Blend(eyes_s, ICON_OVERLAY)
 
-
-		// user << browse_rsc(preview_icon, "previewicon1.png")							//////////////////////remove user maybeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-		// user << browse_rsc(preview_icon, "previewicon.png?[rand(0,500)]")	
-		// user << browse("previewicon1.png")
-
 		facial_s = null
 		hair_s = null
 		underwear_s = null
@@ -159,7 +154,7 @@ datum/preferences
 
 	proc/ShowChoices(mob/user)
 		sanitize_null_values()
-		update_preview_icon(user)
+		update_preview_icon()
 		user << browse_rsc(preview_icon, "previewicon.png")
 		user << browse_rsc(icon(cursors_selection[target_cursor]), "tcursor.png")
 		user << browse_rsc(icon(hud_style_selection[hud_style], "preview"), "hud_preview.png")
@@ -194,10 +189,13 @@ $(function() {
 
 function SwitchPic(picID) {
 	var pic = document.getElementById(picID);
-
 	var d = new Date(); 
 	var image='previewicon.png?'+d.getMilliseconds(); 
-	pic.src = image;
+
+	setTimeout(function(){
+		pic.src = image;
+		
+		}, 500)
 }
 </script>"}
 		dat += script
@@ -233,20 +231,6 @@ function SwitchPic(picID) {
 		dat += "<table><tr><td>"
 		dat += "<b>Appearance:</b><br>"
 
-			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
-			
-		// dat += "<br><p id='custom_first_text'>appearance text</p>"
-		////////////////// dat += generate_select_table("custom_first", AH.customization_first, customization_styles)
-		// dat += "<br><Select id='custom_first'>"
-		// for (var/i in customization_styles)
-		// 	//this is for setting the default value
-		// 	if (i == AH.customization_first)
-		// 		dat += "<option value='[customization_styles[i]]' selected='selected'>[i]</option>"
-		// 	else 
-		// 		dat += "<option value='[customization_styles[i]]'>[i]</option>"
-
-		// dat += "</Select><br>"
-		// dat += "<a href='byond://?src=\ref[user];preferences=1;linkshairstuff=input' id = 'cust_first'></a>"
 
 		if (AH)
 			dat += "<button onclick='myfunction()'>Click myfunction</button>"
@@ -256,26 +240,25 @@ function SwitchPic(picID) {
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;underwear=input'><b>Underwear:</b></a> [AH.underwear] "
 			dat += "<a href='byond://?src=\ref[user];preferences=1;eyes=input'><b>Eye Color:</b> <font face=\"fixedsys\" size=\"3\" color=\"[AH.e_color]\"><b>#</b></font></a><br>"
 			
-			dat += "<div>Underwear:</div>"
+			dat += "<div>Underwear:"
 			dat += generate_select_table("underwear", AH.underwear, underwear_styles)
-			dat += "<a href='byond://?src=\ref[user];preferences=1;underwear_color=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.u_color]\"><b>#</b></font></a><br>"
+			dat += "<a href='byond://?src=\ref[user];preferences=1;underwear_color=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.u_color]\"><b>#</b></font></a><br></div>"
 
 
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
-			dat += "<div>Bottom Detail:</div>"
+			dat += "<div>Bottom Detail:"
 			dat += generate_select_table("custom_first", AH.customization_first, customization_styles)
 
-			dat += "<a href='byond://?src=\ref[user];preferences=1;hair=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_first_color]\"><b>#</b></font></a><br>"
+			dat += "<a href='byond://?src=\ref[user];preferences=1;hair=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_first_color]\"><b>#</b></font></a><br></div>"
 
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_second=input'><b>Mid Detail:</b></a> [AH.customization_second] "
-			dat += "<div>Mid Detail:</div>"
+			dat += "<div>Mid Detail:"
 			dat += generate_select_table("custom_second", AH.customization_second, customization_styles)
-			dat += "<a href='byond://?src=\ref[user];preferences=1;facial=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_second_color]\"><b>#</b></font></a><br>"
-
+			dat += "<a href='byond://?src=\ref[user];preferences=1;facial=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_second_color]\"><b>#</b></font></a><br></div>"
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_third=input'><b>Top Detail:</b></a> [AH.customization_third] "
-			dat += "<div>Top Detail:</div>"
+			dat += "<div>Top Detail:"
 			dat += generate_select_table("custom_third", AH.customization_third, customization_styles)
-			dat += "<a href='byond://?src=\ref[user];preferences=1;detail=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_third_color]\"><b>#</b></font></a><br>"
+			dat += "<a href='byond://?src=\ref[user];preferences=1;detail=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_third_color]\"><b>#</b></font></a><br></div>"
 
 			dat += "</td><td>"
 			dat += "<center><b>Preview</b>:<br>"
@@ -322,18 +305,18 @@ function SwitchPic(picID) {
 		user << browse(dat,"window=preferences;size=333x615")
 
 
-	//@id, The name of the Select table ID to be used.
-	//@ah_var, The var in the appearance holder that is in focus
-	//@Style_list, The assoc list with the values to be used for generating this select table
+	//id, The name of the Select table ID to be used.
+	//ah_var, The var in the appearance holder that is in focus
+	//Style_list, The assoc list with the values to be used for generating this select table
 	proc/generate_select_table(var/id, var/ah_var, var/list/style_list)
-		var/select = "<br><Select id='[id]'>"
+		var/select = "<Select id='[id]'>"
 		for (var/i in style_list)
 			//this is for setting the default value
 			if (AH && i == ah_var)
 				select += "<option value='[style_list[i]]' selected='selected'>[i]</option>"
 			else 
 				select += "<option value='[style_list[i]]'>[i]</option>"
-		select += "</Select><br>"
+		select += "</Select>"
 		return select
 
 	proc/ResetAllPrefsToMed(mob/user)
@@ -646,58 +629,23 @@ function SwitchPic(picID) {
 		return 1
 
 	Topic(href, href_list[])
-		var/id = href_list["id"]
+		var/table_id = href_list["id"]
 
-		//if you find any ID. custom_first, second,
-		if (id)
-			var/d = href_list["style"]
-			world << "ID is:	[d]"
-			world << "style is:	[d]"
-
-			//if the id is underwear, then set the string's style to AH.underwear
-			if (id == "underwear")
+		if (table_id)
+			if (table_id == "underwear")
 				AH.underwear = href_list["style"]
-			else if (id == "custom_first")
+			else if (table_id == "custom_first")
 				AH.customization_first = href_list["style"]
-			else if (id == "custom_second")
+			else if (table_id == "custom_second")
 				AH.customization_second = href_list["style"]
-			else if (id == "custom_third")
+			else if (table_id == "custom_third")
 				AH.customization_third = href_list["style"]
 
 			update_preview_icon()
-			usr << browse_rsc(preview_icon, "previewicon.png")	
+			usr << browse_rsc(preview_icon, "previewicon.png")
 			usr << browse("previewicon.png","display=0")
 
 		..()
-		// if (href_list["underwear"])
-		// 	var/new_style = href_list["style"]
-		// 	world << "value of style is: [new_style]"
-		// 	if (new_style)
-		// 		AH.underwear = new_style
-		// 		update_preview_icon()
-		// 		usr << browse_rsc(preview_icon, "previewicon.png")	
-		// 		usr << browse("previewicon.png","display=0")
-
-		// if (href_list["underwear"])
-		// 	doshit(href_list["style"], AH.underwear)
-		// else if (href_list["custom_first"])
-		// 	doshit(href_list["style"], AH.customization_first)
-		// else if (href_list["custom_second"])
-		// 	doshit(href_list["style"], AH.customization_second)
-		// else if (href_list["custom_third"])
-		// 	doshit(href_list["style"], AH.customization_third)
-
-	//@style = string
-	//
-	// proc/generate_select_table(var/id, var/ah_var, var/list/style_list)
-
-	// proc/doshit(var/new_style, var/ah_var)
-	// 	world << "value of style is: [new_style]"
-	// 	if (new_style)
-	// 		ah_var = new_style
-	// 		update_preview_icon()
-	// 		usr << browse_rsc(preview_icon, "previewicon.png")	
-	// 		usr << browse("previewicon.png","display=0")	
 
 
 	proc/process_link(mob/user, list/link_tags)
@@ -899,29 +847,29 @@ function SwitchPic(picID) {
 				AH.s_tone = max(min(round(new_tone), 220), 1)
 				AH.s_tone =  -AH.s_tone + 35
 
-		// if (link_tags["customization_first"])
-		// 	var/new_style = input(user, "Please select the hair style you want.", "Character Generation")  as null|anything in customization_styles
+		if (link_tags["customization_first"])
+			var/new_style = input(user, "Please select the hair style you want.", "Character Generation")  as null|anything in customization_styles
 
-		// 	if (new_style)
-		// 		AH.customization_first = new_style
+			if (new_style)
+				AH.customization_first = new_style
 
-		// if (link_tags["customization_second"])
-		// 	var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
+		if (link_tags["customization_second"])
+			var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
 
-		// 	if (new_style)
-		// 		AH.customization_second = new_style
+			if (new_style)
+				AH.customization_second = new_style
 
-		// if (link_tags["customization_third"])
-		// 	var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
+		if (link_tags["customization_third"])
+			var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
 
-		// 	if (new_style)
-		// 		AH.customization_third = new_style
+			if (new_style)
+				AH.customization_third = new_style
 
-		// if (link_tags["underwear"])
-		// 	var/new_style = input(user, "Please select the underwear you want.", "Character Generation")  as null|anything in underwear_styles
+		if (link_tags["underwear"])
+			var/new_style = input(user, "Please select the underwear you want.", "Character Generation")  as null|anything in underwear_styles
 
-		// 	if (new_style)
-		// 		AH.underwear = new_style
+			if (new_style)
+				AH.underwear = new_style
 
 		if (link_tags["underwear_color"])
 			var/new_ucolor = input(user, "Please select underwear color.", "Character Generation") as null|color
