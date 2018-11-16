@@ -627,7 +627,6 @@ function SwitchPic(picID) {
 		if (!user.client)
 			return
 
-
 		if (link_tags["help"])
 			var/helptext = "<html><body><title>Jobs Help</title><b><u>Job Preferences Help:</u></b><br>"
 			switch(link_tags["help"])
