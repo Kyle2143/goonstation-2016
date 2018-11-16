@@ -172,49 +172,34 @@ datum/preferences
 
 		// <script type='text/javascript' src='[resource("js/jquery-ui.min.js")]'></script>
 		var/script = {"
-		<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
-		<script type='text/javascript'>
-			var i = 0
-			function myfunction() {
-				document.body.style.backgroundColor = 'red';
-				pick.src(image);
-			}
-		$(function() {
-			$('#custom_first').change(function(){
-		        var r = $( "#custom_first option:selected" ).text();
+<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
+<script type='text/javascript'>
+function myfunction() {
+	document.body.style.backgroundColor = 'red';
+	pick.src(image);
+}
+$(function() {
+	$('select').change(function(){
+        var id = document.activeElement.id
+		var r = $("#" + id + " option:selected" ).text();
 
-				document.getElementById("custom_first_text").innerHTML = r;
+		/*document.getElementById("custom_first_text").innerHTML = r;*/
 
-				var command = encodeURIComponent("dothing");
-				var argument = encodeURIComponent(r);
-				/*window.location = 'byond://winset?command=' + command + argument;*/
-				window.location='byond://?src=\ref[src];preferences=1;customization_first_js=1;style='+argument;
-				SwitchPic("sprite_preview");
-			});
-		});
+		window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
+		SwitchPic("sprite_preview");
+
+	});
+});
 
 
+function SwitchPic(picID) {
+	var pic = document.getElementById(picID);
 
-		function SwitchPic(picID) {
-  			var pic = document.getElementById(picID);
-
-  			var d = new Date(); 
-  			var image='previewicon.png?'+d.getMilliseconds(); 
-  			pic.src = image;
-
-/*	  			pic.src = 'previewicon.png';*/
-
-/*			if (i == 0 ){
-	  			pic.src = 'previewicon.png';
-	  			i =1;
-	  		}
-	  		else{
-	  			pic.src = 'previewicon1.png';
-	  			i = 2;
-			}
-*/		}
-
-		</script>"}
+	var d = new Date(); 
+	var image='previewicon.png?'+d.getMilliseconds(); 
+	pic.src = image;
+}
+</script>"}
 		dat += script
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
 
@@ -250,8 +235,8 @@ datum/preferences
 
 			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
 			
-		dat += "<br><p id='custom_first_text'>appearance text</p>"
-		dat += generate_select_table("custom_first", AH.customization_first, customization_styles)
+		// dat += "<br><p id='custom_first_text'>appearance text</p>"
+		////////////////// dat += generate_select_table("custom_first", AH.customization_first, customization_styles)
 		// dat += "<br><Select id='custom_first'>"
 		// for (var/i in customization_styles)
 		// 	//this is for setting the default value
@@ -268,20 +253,28 @@ datum/preferences
 
 			dat += "<a href='byond://?src=\ref[user];preferences=1;s_tone=input'><b>Skin Tone:</b></a> [-AH.s_tone + 35]/220<br>"
 
-			dat += "<a href='byond://?src=\ref[user];preferences=1;underwear=input'><b>Underwear:</b></a> [AH.underwear] "
+			// dat += "<a href='byond://?src=\ref[user];preferences=1;underwear=input'><b>Underwear:</b></a> [AH.underwear] "
+			dat += "<a href='byond://?src=\ref[user];preferences=1;eyes=input'><b>Eye Color:</b> <font face=\"fixedsys\" size=\"3\" color=\"[AH.e_color]\"><b>#</b></font></a><br>"
+			
+			dat += "<div>Underwear:</div>"
+			dat += generate_select_table("underwear", AH.underwear, underwear_styles)
 			dat += "<a href='byond://?src=\ref[user];preferences=1;underwear_color=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.u_color]\"><b>#</b></font></a><br>"
 
-			dat += "<a href='byond://?src=\ref[user];preferences=1;eyes=input'><b>Eye Color:</b> <font face=\"fixedsys\" size=\"3\" color=\"[AH.e_color]\"><b>#</b></font></a><br>"
 
-
-			dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
+			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_first=input'><b>Bottom Detail:</b></a> [AH.customization_first] "
+			dat += "<div>Bottom Detail:</div>"
+			dat += generate_select_table("custom_first", AH.customization_first, customization_styles)
 
 			dat += "<a href='byond://?src=\ref[user];preferences=1;hair=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_first_color]\"><b>#</b></font></a><br>"
 
-			dat += "<a href='byond://?src=\ref[user];preferences=1;customization_second=input'><b>Mid Detail:</b></a> [AH.customization_second] "
+			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_second=input'><b>Mid Detail:</b></a> [AH.customization_second] "
+			dat += "<div>Mid Detail:</div>"
+			dat += generate_select_table("custom_second", AH.customization_second, customization_styles)
 			dat += "<a href='byond://?src=\ref[user];preferences=1;facial=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_second_color]\"><b>#</b></font></a><br>"
 
-			dat += "<a href='byond://?src=\ref[user];preferences=1;customization_third=input'><b>Top Detail:</b></a> [AH.customization_third] "
+			// dat += "<a href='byond://?src=\ref[user];preferences=1;customization_third=input'><b>Top Detail:</b></a> [AH.customization_third] "
+			dat += "<div>Top Detail:</div>"
+			dat += generate_select_table("custom_third", AH.customization_third, customization_styles)
 			dat += "<a href='byond://?src=\ref[user];preferences=1;detail=input'><font face=\"fixedsys\" size=\"3\" color=\"[AH.customization_third_color]\"><b>#</b></font></a><br>"
 
 			dat += "</td><td>"
@@ -330,10 +323,10 @@ datum/preferences
 
 
 	//@id, The name of the Select table ID to be used.
-	//@ah_var, The var in the appearance holder we are changing with this select table
+	//@ah_var, The var in the appearance holder that is in focus
 	//@Style_list, The assoc list with the values to be used for generating this select table
 	proc/generate_select_table(var/id, var/ah_var, var/list/style_list)
-		var/select = "<br><Select id='custom_first'>"
+		var/select = "<br><Select id='[id]'>"
 		for (var/i in style_list)
 			//this is for setting the default value
 			if (AH && i == ah_var)
@@ -652,26 +645,61 @@ datum/preferences
 		src.antispam = 0
 		return 1
 
-	proc/dothing(var/new_style = "afro")
-		if (new_style)
-			AH.customization_first = new_style
-
 	Topic(href, href_list[])
+		var/id = href_list["id"]
 
-		if (href_list["customization_first_js"])
+		//if you find any ID. custom_first, second,
+		if (id)
+			var/d = href_list["style"]
+			world << "ID is:	[d]"
+			world << "style is:	[d]"
 
-			var/new_style = href_list["style"]
-			world << "value of style is: [new_style]"
-			if (new_style)
-				AH.customization_first = new_style
-				world << "hit this thing1"
-				update_preview_icon()
-				world << "hit this thing2"
-				var/r = rand(0,500)
-				usr << browse_rsc(preview_icon, "previewicon.png")	
-				usr << browse("previewicon.png","display=0")	
+			//if the id is underwear, then set the string's style to AH.underwear
+			if (id == "underwear")
+				AH.underwear = href_list["style"]
+			else if (id == "custom_first")
+				AH.customization_first = href_list["style"]
+			else if (id == "custom_second")
+				AH.customization_second = href_list["style"]
+			else if (id == "custom_third")
+				AH.customization_third = href_list["style"]
+
+			update_preview_icon()
+			usr << browse_rsc(preview_icon, "previewicon.png")	
+			usr << browse("previewicon.png","display=0")
 
 		..()
+		// if (href_list["underwear"])
+		// 	var/new_style = href_list["style"]
+		// 	world << "value of style is: [new_style]"
+		// 	if (new_style)
+		// 		AH.underwear = new_style
+		// 		update_preview_icon()
+		// 		usr << browse_rsc(preview_icon, "previewicon.png")	
+		// 		usr << browse("previewicon.png","display=0")
+
+		// if (href_list["underwear"])
+		// 	doshit(href_list["style"], AH.underwear)
+		// else if (href_list["custom_first"])
+		// 	doshit(href_list["style"], AH.customization_first)
+		// else if (href_list["custom_second"])
+		// 	doshit(href_list["style"], AH.customization_second)
+		// else if (href_list["custom_third"])
+		// 	doshit(href_list["style"], AH.customization_third)
+
+	//@style = string
+	//
+	// proc/generate_select_table(var/id, var/ah_var, var/list/style_list)
+
+	// proc/doshit(var/new_style, var/ah_var)
+	// 	world << "value of style is: [new_style]"
+	// 	if (new_style)
+	// 		ah_var = new_style
+	// 		update_preview_icon()
+	// 		usr << browse_rsc(preview_icon, "previewicon.png")	
+	// 		usr << browse("previewicon.png","display=0")	
+
+
 	proc/process_link(mob/user, list/link_tags)
 		if (!user.client)
 			return
@@ -871,29 +899,29 @@ datum/preferences
 				AH.s_tone = max(min(round(new_tone), 220), 1)
 				AH.s_tone =  -AH.s_tone + 35
 
-		if (link_tags["customization_first"])
-			var/new_style = input(user, "Please select the hair style you want.", "Character Generation")  as null|anything in customization_styles
+		// if (link_tags["customization_first"])
+		// 	var/new_style = input(user, "Please select the hair style you want.", "Character Generation")  as null|anything in customization_styles
 
-			if (new_style)
-				AH.customization_first = new_style
+		// 	if (new_style)
+		// 		AH.customization_first = new_style
 
-		if (link_tags["customization_second"])
-			var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
+		// if (link_tags["customization_second"])
+		// 	var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
 
-			if (new_style)
-				AH.customization_second = new_style
+		// 	if (new_style)
+		// 		AH.customization_second = new_style
 
-		if (link_tags["customization_third"])
-			var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
+		// if (link_tags["customization_third"])
+		// 	var/new_style = input(user, "Please select the detail style you want.", "Character Generation")  as null|anything in customization_styles
 
-			if (new_style)
-				AH.customization_third = new_style
+		// 	if (new_style)
+		// 		AH.customization_third = new_style
 
-		if (link_tags["underwear"])
-			var/new_style = input(user, "Please select the underwear you want.", "Character Generation")  as null|anything in underwear_styles
+		// if (link_tags["underwear"])
+		// 	var/new_style = input(user, "Please select the underwear you want.", "Character Generation")  as null|anything in underwear_styles
 
-			if (new_style)
-				AH.underwear = new_style
+		// 	if (new_style)
+		// 		AH.underwear = new_style
 
 		if (link_tags["underwear_color"])
 			var/new_ucolor = input(user, "Please select underwear color.", "Character Generation") as null|color
