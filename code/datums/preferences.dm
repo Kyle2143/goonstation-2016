@@ -163,16 +163,7 @@ datum/preferences
 		var/script = {"
 <script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
 <script type='text/javascript'>
-$(function() {
-	$('select').change(function(){
-        var id = document.activeElement.id
-		var r = $("#" + id + " option:selected" ).text();
 
-		window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
-		SwitchPic("sprite_preview");
-
-	});
-});
 
 
 function SwitchPic(picID) {
@@ -185,6 +176,34 @@ function SwitchPic(picID) {
 		
 		}, 500)
 }
+
+//stole this debounce function from Kfir Zuberi at https://medium.com/walkme-engineering/debounce-and-throttle-in-real-life-scenarios-1cc7e2e38c68
+function debounce (func, interval) {
+  var timeout;
+  return function () {
+    var context = this, args = arguments;
+    var later = function () {
+      timeout = null;
+      func.apply(context, args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, interval || 200);
+  }
+}
+
+ var myHeavyFunction = debounce(function(){
+        var id = document.activeElement.id
+		var r = $("#" + id + " option:selected" ).text();
+
+		window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
+		SwitchPic("sprite_preview");
+
+	
+}, 250);
+$(function() {
+
+$('select').change(myHeavyFunction)
+})
 </script>"}
 		dat += script
 		dat += "<b>Profile Name:</b> "
@@ -296,8 +315,7 @@ function SwitchPic(picID) {
 
 	Topic(href, href_list[])
 		var/table_id = href_list["id"]
-
-		//the if block determines where to save the incoming choice in the AppearanceHolder. Then in all cases it will update the icon and send it to the browser
+		//the if block determines whatever to save the incoming choice in the AppearanceHolder. Then in all cases it will update the icon and send it to the browser
 		if (table_id)
 			if (table_id == "underwear")
 				AH.underwear = href_list["style"]
