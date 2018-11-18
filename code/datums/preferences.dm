@@ -303,14 +303,14 @@ $('select').change(myHeavyFunction)
 	//ah_var, The var in the appearance holder that is in focus
 	//Style_list, The assoc list with the values to be used for generating this select table
 	proc/generate_select_table(var/id, var/ah_var, var/list/style_list)
-		var/select = "<Select id='[id]'>"
+		var/select = "<select id='[id]'>"
 		for (var/i in style_list)
 			//this is for setting the default value
 			if (AH && i == ah_var)
 				select += "<option value='[style_list[i]]' selected='selected'>[i]</option>"
 			else 
 				select += "<option value='[style_list[i]]'>[i]</option>"
-		select += "</Select>"
+		select += "</select>"
 		return select
 
 	Topic(href, href_list[])
