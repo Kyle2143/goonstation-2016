@@ -316,19 +316,30 @@ $('select').change(myHeavyFunction)
 	Topic(href, href_list[])
 		var/table_id = href_list["id"]
 		//the if block determines whatever to save the incoming choice in the AppearanceHolder. Then in all cases it will update the icon and send it to the browser
+		var/changed = 0
 		if (table_id)
 			if (table_id == "underwear")
-				AH.underwear = href_list["style"]
+				if (AH.underwear != href_list["style"])
+					AH.underwear = href_list["style"]
+					changed = 1
 			else if (table_id == "custom_first")
-				AH.customization_first = href_list["style"]
-			else if (table_id == "custom_second")
-				AH.customization_second = href_list["style"]
-			else if (table_id == "custom_third")
-				AH.customization_third = href_list["style"]
+				if (AH.customization_first != href_list["style"])
+					AH.customization_first = href_list["style"]
+					changed = 1
 
-			update_preview_icon()
-			usr << browse_rsc(preview_icon, "previewicon.png")
-			usr << browse("previewicon.png","display=0")
+			else if (table_id == "custom_second")
+				if (AH.customization_second != href_list["style"])
+					AH.customization_second = href_list["style"]
+					changed = 1
+			else if (table_id == "custom_third")
+				if (AH.customization_third != href_list["style"])
+					AH.customization_third = href_list["style"]
+					changed = 1
+
+			if (changed)
+				update_preview_icon()
+				usr << browse_rsc(preview_icon, "previewicon.png")
+				usr << browse("previewicon.png","display=0")
 
 		..()
 
