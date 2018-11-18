@@ -192,19 +192,22 @@ function debounce (func, interval) {
 }
 
  var myHeavyFunction = debounce(function(){
-        var id = document.activeElement.id
-		var r = $("#" + id + " option:selected" ).text();
-
-		window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
-		SwitchPic("sprite_preview");
+    var id = $(this).attr('id')
+	var r = $("#" + id + " option:selected" ).text();
+	window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
+	SwitchPic("sprite_preview");
 
 	
-}, 250);
-$(function() {
+	}, 250);
 
-$('select').change(myHeavyFunction)
-})
+	$(function() {
+
+	$('select').change(myHeavyFunction)
+	}
+
+	)
 </script>"}
+
 		dat += script
 		dat += "<b>Profile Name:</b> "
 		dat += "<a href=\"byond://?src=\ref[user];preferences=1;profile_name=input\"><b>[src.profile_name ? src.profile_name : "Unnamed"]</b></a> "
