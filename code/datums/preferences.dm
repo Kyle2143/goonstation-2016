@@ -165,47 +165,44 @@ datum/preferences
 <script type='text/javascript'>
 
 
+$(function() {	
 
-function SwitchPic(picID) {
-	var pic = document.getElementById(picID);
-	var d = new Date(); 
-	var image='previewicon.png?'+d.getMilliseconds(); 
+	function SwitchPic(picID) {
+		var pic = document.getElementById(picID);
+		var d = new Date(); 
+		var image='previewicon.png?'+d.getMilliseconds(); 
 
-	setTimeout(function(){
-		pic.src = image;
-		
-		}, 500)
-}
+		setTimeout(function(){
+			pic.src = image;
+			
+			}, 500)
+	}
 
-//stole this debounce function from Kfir Zuberi at https://medium.com/walkme-engineering/debounce-and-throttle-in-real-life-scenarios-1cc7e2e38c68
-function debounce (func, interval) {
-  var timeout;
-  return function () {
-    var context = this, args = arguments;
-    var later = function () {
-      timeout = null;
-      func.apply(context, args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, interval || 200);
-  }
-}
+	//stole this debounce function from Kfir Zuberi at https://medium.com/walkme-engineering/debounce-and-throttle-in-real-life-scenarios-1cc7e2e38c68
+	function debounce (func, interval) {
+	  var timeout;
+	  return function () {
+	    var context = this, args = arguments;
+	    var later = function () {
+	      timeout = null;
+	      func.apply(context, args);
+	    };
+	    clearTimeout(timeout);
+	    timeout = setTimeout(later, interval || 200);
+	  }
+	}
 
- var myHeavyFunction = debounce(function(){
-    var id = $(this).attr('id')
-	var r = $("#" + id + " option:selected" ).text();
-	window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
-	SwitchPic("sprite_preview");
-
-	
+	 var update_image = debounce(function(){
+	    var id = $(this).attr('id')
+		var r = $("#" + id + " option:selected" ).text();
+		window.location='byond://?src=\ref[src];preferences=1;id='+id+';style='+encodeURIComponent(r);
+		SwitchPic("sprite_preview");
 	}, 250);
 
 	$(function() {
-
-	$('select').change(myHeavyFunction)
-	}
-
-	)
+		$('select').change(update_image)
+	})
+});
 </script>"}
 
 		dat += script
