@@ -240,7 +240,7 @@ proc/create_fluff(var/datum/mind/target)
 
 	set_up()
 		var/list/target_areas = list(/area/station/chemistry,
-		/area/station/artifact,
+		/area/station/science/artifact,
 		/area/station/science/lab,
 		/area/station/science/teleporter,
 		/*/area/station/medical/medbay,*/ // On Cogmap 1, medbay is split up into three separate areas.
