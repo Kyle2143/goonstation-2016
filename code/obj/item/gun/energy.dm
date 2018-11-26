@@ -743,7 +743,7 @@
 		projectiles = list(current_projectile,new/datum/projectile/bullet/revolver_38,new/datum/projectile/bullet/smoke,new/datum/projectile/bullet/tranq_dart,new/datum/projectile/bullet/flare,new/datum/projectile/bullet/autocannon/lawgiver,new/datum/projectile/bullet/clownshot)
 		
 		src.indicator_display = image('icons/obj/lawgiver.dmi', "")
-		aaa(M)
+		asign_name(M)
 
 		update_icon()
 		..()
@@ -758,11 +758,11 @@
 		src.add_fingerprint(user)
 		if (!owner_prints)
 			boutput(user, "<span style=\"color:red\">[src] has accepted your fingerprint ID. You are its owner!</span>")
-			aaa(user)
+			asign_name(user)
 		else
 			boutput(user, "<span style=\"color:blue\">There don't see to be any buttons on [src] to press.</span>")
 
-	proc/aaa(var/mob/M)
+	proc/asign_name(var/mob/M)
 		if (ishuman(M))
 			var/mob/living/carbon/human/H = M
 			if (H.bioHolder)
@@ -826,7 +826,7 @@
 
 			update_icon()
 
-	//Are you really the laws? takes the mob as speaker, and the text spoken, sanitizes it. If you say "i am the law" and you in fact are NOT the law, it's gonna blow. Moved out of the switch statement because it that switch is only gonna run if the owner speaks
+	//Are you really the law? takes the mob as speaker, and the text spoken, sanitizes it. If you say "i am the law" and you in fact are NOT the law, it's gonna blow. Moved out of the switch statement because it that switch is only gonna run if the owner speaks
 	proc/are_you_the_law(mob/M as mob, text)
 		text = sanitize_talk(text)
 		if (text == "iamthelaw")
@@ -870,7 +870,7 @@
 			else if (current_projectile.type == /datum/projectile/bullet/clownshot)		//clownshot - pink
 				indicator_display.color = "#FFC0CB"
 			else
-				indicator_display.color = "#000000"				//default, should never reach make it black
+				indicator_display.color = "#000000"				//default, should never reach. make it black
 			src.overlays += indicator_display
 
 	//just remove all capitalization and non-letter characters
@@ -915,10 +915,26 @@
 
 	examine()
 		set src in usr
+		var/gun_setting_name = "detain"
+		if(current_projectile.type == /datum/projectile/energy_bolt/aoe)
+			gun_setting_name = "detain"
+		else if (current_projectile.type == /datum/projectile/bullet/revolver_38)
+			gun_setting_name = "execute"
+		else if (current_projectile.type == /datum/projectile/bullet/smoke)
+			gun_setting_name = "smokeshot"
+		else if (current_projectile.type == /datum/projectile/bullet/tranq_dart)
+			gun_setting_name = "knockout"
+		else if (current_projectile.type == /datum/projectile/bullet/flare)
+			gun_setting_name = "hotshot"
+		else if (current_projectile.type == /datum/projectile/bullet/autocannon/lawgiver)
+			gun_setting_name = "bigshot"
+		else if (current_projectile.type == /datum/projectile/bullet/clownshot)
+			gun_setting_name = "clownshot"
 
-		src.desc = "It is set to [icon_state]"
+		src.desc = "It is set to [gun_setting_name]."
 		if(src.cell)
-			src.desc += "[src.projectiles ? "It will use the projectile: [src.current_projectile.sname]. " : ""]There are [src.cell.charge]/[src.cell.max_charge] PUs left!"
+				//[src.projectiles ? "It will use the projectile: [src.current_projectile.sname]. " : ""]
+			src.desc += "There are [src.cell.charge]/[src.cell.max_charge] PUs left!"
 		else
 			src.desc += "There is no cell loaded!"
 		if(current_projectile)
@@ -931,6 +947,6 @@
 
 /obj/item/gun/energy/lawgiver/emag_act(var/mob/user, var/obj/item/card/emag/E)
 	if (user)
-		boutput(user, "<span style=\"color:red\">Anyone can use this gun now. Be careful!</span>")
+		boutput(user, "<span style=\"color:red\">Anyone can use this gun now. Be careful! (use it in-hand to register your fingerprints)</span>")
 		owner_prints = null
 	return 0
