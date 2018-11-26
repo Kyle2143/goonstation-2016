@@ -913,6 +913,7 @@
 
 		return ..(target, start, user)
 
+	//gotta override this to set the desc name to the proper thing
 	examine()
 		set src in usr
 		var/gun_setting_name = "detain"
@@ -941,7 +942,6 @@
 			src.desc += " Each shot will currently use [src.current_projectile.cost] PUs!"
 		else
 			src.desc += "<span style=\"color:red\">*ERROR* No output selected!</span>"
-		..()
 		return
 	
 
