@@ -249,6 +249,14 @@ toxic - poisons
 	on_hit(atom/hit)
 		explosion_new(null, get_turf(hit), 1)
 
+	lawgiver
+		name = "lawgiver"
+		power = 10
+		cost = 150
+
+		on_hit(atom/hit)
+			explosion_new(null, get_turf(hit), 5)
+
 /datum/projectile/bullet/abg
 	name = "rubber slug"
 	shot_sound = 'sound/weapons/shotgunshot.ogg'
@@ -361,14 +369,6 @@ toxic - poisons
 
 	on_hit(atom/hit)
 		explosion_new(null, get_turf(hit), 15)
-
-	lawgiver
-		name = "lawgiver"
-		power = 10
-		cost = 150
-
-		on_hit(atom/hit)
-			explosion_new(null, get_turf(hit), 5)
 
 	plasma_orb
 		name = "fusion orb"
@@ -626,7 +626,7 @@ toxic - poisons
 /datum/projectile/bullet/clownshot
 	name = "clownshot"
 	power = 1
-	cost = 30				//This should either cost a lot or a little I don't know. On one hand if it costs nothing you can truly tormet clowns with it, but on the other hand if it costs your full charge, then the clown will know how much you hate it because of how much you sacraficed to harm it. I settled for a med amount...
+	cost = 15				//This should either cost a lot or a little I don't know. On one hand if it costs nothing you can truly tormet clowns with it, but on the other hand if it costs your full charge, then the clown will know how much you hate it because of how much you sacraficed to harm it. I settled for a med amount...
 	damage_type = D_KINETIC
 	hit_type = DAMAGE_BLUNT
 	implanted = null

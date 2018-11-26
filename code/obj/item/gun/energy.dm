@@ -740,7 +740,7 @@
 	New(var/mob/M)
 		cell = new/obj/item/ammo/power_cell/self_charging/lawgiver
 		current_projectile = new/datum/projectile/energy_bolt/aoe
-		projectiles = list(current_projectile,new/datum/projectile/bullet/revolver_38,new/datum/projectile/bullet/smoke,new/datum/projectile/bullet/tranq_dart,new/datum/projectile/bullet/flare,new/datum/projectile/bullet/autocannon/lawgiver,new/datum/projectile/bullet/clownshot)
+		projectiles = list(current_projectile,new/datum/projectile/bullet/revolver_38,new/datum/projectile/bullet/smoke,new/datum/projectile/bullet/tranq_dart,new/datum/projectile/bullet/flare,new/datum/projectile/bullet/aex/lawgiver,new/datum/projectile/bullet/clownshot)
 		
 		src.indicator_display = image('icons/obj/lawgiver.dmi', "")
 		asign_name(M)
@@ -816,7 +816,7 @@
 					current_projectile.cost = 60					
 					playsound(M, "sound/vox/hot.ogg", 75)
 				if ("bigshot","highexplosive","he")
-					current_projectile = new/datum/projectile/bullet/autocannon/lawgiver
+					current_projectile = new/datum/projectile/bullet/aex/lawgiver
 					playsound(M, "sound/vox/high.ogg", 75)
 					sleep(4)
 					playsound(M, "sound/vox/explosive.ogg", 75)
@@ -865,7 +865,7 @@
 				indicator_display.color = "#008000"
 			else if (current_projectile.type == /datum/projectile/bullet/flare)			//hotshot - red
 				indicator_display.color = "#FF0000"
-			else if (current_projectile.type == /datum/projectile/bullet/autocannon/lawgiver)	//bigshot - purple
+			else if (current_projectile.type == /datum/projectile/bullet/aex/lawgiver)	//bigshot - purple
 				indicator_display.color = "#551A8B"
 			else if (current_projectile.type == /datum/projectile/bullet/clownshot)		//clownshot - pink
 				indicator_display.color = "#FFC0CB"
@@ -926,7 +926,7 @@
 			gun_setting_name = "knockout"
 		else if (current_projectile.type == /datum/projectile/bullet/flare)
 			gun_setting_name = "hotshot"
-		else if (current_projectile.type == /datum/projectile/bullet/autocannon/lawgiver)
+		else if (current_projectile.type == /datum/projectile/bullet/aex/lawgiver)
 			gun_setting_name = "bigshot"
 		else if (current_projectile.type == /datum/projectile/bullet/clownshot)
 			gun_setting_name = "clownshot"
