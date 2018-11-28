@@ -305,6 +305,114 @@ obj/critter/bear/care
 	atksilicon = 0
 	firevuln = 1
 	brutevuln = 1
+	var/blood_volume = 0		//This will count all the blood that Dr. Acula has fed on. Cheaper than having a reagent_holder holding blood I suppose
+	var/atom/drink_target
+
+	MouseDrop(atom/over_object as mob|obj)
+		if (ishuman(over_object))
+			var/mob/living/carbon/human/H = over_object
+			if (H && !H.restrained() && !H.stat && in_range(src, H))
+				if (src.task == "wandering" || src.task == "thinking")
+					src.task = "drink mob"
+					src.drink_target = H
+					// src.set_loc(M.loc)
+					src.visible_message("[usr] offers up [his_or_her(usr)] arm to feed [src].")
+					if (prob(50))
+						take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
+						src.visible_message("<span style=\"color:red\"><B>Whoops, looke like [src] bit down a bit too hard.</span>")
+
+		else
+			return ..()
+
+	//stolen first part from the seek_target in parent that seeks for food/snack. in here we'll search for reagent containers with blood
+	proc/seek_blood()
+		// src.anchored = initial(src.anchored)
+		if (src.target)
+			src.task = "chasing"
+			return 0
+
+		var/list/visible = new()
+		for (var/obj/item/reagent_containers/S in view(src.seekrange,src))
+			if (S.reagents && S.reagents.has_reagent("blood"))
+				visible.Add(S)
+				continue
+		// if (src.food_target && visible.Find(src.food_target))
+		// 	src.task = "chasing food"
+		// 	return
+		// else
+		// 	src.task = "thinking"
+		if (visible.len)
+			src.drink_target = visible[1]
+			src.task = "chasing blood"
+
+			return 1
+		return 0
+
+	ai_think()
+		if (src.task == "thinking")
+			src.attack = 0
+			src.target = null
+			walk_to(src,0)
+
+			if (seek_blood()) return 1
+			if (src.aggressive) seek_target()
+			if (src.wanderer && src.mobile && !src.target) src.task = "wandering"
+			return 1
+
+		else if (src.task == "chasing blood")
+			if (!drink_target || !isobj(drink_target) || get_dist(src, src.drink_target) > 8)
+				src.task = "thinking"
+				drink_target = null
+			else if (get_dist(src, src.drink_target) <= src.attack_range)
+				src.task = "drink obj"
+			else
+				walk_to(src, src.drink_target,1,4)
+			return 1
+
+		else if (src.task == "drink obj")
+			if (!drink_target || get_dist(src, src.drink_target) > src.attack_range)
+				src.task = "thinking"
+			else
+				if (istype(drink_target,/obj/item/reagent_containers/))
+					var/obj/item/reagent_containers/container = drink_target
+					container.reagents.remove_reagent("blood", 5)
+					blood_volume += 5
+					if (prob(30))
+						playsound(src.loc,"sound/items/drink.ogg", rand(10,50), 1)
+
+					spawn(rand(30,50))
+						src.task = "thinking"
+						src.visible_message("[src]'s finishes drinking blood from [drink_target] for now. That cutie looks pretty satisfied.")
+						src.drink_target = null
+			return 1
+
+		else if (src.task == "drink mob")
+			if (!src.drink_target || get_dist(src, src.drink_target) > src.attack_range)
+				src.task = "thinking"
+			else
+				if (ishuman(drink_target))
+					var/mob/living/carbon/human/H = drink_target
+					if (H.blood_volume < 5)
+						H.blood_volume = 0
+					else
+						H.blood_volume -= 5
+						src.blood_volume += 5
+					
+					if (prob(5))
+						playsound(src.loc,"sound/items/drink.ogg", rand(10,50), 1)
+
+					spawn(rand(50,100))
+						src.task = "thinking"
+						src.visible_message("[src]'s releases [drink_target]'s arm.")
+						src.drink_target = null
+			return 1
+		else if (src.task == "wandering")
+			patrol_step()
+			if (prob(2))
+				seek_blood()
+
+		else
+			..()
 
 	CritterDeath()
 		..()
@@ -314,6 +422,15 @@ obj/critter/bear/care
 	CritterAttack(mob/M)
 		src.attacking = 1
 		src.visible_message("<span class='combat'><B>[src]</B> bites [src.target]!</span>")
+		//steal blood
+		if (ishuman(M))
+			var/mob/living/carbon/human/H = M
+			if (H.blood_volume < 10)
+				H.blood_volume = 0
+			else
+				H.blood_volume -= 10
+				src.blood_volume += 10
+
 		random_brute_damage(src.target, 1)
 		spawn(10)
 			src.attacking = 0
