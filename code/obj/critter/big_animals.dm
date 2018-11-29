@@ -365,11 +365,13 @@ obj/critter/bear/care
 			else
 				H.blood_volume -= blood_sip_amt
 				src.blood_volume += blood_sip_amt*2			//fresh blood is the quenchiest. Bats get more blood points this way
+			src.health += 2
 
 		else if (istype(target,/obj/item/reagent_containers/))
 			var/obj/item/reagent_containers/container = target
 			container.reagents.remove_reagent("blood", blood_sip_amt)
 			blood_volume += blood_sip_amt
+			src.health ++
 
 		else return 0
 
