@@ -357,6 +357,38 @@ obj/critter/bear/care
 				return 1
 		return 0
 
+	proc/drink_blood(var/atom/target)
+		if (ishuman(target))
+			var/mob/living/carbon/human/H = target
+			if (H.blood_volume < blood_sip_amt)
+				H.blood_volume = 0
+			else
+				H.blood_volume -= blood_sip_amt
+				src.blood_volume += blood_sip_amt*2			//fresh blood is the quenchiest. Bats get more blood points this way
+
+		else if (istype(target,/obj/item/reagent_containers/))
+			var/obj/item/reagent_containers/container = target
+			container.reagents.remove_reagent("blood", blood_sip_amt)
+			blood_volume += blood_sip_amt
+
+		else return 0
+
+		last_drink = world.time
+		sips_taken++
+		if (prob(30))
+			playsound(src.loc,"sound/items/drink.ogg", rand(10,50), 1)
+		// if (prob(20))		uncomment this for the eat animation
+		//	eat_twitch(src)
+
+		if (sips_taken >= sips_to_take) 
+			src.task = "thinking"
+			src.visible_message("[src]'s finishes drinking blood from [drink_target] for now. That cutie looks pretty satisfied.")
+			src.drink_target = null
+			src.sips_taken = 0
+		return 1
+
+
+
 	//overriding ai_think, adding new switch cases for bats. If these new ones (or overridden "think") get hit, special action happens here and we return. otherwise call parent.
 	ai_think()
 		switch (task)
@@ -384,47 +416,14 @@ obj/critter/bear/care
 				if (!drink_target || get_dist(src, src.drink_target) > 0)
 					src.task = "thinking"
 				else
-					if (istype(drink_target,/obj/item/reagent_containers/))
-						var/obj/item/reagent_containers/container = drink_target
-						container.reagents.remove_reagent("blood", blood_sip_amt)
-						blood_volume += blood_sip_amt
-						last_drink = world.time
-						sips_taken++
-						if (prob(30))
-							playsound(src.loc,"sound/items/drink.ogg", rand(10,50), 1)
-						// if (prob(20))		uncomment this for the eat animation
-						//	eat_twitch(src)
-
-						if (sips_taken >= sips_to_take) 
-							src.task = "thinking"
-							src.visible_message("[src]'s finishes drinking blood from [drink_target] for now. That cutie looks pretty satisfied.")
-							src.drink_target = null
-							src.sips_taken = 0
+					drink_blood(drink_target)
 				return 0
 
 			if ("drink mob")
 				if (!src.drink_target || get_dist(src, src.drink_target) > src.attack_range)
 					src.task = "thinking"
 				else
-					if (ishuman(drink_target))
-						var/mob/living/carbon/human/H = drink_target
-						if (H.blood_volume < blood_sip_amt)
-							H.blood_volume = 0
-						else
-							H.blood_volume -= blood_sip_amt
-							src.blood_volume += blood_sip_amt*2			//fresh blood is the quenchiest. Bats get more blood points this way
-						last_drink = world.time
-						sips_taken++
-						if (prob(5))
-							playsound(src.loc,"sound/items/drink.ogg", rand(10,50), 1)
-						//if (prob(40))		uncomment this for the eat animation
-							//eat_twitch(src)
-
-						if (sips_taken >= (sips_to_take))
-							src.task = "thinking"
-							src.visible_message("[src]'s releases [drink_target]'s arm.")
-							src.drink_target = null
-							src.sips_taken = 0
+					drink_blood(drink_target)
 				return 0
 		..()
 
@@ -438,16 +437,9 @@ obj/critter/bear/care
 		src.visible_message("<span class='combat'><B>[src]</B> bites [src.target]!</span>")
 		//steal blood
 		random_brute_damage(src.target, 1)
-		if (ishuman(M))
-			var/mob/living/carbon/human/H = M
-			if (H.blood_volume < blood_sip_amt)
-				H.blood_volume = 0
-			else
-				H.blood_volume -= blood_sip_amt
-				src.blood_volume += blood_sip_amt
-			last_drink = world.time
-			if (prob(20))
-				take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
+		drink_blood(M)
+		if (prob(20))
+			take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
 
 		spawn(10)
 			src.attacking = 0
@@ -515,16 +507,9 @@ obj/critter/bear/care
 		src.attacking = 1
 		src.visible_message("<span class='combat'><B>[src]</B> bites and claws at [src.target]!</span>")
 		random_brute_damage(src.target, rand(3,5))
-		if (ishuman(M))
-			var/mob/living/carbon/human/H = M
-			if (H.blood_volume < blood_sip_amt)
-				H.blood_volume = 0
-			else
-				H.blood_volume -= blood_sip_amt
-				src.blood_volume += blood_sip_amt
-			last_drink = world.time
-			if (prob(20))
-				take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
+		drink_blood(M)
+		if (prob(20))
+			take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
 
 		spawn(10)
 			src.attacking = 0
