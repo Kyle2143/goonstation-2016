@@ -327,9 +327,9 @@ obj/critter/bear/care
 					src.drink_target = H
 					src.set_loc(H.loc)
 					src.visible_message("[usr] offers up [his_or_her(usr)] arm to feed [src].")
-					if (prob(50))
+					if (prob(30))
 						take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
-						src.visible_message("<span style=\"color:red\"><B>Whoops, looke like [src] bit down a bit too hard.</span>")
+						src.visible_message("<span style=\"color:red\"><B>Whoops, looks like [src] bit down a bit too hard.</span>")
 
 			//stand next to bat, and point towards some blood, the bat will try to drink it
 			else if (istype(over_object,/obj/item/reagent_containers/) && get_dist(usr, src) <= 1)
@@ -446,7 +446,9 @@ obj/critter/bear/care
 				H.blood_volume -= blood_sip_amt
 				src.blood_volume += blood_sip_amt
 			last_drink = world.time
-		
+			if (prob(20))
+				take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
+
 		spawn(10)
 			src.attacking = 0
 
@@ -513,6 +515,17 @@ obj/critter/bear/care
 		src.attacking = 1
 		src.visible_message("<span class='combat'><B>[src]</B> bites and claws at [src.target]!</span>")
 		random_brute_damage(src.target, rand(3,5))
+		if (ishuman(M))
+			var/mob/living/carbon/human/H = M
+			if (H.blood_volume < blood_sip_amt)
+				H.blood_volume = 0
+			else
+				H.blood_volume -= blood_sip_amt
+				src.blood_volume += blood_sip_amt
+			last_drink = world.time
+			if (prob(20))
+				take_bleeding_damage(usr, null, 5, DAMAGE_CUT, 0, get_turf(src))
+
 		spawn(10)
 			src.attacking = 0
 
