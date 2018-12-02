@@ -3962,9 +3962,10 @@
 
 			return 0
 
-		if (src.health < 0 || (src.organHolder && !src.organHolder.left_lung && !src.organHolder.right_lung)) //We aren't breathing.
+		if (src.health < 0 || (src.organHolder && src.organHolder.get_working_lung_amt() == 0)) //We aren't breathing.
 			return 0
 
+		var/has_cyberlungs = (src.organHolder && (organHolder.left_lung && organHolder.right_lung) && (src.organHolder.left_lung.robotic && src.organHolder.right_lung.robotic)) //gotta prevent null pointers...
 		var/safe_oxygen_min = 17 // Minimum safe partial pressure of O2, in kPa
 		//var/safe_oxygen_max = 140 // Maximum safe partial pressure of O2, in kPa (Not used for now)
 		var/safe_co2_max = 9 // Yes it's an arbitrary value who cares?
@@ -4030,11 +4031,14 @@
 				else if (SA_pp > 0.01)	// There is sleeping gas in their lungs, but only a little, so give them a bit of a warning
 					if (prob(20))
 						spawn(0) emote(pick("giggle", "laugh"))
-			for (var/datum/gas/rad_particles/RV in breath.trace_gases)
-				src.irradiate(RV.moles/10,1)
+
+			//cyber lungs beat radiation. Is there anything they can't do?
+			if (!has_cyberlungs)
+				for (var/datum/gas/rad_particles/RV in breath.trace_gases)
+					src.irradiate(RV.moles/10,1)
 
 		if (breath.temperature > (T0C+66) && !src.is_heat_resistant()) // Hot air hurts :(
-			if (!(breath.temperature < (T0C+150) && (src.organHolder && src.organHolder.left_lung.robotic && src.organHolder.right_lung.robotic)))
+			if (! has_cyberlungs || (has_cyberlungs && (breath.temperature > (T0C+500))))
 
 				var/burn_damage = min((breath.temperature - (T0C+66)) / 3,10) + 6
 				TakeDamage("chest", 0, burn_damage, 0, DAMAGE_BURN)
