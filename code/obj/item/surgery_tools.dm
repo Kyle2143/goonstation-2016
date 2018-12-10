@@ -877,16 +877,24 @@ SURGICAL SCISSORS
 	throw_range = 5
 	var/mob/Poisoner = null
 	module_research = list("tools" = 3, "medicine" = 3, "weapons" = 0.25)
+	var/image/handle = null
 
 	New()
 		..()
 		src.create_reagents(5)
+		icon_state = "surgical-scissors-metal"
+		handle = image('icons/obj/surgery.dmi', "")
 		if (prob(1) && prob(10))	// 1:1000 chance
-			icon_state = "surgical_scissors-"
+			handle.icon_state = "surgical-scissors-handle-c"
 			desc = "Used for precisely cutting up people in surgery. I guess you could use them on paper too... There's something off about this pair."
-
 		else
-			icon_state = pick("surgical_scissors-r", "surgical_scissors-g", "surgical_scissors-b", "surgical_scissors-v", "surgical_scissors-dr", "surgical_scissors-g", "surgical_scissors-gr", "surgical_scissors-gf", "surgical_scissors-c", "surgical_scissors-pi", "surgical_scissors-y")
+			handle.icon_state = "surgical-scissors-handle"
+			handle.color = "#[random_hex(6)]"
+		
+		src.overlays += handle
+
+	disposing()
+		handle = null
 
 
 	attack(mob/living/carbon/M as mob, mob/user as mob)
