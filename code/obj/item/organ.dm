@@ -1258,6 +1258,7 @@
 	mats = 6
 
 	New()
+		..()
 		if (prob(50))
 			body_side = L_ORGAN
 			icon_state = "cyber-lung-L"
@@ -1265,6 +1266,16 @@
 		else
 			body_side = R_ORGAN
 			icon_state = "cyber-lung-R"
+
+	//this might be funny, but you'd have to change manual breathing to be a var on a human instead of a global var.
+	// emp_act()
+	// 	if (donor)
+	// 		donor.manualbreathing = 1
+	// 		donor.show_text("Your chest lurches. It feels like your lungs aren't working properly. You are gonna need to make an effort to breathe.", "red")
+	// 		spawn(600)
+	// 			if (donor)
+	// 				donor.manualbreathing = 0
+	// 	..()
 
 /*========================*/
 /*----------Eyes----------*/
