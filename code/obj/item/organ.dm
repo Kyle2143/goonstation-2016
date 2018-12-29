@@ -385,7 +385,7 @@
 				myLeftLung.on_removal()
 				src.left_lung = null
 				organ_list["left_lung"] = null
-				handle_lungs()
+				handle_lungs_stamina()
 				return myLeftLung
 
 			if ("right_lung")
@@ -396,7 +396,7 @@
 				myRightLung.on_removal()
 				src.right_lung = null
 				organ_list["right_lung"] = null
-				handle_lungs()
+				handle_lungs_stamina()
 				return myRightLung
 
 			if ("butt")
@@ -670,7 +670,7 @@
 				src.left_lung = newLeftLung
 				newLeftLung.set_loc(src.donor)
 				organ_list["left_lung"] = newLeftLung
-				handle_lungs()
+				handle_lungs_stamina()
 				success = 1
 
 			if ("right_lung")
@@ -684,7 +684,7 @@
 				src.right_lung = newRightLung
 				newRightLung.set_loc(src.donor)
 				organ_list["right_lung"] = newRightLung
-				handle_lungs()
+				handle_lungs_stamina()
 				success = 1
 
 			if ("butt")
@@ -805,16 +805,13 @@
 				I.reagents.trans_to(src.donor, 330)
 			return 1
 
-	//OK you're probably thinking why this in needed at all. It seemed the simplest way to add and remove stamina based on the amount of lungs.
-	//Because I have it so that an organ can stop working when it hits 100+ damage, we get the amount of working lungs, 
-	// then we see if that value is different from the last poll, (var/lungs_changed)
-	//i have the "if (working_lungs != lungs_changed)" in each switch case because I think it's a bit cleaner. I think it adds an extra 2 lines than if I moved it out and kept the damage done, but w/e
+	//OK you're probably thinking why this in needed at all. It seemed the simplest way, to add and remove stamina based on the amount of lungs.
+	//Because I have it so that an organ can stop working when it hits 100+ damage, we need to check if we have to make stamina changes often.
 
 	//change stamina modifies based on amount of working lungs. lungs w/ health > 0
-	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the modifier
+	//lungs_changed works like this: if lungs_changed is != the num of working lungs, then apply the stamina modifier
 	proc/handle_lungs_stamina()
 		var/working_lungs = src.get_working_lung_amt()
-
 		switch (working_lungs)
 			if (0)
 				if (working_lungs != lungs_changed)
@@ -844,23 +841,6 @@
 					donor.remove_stam_mod_regen("double_lung_removal")
 					donor.remove_stam_mod_max("double_lung_removal")
 					lungs_changed = 2
-
-	proc/handle_lungs_type()
-		if (src.get_working_lung_amt() == 2)
-			if (donor.organHolder.left_lung.robotic && donor.organHolder.right_lung.robotic)
-				donor.resp_type = new /datum/respiration_type/cyberlungs
-
-			else if (donor.organHolder.left_lung.synthetic && donor.organHolder.right_lung.synthetic)
-				donor.resp_type = new /datum/respiration_type/synthlungs
-			else //2 regular human lungs
-
-				donor.resp_type = new /datum/respiration_type
-		else //any other amount of lungs... 0 or 1... you'll have regular old human resparation type
-			donor.resp_type = new /datum/respiration_type
-
-	proc/handle_lungs()
-		handle_lungs_type()
-		handle_lungs_stamina()
 
 /mob/living/carbon/human/proc/eye_istype(var/obj/item/I)
 	if (!src.organHolder || !I)
@@ -1278,7 +1258,6 @@
 	mats = 6
 
 	New()
-		..()
 		if (prob(50))
 			body_side = L_ORGAN
 			icon_state = "cyber-lung-L"
@@ -1287,15 +1266,6 @@
 			body_side = R_ORGAN
 			icon_state = "cyber-lung-R"
 
-	//this might be funny, but you'd have to change manual breathing to be a var on a human instead of a global var.
-	// emp_act()
-	// 	if (donor)
-	// 		donor.manualbreathing = 1
-	// 		donor.show_text("Your chest lurches. It feels like your lungs aren't working properly. You are gonna need to make an effort to breathe.", "red")
-	// 		spawn(600)
-	// 			if (donor)
-	// 				donor.manualbreathing = 0
-	// 	..()
 /*========================*/
 /*----------Eyes----------*/
 /*========================*/
@@ -2555,30 +2525,3 @@
 
 #undef L_ORGAN
 #undef R_ORGAN
-
-//default is regular human lungs
-/datum/respiration_type
-	var/resp_system_name = "human_lungs"
-	var/fluid = 0		//might need for underwater breathing, no clue really how it's handled, if it's just an aquatic genetics check or something
-
-	var/safe_oxygen_min = 17
-	var/safe_co2_max = 9
-	var/safe_toxins_max = 0.04
-	var/SA_para_min = 1
-	var/SA_sleep_min = 5
-		//var/safe_oxygen_max = 140 // Maximum safe partial pressure of O2, in kPa (Not used for now)
-
-	// humanlungs
-/datum/respiration_type/cyberlungs
-		resp_system_name = "cyber_lungs"
-		safe_oxygen_min = 7
-		safe_co2_max = 18
-		safe_toxins_max = 0.08
-
-/datum/respiration_type/synthlungs
-		resp_system_name = "synth_lungs"
-		safe_oxygen_min = 1
-		safe_co2_max = 100
-		safe_toxins_max = 0.5
-		SA_para_min = 1
-		SA_sleep_min = 1

@@ -59,7 +59,6 @@
 
 	var/datum/organHolder/organHolder
 	var/ignore_organs = 0 // set to 1 to basically skip the handle_organs() proc
-	var/datum/respiration_type/resp_type = new /datum/respiration_type
 
 	var/on_chair = 0
 	var/simple_examine = 0
@@ -3949,22 +3948,6 @@
 
 		canmove = 1
 
-	// //change the variables for safe oxygen, co2, tox, pressures/amounts in the air src can breathe.
-	// proc/set_safe_breath_values(/datum/respiration_type/comp)
-	// 	src.resp_type.
-	// 	respiration_type["safe_oxygen_min"] = safe_oxygen_min
-	// 	respiration_type["safe_co2_max"] = safe_co2_max
-	// 	respiration_type["safe_toxins_max"] = safe_toxins_max
-	// 	respiration_type["SA_para_min"] = SA_para_min
-	// 	respiration_type["SA_sleep_min"] = SA_sleep_min
-
-
-	// 	//var/safe_oxygen_max = 140 // Maximum safe partial pressure of O2, in kPa (Not used for now)
-
-
-	// 	return
-
-
 	proc/handle_breath(datum/gas_mixture/breath)
 		if (src.nodamage) return
 
@@ -3983,9 +3966,13 @@
 			return 0
 
 		var/has_cyberlungs = (src.organHolder && (organHolder.left_lung && organHolder.right_lung) && (src.organHolder.left_lung.robotic && src.organHolder.right_lung.robotic)) //gotta prevent null pointers...
+		var/safe_oxygen_min = 17 // Minimum safe partial pressure of O2, in kPa
 		//var/safe_oxygen_max = 140 // Maximum safe partial pressure of O2, in kPa (Not used for now)
+		var/safe_co2_max = 9 // Yes it's an arbitrary value who cares?
+		var/safe_toxins_max = 0.4
+		var/SA_para_min = 1
+		var/SA_sleep_min = 5
 		var/oxygen_used = 0
-
 		var/breath_pressure = (breath.total_moles()*R_IDEAL_GAS_EQUATION*breath.temperature)/BREATH_VOLUME
 
 		//Partial pressure of the O2 in our breath
@@ -3995,17 +3982,11 @@
 		// And CO2, lets say a PP of more than 10 will be bad (It's a little less really, but eh, being passed out all round aint no fun)
 		var/CO2_pp = (breath.carbon_dioxide/breath.total_moles())*breath_pressure
 
-		//change safe gas levels for cyberlungs
-		if (has_cyberlungs)
-			safe_oxygen_min = 9
-			safe_co2_max = 18
-			safe_toxins_max = 5		//making it a lot higher than regular, because even doubling the regular value is pitifully low. This is still reasonably low, but it might be noticable
-
 		if (O2_pp < safe_oxygen_min) 			// Too little oxygen
 			if (prob(20))
 				spawn(0) emote("gasp")
 			if (O2_pp > 0)
-				var/ratio = round(src.resp_type.safe_oxygen_min/(O2_pp + 0.1))
+				var/ratio = round(safe_oxygen_min/(O2_pp + 0.1))
 				take_oxygen_deprivation(min(5*ratio, 5)) // Don't fuck them up too fast (space only does 7 after all!)
 				oxygen_used = breath.oxygen*ratio/6
 			else
@@ -4019,7 +4000,7 @@
 		breath.oxygen -= oxygen_used
 		breath.carbon_dioxide += oxygen_used
 
-		if (CO2_pp > src.resp_type.safe_co2_max)
+		if (CO2_pp > safe_co2_max)
 			if (!co2overloadtime) // If it's the first breath with too much CO2 in it, lets start a counter, then have them pass out after 12s or so.
 				co2overloadtime = world.time
 			else if (world.time - co2overloadtime > 120)
@@ -4033,8 +4014,8 @@
 		else
 			co2overloadtime = 0
 
-		if (Toxins_pp > src.resp_type.safe_toxins_max) // Too much toxins
-			var/ratio = breath.toxins/src.resp_type.safe_toxins_max
+		if (Toxins_pp > safe_toxins_max) // Too much toxins
+			var/ratio = breath.toxins/safe_toxins_max
 			take_toxin_damage(ratio * 325,15)
 			hud.update_tox_indicator(1)
 		else
@@ -4043,9 +4024,9 @@
 		if (breath.trace_gases && breath.trace_gases.len)	// If there's some other shit in the air lets deal with it here.
 			for (var/datum/gas/sleeping_agent/SA in breath.trace_gases)
 				var/SA_pp = (SA.moles/breath.total_moles())*breath_pressure
-				if (SA_pp > src.resp_type.SA_para_min) // Enough to make us paralysed for a bit
+				if (SA_pp > SA_para_min) // Enough to make us paralysed for a bit
 					src.paralysis = max(src.paralysis, 3) // 3 gives them one second to wake up and run away a bit!
-					if (SA_pp > src.resp_type.SA_sleep_min) // Enough to make us sleep as well
+					if (SA_pp > SA_sleep_min) // Enough to make us sleep as well
 						src.sleeping = max(src.sleeping, 2)
 				else if (SA_pp > 0.01)	// There is sleeping gas in their lungs, but only a little, so give them a bit of a warning
 					if (prob(20))
@@ -4501,7 +4482,6 @@
 
 		// lungs 
 		if (!src.nodamage)		// I don't know why all these if (!src.nodamage) aren't just checked once, but OK
-			//this is called to keep things in line with how other organs do not function when they have over 100 damage. adding/removing stamina debuffs
 			src.organHolder.handle_lungs_stamina()
 			// if (src.organHolder.get_working_lung_amt() == 1)
 			// if ((src.organHolder.left_lung && src.organHolder.left_lung.get_damage() > 65) || (src.organHolder.right_lung && src.organHolder.right_lung.get_damage() > 65))
