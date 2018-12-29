@@ -1249,23 +1249,27 @@
 	body_side = R_ORGAN
 
 /obj/item/organ/lung/cyber
-	name = "cyberlung"
-	desc = "A fancy electronic eye to replace one that someone's lost. Kinda fragile, but better than nothing!"
-	icon_state = "cyber-lung-L"
-	// item_state = "heart_robo1"
+	name = "cyberlungs"
+	desc = "Fancy robotic lungs!"
+	icon_state = "cyber-lungs"
 	robotic = 1
 	edible = 0
 	mats = 6
 
-	New()
-		..()
-		if (prob(50))
-			body_side = L_ORGAN
-			icon_state = "cyber-lung-L"
+/obj/item/organ/lung/cyber/left
+	name = "left lung"
+	desc = "Inflating robotic airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a left lung, since it has three lobes. Hopefully whoever used to have this one doesn't need it anymore."
+	organ_name = "cyber_lung_L"
+	icon_state = "cyber-lung-L"
+	body_side = L_ORGAN
 
-		else
-			body_side = R_ORGAN
-			icon_state = "cyber-lung-R"
+/obj/item/organ/lung/cyber/right
+	name = "right lung"
+	organ_name = "cyber_lung_R"
+	desc = "Inflating robotic airsack that passes breathed oxygen into a person's blood and expels carbon dioxide back out. This is a right lung, since it has two lobes and a cardiac notch, where the heart would be. Hopefully whoever used to have this one doesn't need it anymore."
+	icon_state = "cyber-lung-R"
+	body_side = R_ORGAN
+
 
 /*========================*/
 /*----------Eyes----------*/
