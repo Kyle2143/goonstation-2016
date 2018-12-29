@@ -3982,6 +3982,12 @@
 		// And CO2, lets say a PP of more than 10 will be bad (It's a little less really, but eh, being passed out all round aint no fun)
 		var/CO2_pp = (breath.carbon_dioxide/breath.total_moles())*breath_pressure
 
+		//change safe gas levels for cyberlungs
+		if (has_cyberlungs)
+			safe_oxygen_min = 9
+			safe_co2_max = 18
+			safe_toxins_max = 5		//making it a lot higher than regular, because even doubling the regular value is pitifully low. This is still reasonably low, but it might be noticable
+
 		if (O2_pp < safe_oxygen_min) 			// Too little oxygen
 			if (prob(20))
 				spawn(0) emote("gasp")

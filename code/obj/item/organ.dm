@@ -1258,6 +1258,7 @@
 	mats = 6
 
 	New()
+		..()
 		if (prob(50))
 			body_side = L_ORGAN
 			icon_state = "cyber-lung-L"
