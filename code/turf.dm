@@ -1903,7 +1903,6 @@ var/global/client/ff_debugger = null
 						var/original_dir = M.dir
 						step(M, M.inertia_dir)
 						M.dir = original_dir
-						animate_float(M)
 
 					else
 						M.inertia_dir = M.last_move
