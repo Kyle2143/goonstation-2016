@@ -134,7 +134,8 @@
 				interrupt(INTERRUPT_ALWAYS)
 				return
 
-			if (target.stat != 2 && !(ismonkey(target) || target.bioHolder && target.bioHolder.HasEffect("monkey"))) // Can't farm monkeys.
+			//no longer care about whether the target is dead, just if they've been dead so long they're decomposing.
+			if (target.decomp_stage <= 2 && !(ismonkey(target) || target.bioHolder && target.bioHolder.HasEffect("monkey"))) // Can't farm monkeys.
 				src.do_we_get_points = 1
 
 		if (complete >= 0.8 && last_complete < 0.8)
@@ -143,7 +144,7 @@
 				interrupt(INTERRUPT_ALWAYS)
 				return
 
-			if (target.stat != 2 && !(ismonkey(target) || target.bioHolder && target.bioHolder.HasEffect("monkey")))
+			if (target.decomp_stage <= 2 && !(ismonkey(target) || target.bioHolder && target.bioHolder.HasEffect("monkey")))
 				src.do_we_get_points = 1
 
 		if (complete >= 0.9 && last_complete < 0.9)
@@ -152,7 +153,7 @@
 				interrupt(INTERRUPT_ALWAYS)
 				return
 
-			if (target.stat != 2 && !(ismonkey(target) || target.bioHolder && target.bioHolder.HasEffect("monkey")))
+			if (target.decomp_stage <= 2 && !(ismonkey(target) || target.bioHolder && target.bioHolder.HasEffect("monkey")))
 				src.do_we_get_points = 1
 
 		last_complete = complete
