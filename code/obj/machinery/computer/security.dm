@@ -28,6 +28,7 @@
 	//moved out of global to only be used in sec computers
 	proc/move_security_camera(/*n,*/direct,var/mob/living/carbon/user)
 		if(!user) return
+		
 
 		// if(user.classic_move)
 		var/obj/machinery/camera/closest = src.current
@@ -89,11 +90,11 @@
 	user.unlock_medal("Peeping Tom", 1)
 
 	var/list/L = list()
-	// var/bool = 1
+	var/bool = 1
 	for (var/obj/machinery/camera/C in machines)
-		// if (bool)
-		// 	src.current = C
-		// 	bool = 0
+		if (bool)
+			src.current = C
+			bool = 0
 		L.Add(C)
 
 	L = camera_sort(L)
@@ -122,6 +123,8 @@
 	if (href_list["close"])
 		usr.set_eye(null)
 		winshow(usr, "camera_console", 0)
+		winshow(usr, "movement_camera", 0)
+
 		return
 
 	else if (href_list["camera"])
@@ -167,8 +170,12 @@
 				direction = NORTH
 
 		move_security_camera(direction,usr)
+
 	else if (href_list["thing"])
-		var/js = {"
+		make_movement_screen()
+
+/obj/machinery/computer/security/proc/make_movement_screen()
+	var/js = {"
 		<html>
 <body>
 
@@ -192,11 +199,10 @@
 </body>
 </html>"}
 	
-		var/dat = "<html>"
-		dat += js
-		dat += "</html>"
-		usr << browse(dat,"window=preferences;size=333x615")
-
+	var/dat = "<html>"
+	dat += js
+	dat += "</html>"
+	usr << browse(dat,"window=movement_camera;size=333x615")
 
 
 /obj/machinery/computer/security/attackby(I as obj, user as mob)
