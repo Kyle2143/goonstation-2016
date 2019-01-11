@@ -1,3 +1,5 @@
+
+
 /obj/machinery/computer/security
 	name = "Security Cameras"
 	icon_state = "security"
@@ -5,6 +7,50 @@
 	var/network = "SS13"
 	var/maplevel = 1
 	desc = "A computer that allows one to connect to a security camera network and view camera images."
+
+	//This might not be needed. I thought that the proc should be on the computer instead of the mob switching, but maybe not
+	proc/switchCamera(var/mob/living/user, var/obj/machinery/camera/C)
+		if (!C)
+			user.machine = null
+			user.set_eye(null)
+			return 0
+			
+		if (stat == 2 || C.network != src.network) return 0
+
+		// ok, we're alive, camera is acceptable and in our network...
+//AAAAAAAAAAAADDDDDDDDD BBAAAAAAAACK		// camera_overlay_check(C) //Add static if the camera is disabled
+
+		// src.machine = src
+		src.current = C
+		user.set_eye(C)
+		return 1
+
+	//moved out of global to only be used in sec computers
+	proc/move_security_camera(/*n,*/direct,var/mob/living/carbon/user)
+		if(!user) return
+
+		// if(user.classic_move)
+		var/obj/machinery/camera/closest = src.current
+		if(closest)
+			//do
+			if(direct & NORTH)
+				closest = closest.c_north
+			else if(direct & SOUTH)
+				closest = closest.c_south
+			if(direct & EAST)
+				closest = closest.c_east
+			else if(direct & WEST)
+				closest = closest.c_west
+			//while(closest && !closest.status) //Skip disabled cameras - THIS NEEDS TO BE BETTER (static overlay imo)
+		else
+			closest = getCameraMove(user, direct) //Ok, let's do this then.
+
+		if(!closest)
+			return
+
+		// user.tracker.cease_track()
+		switchCamera(user, closest)
+		// user.switchCamera(closest)		//from original
 
 /obj/machinery/computer/security/wooden_tv
 	name = "Security Cameras"
@@ -43,53 +89,32 @@
 	user.unlock_medal("Peeping Tom", 1)
 
 	var/list/L = list()
+	// var/bool = 1
 	for (var/obj/machinery/camera/C in machines)
+		// if (bool)
+		// 	src.current = C
+		// 	bool = 0
 		L.Add(C)
 
 	L = camera_sort(L)
 
-	//var/list/D = list()
-	//D["Cancel"] = "Cancel"
+
 
 	user << output(null, "camera_console.camlist")
+	user << output("<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>", "camera_console.camlist")
 	for (var/obj/machinery/camera/C in L)
 		if (C.network == src.network)
 			. = "[C.c_tag][C.status ? null : " (Deactivated)"]"
 			//D[.] = C
 			user << output("<a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'><div>[.]</div></a>", "camera_console.camlist")
+	
 
-
+	// user << output(js)
 	onclose(user, "camera_console", src)
 	winset(user, "camera_console.exitbutton", "command=\".windowclose \ref[src]\"")
 	winshow(user, "camera_console", 1)
 
 
-/*
-	var/t = input(user, "Which camera should you change to?") as null|anything in D
-
-	if(!t)
-		user.set_eye(null)
-		user.machine = null
-		return 0
-
-	var/obj/machinery/camera/C = D[t]
-
-	if (t == "Cancel")
-		user.set_eye(null)
-		user.machine = null
-		return 0
-
-	if ((get_dist(user, src) > 1 || user.machine != src || !user.sight_check(1) || !( user.canmove ) || !( C.status )) && (!istype(user, /mob/living/silicon/ai)))
-		user.set_eye(null)
-		return 0
-	else
-		src.current = C
-		user.set_eye(C)
-		use_power(50)
-
-		spawn(5)
-			attack_hand(user)
-*/
 /obj/machinery/computer/security/Topic(href, href_list)
 	if (!usr)
 		return
@@ -113,6 +138,66 @@
 			src.current = C
 			usr.set_eye(C)
 			use_power(50)
+	//using arrowkeys/wasd/ijkl to move from camera to camera
+	else if (href_list["move"])
+
+		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1) || !( usr.canmove )))
+			usr.set_eye(null)
+			winshow(usr, "camera_console", 0)
+			return
+
+		var/direction = href_list["move"]
+		world << direction
+		switch (direction)
+			if ("37")
+				//W
+				direction = WEST
+
+			if ("38")
+				//N
+				direction = NORTH
+			if ("39")
+				//S
+				direction = EAST
+
+			if ("40")
+				//E
+				direction = SOUTH
+			else
+				direction = NORTH
+
+		move_security_camera(direction,usr)
+	else if (href_list["thing"])
+		var/js = {"
+		<html>
+<body>
+
+<p id="p1">Hello World!</p>
+
+
+			<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
+	<script type='text/javascript'>
+
+	$(document).ready(function() {
+	  $(document).keydown(function(event){
+	        var keyId = event.which;
+	        document.getElementById("p1").innerHTML = keyId;
+	        window.location='byond://?src=\ref[src];move='+keyId;
+	      });
+	      
+	  });
+
+	</script>
+
+</body>
+</html>"}
+	
+		var/dat = "<html>"
+		dat += js
+		dat += "</html>"
+		usr << browse(dat,"window=preferences;size=333x615")
+
+
 
 /obj/machinery/computer/security/attackby(I as obj, user as mob)
 	if(istype(I, /obj/item/screwdriver))
