@@ -28,7 +28,12 @@
 	//moved out of global to only be used in sec computers
 	proc/move_security_camera(/*n,*/direct,var/mob/living/carbon/user)
 		if(!user) return
-		
+
+		//pretty sure this should never happen since I'm adding the first camera found to be the current, but just in cases
+		if (!src.current)
+			boutput(user, "<span style=\"color:red\">No current active camera. Select a camera as an origin point.</span>")
+			return
+
 
 		// if(user.classic_move)
 		var/obj/machinery/camera/closest = src.current
@@ -99,21 +104,63 @@
 
 	L = camera_sort(L)
 
-
-
-	user << output(null, "camera_console.camlist")
-	user << output("<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>", "camera_console.camlist")
+	var/cameras_table 
 	for (var/obj/machinery/camera/C in L)
 		if (C.network == src.network)
 			. = "[C.c_tag][C.status ? null : " (Deactivated)"]"
 			//D[.] = C
-			user << output("<a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'><div>[.]</div></a>", "camera_console.camlist")
-	
+			cameras_table += \
+			{"<tr>
+			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td>
+			</tr>"}
 
-	// user << output(js)
-	onclose(user, "camera_console", src)
-	winset(user, "camera_console.exitbutton", "command=\".windowclose \ref[src]\"")
-	winshow(user, "camera_console", 1)
+	var/script = \
+	{"
+	<script type='text/javascript'>
+		function filterTable() {
+		  var input, filter, table, tr, td, i, txtValue;
+		  input = document.getElementById('searchbar');
+		  filter = input.value.toUpperCase();
+		  table = document.getElementById('cameraTable');
+		  tr = table.getElementsByTagName('tr');
+		  for (i = 0; i < tr.length; i++) {
+		    td = tr\[i\].getElementsByTagName('td')\[0\];
+		    if (td) {
+		      txtValue = td.textContent || td.innerText;
+		      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+		        tr\[i\].style.display = '';
+		      } else {
+		        tr\[i\].style.display = 'none';
+		      }
+		    }
+		  }
+		}
+	</script>"}
+
+
+	var/dat = {"[script]
+	<body>
+		<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>
+		<h2>Cameras</h2>
+		<input type='text' id='searchbar' onkeyup='filterTable()' placeholder='Search for cameras..'>
+		<table id='cameraTable'>
+		[cameras_table]
+		</table>
+	</body>"}
+
+	// user << output(null, "camera_console.camlist")
+	// user << output("<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>", "camera_console.camlist")
+	// var/table = "<table id='cameraTable'>"
+
+	// user << output(dat, "camera_console.camlist")
+
+	// user << browse(dat, "window=camera_console.camlist;size=400x500")
+	user.Browse(dat, "window=security_camera_computer")
+
+	// user << browse(dat, "window=camera_console;size=400x500")
+	// onclose(user, "camera_console", src)
+	// winset(user, "camera_console.exitbutton", "command=\".windowclose \ref[src]\"")
+	winshow(user, "AAAAAA", 1)
 
 
 /obj/machinery/computer/security/Topic(href, href_list)
@@ -132,7 +179,7 @@
 		if (!istype(C, /obj/machinery/camera))
 			return
 
-		if ((!istype(usr, /mob/living/silicon/ai)) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1) || !( usr.canmove ) || !( C.status )))
+		if ((!istype(usr, /mob/living/silicon/ai)) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1) || !( C.status )))
 			usr.set_eye(null)
 			winshow(usr, "camera_console", 0)
 			return
@@ -144,7 +191,7 @@
 	//using arrowkeys/wasd/ijkl to move from camera to camera
 	else if (href_list["move"])
 
-		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1) || !( usr.canmove )))
+		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
 			usr.set_eye(null)
 			winshow(usr, "camera_console", 0)
 			return
@@ -199,10 +246,7 @@
 </body>
 </html>"}
 	
-	var/dat = "<html>"
-	dat += js
-	dat += "</html>"
-	usr << browse(dat,"window=movement_camera;size=333x615")
+	usr << browse(js,"window=movement_camera;size=333x615")
 
 
 /obj/machinery/computer/security/attackby(I as obj, user as mob)
