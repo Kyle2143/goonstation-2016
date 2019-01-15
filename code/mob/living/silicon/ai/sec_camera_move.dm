@@ -10,39 +10,6 @@
 #define EXISTING_LINK_WEIGHT 10
 //If there is an existing link to this camera
 
-//moved to the sec computer. changed a bit
-// /mob/living/carbon/proc/switchCamera(var/obj/machinery/camera/C)
-// 	if (!C)
-// 		src.machine = null
-// 		src.set_eye(null)
-// 		return 0
-		
-// 	if (istype(src.machine, /obj/machinery/computer/security))
-// 		var/obj/machinery/computer/security/sec_monitor = src.machine
-// 	if (stat == 2 || C.network != sec_monitor.network) return 0
-
-// 	// ok, we're alive, camera is acceptable and in our network...
-// 	camera_overlay_check(C) //Add static if the camera is disabled
-
-// 	// src.machine = src
-// 	// src:current = C
-// 	src.set_eye(C)
-// 	return 1
-
-// /mob/living/silicon/ai/proc/switchCamera(var/obj/machinery/camera/C)
-// 	if (!C)
-// 		src.machine = null
-// 		src.set_eye(null)
-// 		return 0
-// 	if (stat == 2 || C.network != src.network) return 0
-
-// 	// ok, we're alive, camera is acceptable and in our network...
-// 	camera_overlay_check(C) //Add static if the camera is disabled
-
-// 	src.machine = src
-// 	src:current = C
-// 	src.set_eye(C)
-// 	return 1
 
 /proc/getCameraMove(var/atom/old, var/direct, var/skip_disabled = 0)
 	var/min_dist = 1e8
@@ -116,48 +83,6 @@
 
 	return closest
 
-// /proc/move_security_camera(/*n,*/direct,var/mob/living/carbon/user)
-// 	if(!user) return
-
-// 	// if(user.classic_move)
-// 	var/obj/machinery/camera/closest = user.current
-// 	if(closest)
-// 		//do
-// 		if(direct & NORTH)
-// 			closest = closest.c_north
-// 		else if(direct & SOUTH)
-// 			closest = closest.c_south
-// 		if(direct & EAST)
-// 			closest = closest.c_east
-// 		else if(direct & WEST)
-// 			closest = closest.c_west
-// 		//while(closest && !closest.status) //Skip disabled cameras - THIS NEEDS TO BE BETTER (static overlay imo)
-// 	else
-// 		closest = getCameraMove(user, direct) //Ok, let's do this then.
-
-// 	if(!closest)
-// 		return
-
-// 	// user.tracker.cease_track()
-
-// 	user.switchCamera(closest)
-
-	// else
-	// 	if(!(direct in cardinal)) //To cut off stupid rail hopping
-	// 		return
-
-	// 	var/obj/rail/oldrail = locate() in user.loc
-	// 	var/obj/rail/railcheck = locate() in n
-	// 	if(!istype(railcheck) || (oldrail && !(oldrail.bitdir & direct)) )
-	// 		return
-
-	// 	var/flipdir = turn(direct, 180)
-	// 	if(!(railcheck.bitdir & flipdir))
-	// 		return
-
-	// 	src.move_delay = world.time + 3.5
-	// 	user.Move(n,direct)
-	// 	return
 
 #undef SHARED_TYPES_WEIGHT
 #undef CAMERA_PROXIMITY_PREFERENCE

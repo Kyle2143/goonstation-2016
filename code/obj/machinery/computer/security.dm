@@ -20,10 +20,6 @@
 			
 		if (stat == 2 || C.network != src.network) return 0
 
-		// ok, we're alive, camera is acceptable and in our network...
-//AAAAAAAAAAAADDDDDDDDD BBAAAAAAAACK		// camera_overlay_check(C) //Add static if the camera is disabled
-
-		// src.machine = src
 		src.current = C
 		user.set_eye(C)
 		return 1
@@ -379,35 +375,6 @@
 				direction = SOUTH
 
 		move_security_camera(direction,usr)
-
-	// else if (href_list["thing"])
-	// 	make_movement_screen()
-
-// /obj/machinery/computer/security/proc/make_movement_screen()
-// 	var/js = {"
-// 		<html>
-// <body>
-
-// <p id="p1">Hello World!</p>
-
-// 	<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
-// 	<script type='text/javascript'>
-
-// 	$(document).ready(function() {
-// 	  $(document).keydown(function(event){
-// 	        var keyId = event.which;
-// 	        document.getElementById("p1").innerHTML = keyId;
-// 	        window.location='byond://?src=\ref[src];move='+keyId;
-// 	      });
-	      
-// 	 });
-// 	</script>
-
-// </body>
-// </html>"}
-	
-// 	usr << browse(js,"window=movement_camera;size=333x615")
-
 
 /obj/machinery/computer/security/attackby(I as obj, user as mob)
 	if(istype(I, /obj/item/screwdriver))
