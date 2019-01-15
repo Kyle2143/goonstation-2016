@@ -150,22 +150,69 @@
 
 	<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
 	<script type='text/javascript'>
+	//stole this debounce function from Kfir Zuberi at https://medium.com/walkme-engineering/debounce-and-throttle-in-real-life-scenarios-1cc7e2e38c68
+		function debounce (func, interval) {
+			var timeout;
+			return function () {
+				var context = this, args = arguments;
+				var later = function () {
+					timeout = null;
+					func.apply(context, args);
+				};
+				clearTimeout(timeout);
+				timeout = setTimeout(later, interval || 200);
+		  }
+		}
 
-	$(document).delegate('button', 'keydown', function(e) {
+	$(document).delegate('button', 'keydown', debounce(function(e) {
 		var keyId = e.which;
+		//takes arrows, wasd, and ijkl.
+		//If any other key is pressed, just default to return
+		switch(keyId) {
+		case 37:
+		case 65:
+		case 74:
+			keyId = 37;
+			break;
+		case 38:
+		case 87:
+		case 73:
+			keyId = 38;
+			break;
+		case 39:
+		case 68:
+		case 76:
+			keyId = 39;
+			break;
+		case 40:
+		case 83:
+		case 75:
+			keyId = 40;
+			break;
+		default: 
+		  	return;
+		}
 		window.location='byond://?src=\ref[src];move='+keyId;
 		e.preventDefault();
 		
-	 });
+	 },100));
 
 	//for these just add a save link to those list items
 	
-	$(document).delegate('.fav', 'click', function(e) {
-	// $("td").click(function(e) {
-	  //check which list it's in. adding/removing
-	  if ($(this).parent().parent().parent().attr("id") == "cameraList") {
+	$(document).delegate('.fav', 'click', debounce(function(e) {
+	  var table = $(this).parent().parent().parent()
+	  
+	  //check which list it's in. adding/removing. 
+	  if (table.attr("id") == "cameraList") {
+	  	if ($('#savedCameras tr').length >= [favorites_Max]) {
+	  		alert('Cannot have more than [favorites_Max] favorites.');
+	  		return;
+	  	}
+
+
+
 	    var tr = $(this).parent();
-	    $(this).html('Remove');
+	    $(this).html('&#128165;');
 	    tr.appendTo(document.getElementById("savedCameras"));
 
 	    // make topic call from a href
@@ -176,8 +223,8 @@
 
 	    window.location='byond://?src=\ref[src];save='+cameraID;
 
-	  } else if($(this).parent().parent().parent().attr("id") == "savedCameras") {
 	  //Removing shit
+	  } else if(table.attr("id") == "savedCameras") {
 	    var tr = $(this).parent();
 	    $(this).html('&#128190');
 	    tr.appendTo(document.getElementById("cameraList"));
@@ -190,7 +237,7 @@
 	    window.location='byond://?src=\ref[src];remove='+cameraID;
 		}
   
-});
+},50));
 
 	</script>
 
@@ -203,6 +250,29 @@
 		table{
 			width:80;
 		}
+	    a {
+    		color:green;
+    	}
+
+	#main_list{
+		width:275px;
+		margin:5px;
+		padding:3px;
+		float:left;
+		display:inline-block;
+
+	}
+	#fav_list{
+		width:275px;
+		height:300px;
+		border:2px solid red;
+		margin:5px;
+		padding:3px;
+		float:right;
+		display:inline-block;
+
+		overflow:hidden;
+	}
 
 	</style>
 	"}
@@ -214,20 +284,20 @@
 
 			fav_cameras += \
 			{"<tr>
-			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>Remove</td>
+			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>&#128165;</td>
 			</tr>"}
 
 	var/dat = {"[script]
 	<body>
-		<div style='float:left;width:200;border:1px solid black;overflow:hidden'>
-		<button type='button' autofocus id='movementButton'> Keyboard Movement Mode</button>
+		<button type='button' autofocus id='movementButton' style='width:100%;display:block;color:green;background-color:black;'> Keyboard Movement Mode</button>
+		<div id='main_list'>
 
 		<input type='text' id='searchbar' onkeyup='filterTable()' placeholder='Search for cameras..'>
 		<table id='cameraList'>
 			[cameras_list]
 		</table>
 		</div>
-		<div style='height:250,width:200;border:1px solid black;overflow:hidden;float:right;'>
+		<div id='fav_list'>
 			<p>Favorite Cameras: </p>
 			<table id='savedCameras'>
 				[fav_cameras]
@@ -307,24 +377,19 @@
 			return
 
 		var/direction = href_list["move"]
-		world << direction
-		switch (direction)
-			if ("37")
-				//W
-				direction = WEST
 
-			if ("38")
-				//N
+		//validate direction returned. JS tries to sanitize client side keypresses so we won't be getting any keys other than arrow keycodes hopefully. But I added the others here just cause...
+		//arrow keys, wasd, ijkl
+		switch (direction)
+			if ("37","65","74")
+				direction = WEST
+			if ("38","87","73")
 				direction = NORTH
-			if ("39")
-				//S
+			if ("39", "68", "76")
 				direction = EAST
 
-			if ("40")
-				//E
+			if ("40", "83", "75")
 				direction = SOUTH
-			else
-				direction = NORTH
 
 		move_security_camera(direction,usr)
 
