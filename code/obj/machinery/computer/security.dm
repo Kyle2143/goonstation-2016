@@ -4,6 +4,9 @@
 	name = "Security Cameras"
 	icon_state = "security"
 	var/obj/machinery/camera/current = null
+	var/list/obj/machinery/camera/favorites = list()
+	var/const/favorites_Max = 5
+
 	var/network = "SS13"
 	var/maplevel = 1
 	desc = "A computer that allows one to connect to a security camera network and view camera images."
@@ -104,63 +107,143 @@
 
 	L = camera_sort(L)
 
-	var/cameras_table 
+	var/cameras_list 
 	for (var/obj/machinery/camera/C in L)
 		if (C.network == src.network)
 			. = "[C.c_tag][C.status ? null : " (Deactivated)"]"
-			//D[.] = C
-			cameras_table += \
-			{"<tr>
-			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td>
-			</tr>"}
+			// Don't draw if it's in favorites
+			if (C in favorites)
+				continue
+			//the display:none is a holdover from another way I was trying to handle moving shit. might move back or not
+			// &#128190; is save symbol
+			cameras_list += \
+{"<tr>
+<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='save'>&#128190;</td>
+</tr>
+"}
 
-	var/script = \
-	{"
+	var/script = 	{"
 	<script type='text/javascript'>
-		function filterTable() {
-		  var input, filter, table, tr, td, i, txtValue;
-		  input = document.getElementById('searchbar');
-		  filter = input.value.toUpperCase();
-		  table = document.getElementById('cameraTable');
-		  tr = table.getElementsByTagName('tr');
-		  for (i = 0; i < tr.length; i++) {
-		    td = tr\[i\].getElementsByTagName('td')\[0\];
-		    if (td) {
-		      txtValue = td.textContent || td.innerText;
-		      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-		        tr\[i\].style.display = '';
-		      } else {
-		        tr\[i\].style.display = 'none';
-		      }
-		    }
-		  }
-		}
-	</script>"}
+	function filterTable() {
+		var input, filter, table, tr, td, i, txtValue;
+		input = document.getElementById('searchbar');
+		filter = input.value.toUpperCase();
+		table = document.getElementById("cameraList");
+		tr = table.getElementsByTagName("tr");
 
+		// Loop through all table rows, and hide those who don't match the search query
+		for (i = 0; i < tr.length; i++) {
+			td = tr\[i\].getElementsByTagName("td")\[0\];
+			if (td) {
+				txtValue = td.textContent || td.innerText;
+				if (txtValue.toUpperCase().indexOf(filter) > -1) {
+					tr\[i\].style.display = "";
+				} else {
+					tr\[i\].style.display = "none";
+				}
+			} 
+		}
+	}
+
+
+	</script>
+
+	<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
+	<script type='text/javascript'>
+
+	$(document).delegate('button', 'keydown', function(e) {
+		var keyId = e.which;
+		window.location='byond://?src=\ref[src];move='+keyId;
+		e.preventDefault();
+		
+	 });
+
+	//for these just add a save link to those list items
+
+	$("td").click(function(e) {
+	  //check which list it's in. adding/removing
+	  if ($(this).parent().parent().attr("class") == "save") {
+	    var savedUL = document.getElementById("savedCameras");
+	    var li = $(this).parent();
+	    $(this).html('Remove');
+	    li.appendTo(savedUL);
+
+	    // make topic call from a href
+	    var href = li.find('a').attr('href');
+	    var re = /.*camera=(.*)$/g;
+	    var cameraID = re.exec(href)\[1\];
+
+
+	    window.location='byond://?src=\ref[src];save='+cameraID;
+
+	  } else if($(this).parent().parent().attr("class") == "remove") {
+	  //Removing shit
+	    var savedUL = document.getElementById("cameraList");
+	    var li = $(this).parent();
+	    $(this).html('&#128190');
+	    li.appendTo(savedUL);
+
+	    var href = li.find('a').attr('href');
+	    var re = /.*camera=(.*)$/g;
+	    var cameraID = re.exec(href)\[1\];
+
+
+	    window.location='byond://?src=\ref[src];remove='+cameraID;
+		}
+  
+});
+
+	</script>
+
+	<style>
+		ul{
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+
+	</style>
+	"}
+
+	var/fav_cameras
+	for (var/obj/machinery/camera/C in favorites)
+		if (C.network == src.network)
+			. = "[C.c_tag][C.status ? null : " (Deactivated)"]"
+
+			fav_cameras += \
+			{"<tr>
+			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='remove'>Remove</td>
+			</tr>"}
 
 	var/dat = {"[script]
 	<body>
-		<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>
-		<h2>Cameras</h2>
+		<button type='button' autofocus id='movementButton'> Keyboard Movement Mode</button>
+		<p>Favorite Cameras: </p>
+		<table id='savedCameras'>
+			[fav_cameras]
+		</table>
+
+
 		<input type='text' id='searchbar' onkeyup='filterTable()' placeholder='Search for cameras..'>
-		<table id='cameraTable'>
-		[cameras_table]
+		<table id='cameraList'>
+			[cameras_list]
 		</table>
 	</body>"}
 
 	// user << output(null, "camera_console.camlist")
 	// user << output("<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>", "camera_console.camlist")
-	// var/table = "<table id='cameraTable'>"
+	// var/table = "<table id='cameraList'>"
 
 	// user << output(dat, "camera_console.camlist")
 
 	// user << browse(dat, "window=camera_console.camlist;size=400x500")
-	user.Browse(dat, "window=security_camera_computer")
+	user.Browse(dat, "window=security_camera_computer;title=Security Cameras")
 
 	// user << browse(dat, "window=camera_console;size=400x500")
 	// onclose(user, "camera_console", src)
 	// winset(user, "camera_console.exitbutton", "command=\".windowclose \ref[src]\"")
-	winshow(user, "AAAAAA", 1)
+	onclose(user, "security_camera_computer")
+	winshow(user, "security_camera_computer", 1)
 
 
 /obj/machinery/computer/security/Topic(href, href_list)
@@ -169,8 +252,8 @@
 
 	if (href_list["close"])
 		usr.set_eye(null)
-		winshow(usr, "camera_console", 0)
-		winshow(usr, "movement_camera", 0)
+		winshow(usr, "security_camera_computer", 0)
+		// winshow(usr, "movement_camera", 0)
 
 		return
 
@@ -181,19 +264,41 @@
 
 		if ((!istype(usr, /mob/living/silicon/ai)) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1) || !( C.status )))
 			usr.set_eye(null)
-			winshow(usr, "camera_console", 0)
+			winshow(usr, "security_camera_computer", 0)
 			return
 
 		else
 			src.current = C
 			usr.set_eye(C)
 			use_power(50)
+
+	else if (href_list["save"])
+		var/obj/machinery/camera/C = locate(href_list["save"])
+
+		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
+			usr.set_eye(null)
+			winshow(usr, "security_camera_computer", 0)
+			return
+
+		if (C && favorites.len < favorites_Max)
+			favorites += C
+	else if (href_list["remove"])
+		var/obj/machinery/camera/C = locate(href_list["save"])
+
+		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
+			usr.set_eye(null)
+			winshow(usr, "security_camera_computer", 0)
+			return
+
+		if (C)
+			favorites -= C
+
 	//using arrowkeys/wasd/ijkl to move from camera to camera
 	else if (href_list["move"])
 
 		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
 			usr.set_eye(null)
-			winshow(usr, "camera_console", 0)
+			winshow(usr, "security_camera_computer", 0)
 			return
 
 		var/direction = href_list["move"]
@@ -218,35 +323,33 @@
 
 		move_security_camera(direction,usr)
 
-	else if (href_list["thing"])
-		make_movement_screen()
+	// else if (href_list["thing"])
+	// 	make_movement_screen()
 
-/obj/machinery/computer/security/proc/make_movement_screen()
-	var/js = {"
-		<html>
-<body>
+// /obj/machinery/computer/security/proc/make_movement_screen()
+// 	var/js = {"
+// 		<html>
+// <body>
 
-<p id="p1">Hello World!</p>
+// <p id="p1">Hello World!</p>
 
+// 	<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
+// 	<script type='text/javascript'>
 
-			<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
-	<script type='text/javascript'>
-
-	$(document).ready(function() {
-	  $(document).keydown(function(event){
-	        var keyId = event.which;
-	        document.getElementById("p1").innerHTML = keyId;
-	        window.location='byond://?src=\ref[src];move='+keyId;
-	      });
+// 	$(document).ready(function() {
+// 	  $(document).keydown(function(event){
+// 	        var keyId = event.which;
+// 	        document.getElementById("p1").innerHTML = keyId;
+// 	        window.location='byond://?src=\ref[src];move='+keyId;
+// 	      });
 	      
-	  });
+// 	 });
+// 	</script>
 
-	</script>
-
-</body>
-</html>"}
+// </body>
+// </html>"}
 	
-	usr << browse(js,"window=movement_camera;size=333x615")
+// 	usr << browse(js,"window=movement_camera;size=333x615")
 
 
 /obj/machinery/computer/security/attackby(I as obj, user as mob)
