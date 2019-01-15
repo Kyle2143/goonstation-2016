@@ -148,7 +148,6 @@
 
 	</script>
 
-	<script type='text/javascript' src='[resource("js/jquery.min.js")]'></script>
 	<script type='text/javascript'>
 	//stole this debounce function from Kfir Zuberi at https://medium.com/walkme-engineering/debounce-and-throttle-in-real-life-scenarios-1cc7e2e38c68
 		function debounce (func, interval) {
@@ -264,10 +263,10 @@
 	}
 	#fav_list{
 		width:275px;
-		height:300px;
-		border:2px solid red;
+		height:200px;
+		border:2px solid green;
 		margin:5px;
-		padding:3px;
+		padding:4px;
 		float:right;
 		display:inline-block;
 
@@ -305,19 +304,8 @@
 		</div>
 	</body>"}
 
-	// user << output(null, "camera_console.camlist")
-	// user << output("<a href='byond://?src=\ref[src];thing=1' style='display:block;'><div>Movement Mode</div></a>", "camera_console.camlist")
-	// var/table = "<table id='cameraList'>"
-
-	// user << output(dat, "camera_console.camlist")
-
-	// user << browse(dat, "window=camera_console.camlist;size=400x500")
 	user.Browse(dat, "window=security_camera_computer;title=Security Cameras;size=650x500")
-
-	// user << browse(dat, "window=camera_console;size=400x500")
-	// onclose(user, "camera_console", src)
-	// winset(user, "camera_console.exitbutton", "command=\".windowclose \ref[src]\"")
-	onclose(user, "security_camera_computer")
+	onclose(user, "security_camera_computer", src)
 	winshow(user, "security_camera_computer", 1)
 
 
@@ -328,7 +316,6 @@
 	if (href_list["close"])
 		usr.set_eye(null)
 		winshow(usr, "security_camera_computer", 0)
-		// winshow(usr, "movement_camera", 0)
 
 		return
 
