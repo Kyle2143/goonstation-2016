@@ -118,7 +118,7 @@
 			// &#128190; is save symbol
 			cameras_list += \
 {"<tr>
-<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='save'>&#128190;</td>
+<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>&#128190;</td>
 </tr>
 "}
 
@@ -159,31 +159,30 @@
 	 });
 
 	//for these just add a save link to those list items
-
-	$("td").click(function(e) {
+	
+	$(document).delegate('.fav', 'click', function(e) {
+	// $("td").click(function(e) {
 	  //check which list it's in. adding/removing
-	  if ($(this).parent().parent().attr("class") == "save") {
-	    var savedUL = document.getElementById("savedCameras");
-	    var li = $(this).parent();
+	  if ($(this).parent().parent().parent().attr("id") == "cameraList") {
+	    var tr = $(this).parent();
 	    $(this).html('Remove');
-	    li.appendTo(savedUL);
+	    tr.appendTo(document.getElementById("savedCameras"));
 
 	    // make topic call from a href
-	    var href = li.find('a').attr('href');
+	    var href = tr.find('a').attr('href');
 	    var re = /.*camera=(.*)$/g;
 	    var cameraID = re.exec(href)\[1\];
 
 
 	    window.location='byond://?src=\ref[src];save='+cameraID;
 
-	  } else if($(this).parent().parent().attr("class") == "remove") {
+	  } else if($(this).parent().parent().parent().attr("id") == "savedCameras") {
 	  //Removing shit
-	    var savedUL = document.getElementById("cameraList");
-	    var li = $(this).parent();
+	    var tr = $(this).parent();
 	    $(this).html('&#128190');
-	    li.appendTo(savedUL);
+	    tr.appendTo(document.getElementById("cameraList"));
 
-	    var href = li.find('a').attr('href');
+	    var href = tr.find('a').attr('href');
 	    var re = /.*camera=(.*)$/g;
 	    var cameraID = re.exec(href)\[1\];
 
@@ -201,6 +200,9 @@
 			margin: 0;
 			padding: 0;
 		}
+		table{
+			width:80;
+		}
 
 	</style>
 	"}
@@ -212,22 +214,25 @@
 
 			fav_cameras += \
 			{"<tr>
-			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='remove'>Remove</td>
+			<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>Remove</td>
 			</tr>"}
 
 	var/dat = {"[script]
 	<body>
+		<div style='float:left;width:200;border:1px solid black;overflow:hidden'>
 		<button type='button' autofocus id='movementButton'> Keyboard Movement Mode</button>
-		<p>Favorite Cameras: </p>
-		<table id='savedCameras'>
-			[fav_cameras]
-		</table>
-
 
 		<input type='text' id='searchbar' onkeyup='filterTable()' placeholder='Search for cameras..'>
 		<table id='cameraList'>
 			[cameras_list]
 		</table>
+		</div>
+		<div style='height:250,width:200;border:1px solid black;overflow:hidden;float:right;'>
+			<p>Favorite Cameras: </p>
+			<table id='savedCameras'>
+				[fav_cameras]
+			</table>
+		</div>
 	</body>"}
 
 	// user << output(null, "camera_console.camlist")
@@ -237,7 +242,7 @@
 	// user << output(dat, "camera_console.camlist")
 
 	// user << browse(dat, "window=camera_console.camlist;size=400x500")
-	user.Browse(dat, "window=security_camera_computer;title=Security Cameras")
+	user.Browse(dat, "window=security_camera_computer;title=Security Cameras;size=650x500")
 
 	// user << browse(dat, "window=camera_console;size=400x500")
 	// onclose(user, "camera_console", src)
@@ -283,7 +288,7 @@
 		if (C && favorites.len < favorites_Max)
 			favorites += C
 	else if (href_list["remove"])
-		var/obj/machinery/camera/C = locate(href_list["save"])
+		var/obj/machinery/camera/C = locate(href_list["remove"])
 
 		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
 			usr.set_eye(null)
