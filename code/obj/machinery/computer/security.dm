@@ -5,7 +5,7 @@
 	icon_state = "security"
 	var/obj/machinery/camera/current = null
 	var/list/obj/machinery/camera/favorites = list()
-	var/const/favorites_Max = 5
+	var/const/favorites_Max = 8
 
 	var/network = "SS13"
 	var/maplevel = 1
@@ -120,6 +120,7 @@
 
 	var/script = 	{"
 	<script type='text/javascript'>
+	//stolen from W3Schools.com. Simple filtering, works well enough, didn't bother to make anything special for this.
 	function filterTable() {
 		var input, filter, table, tr, td, i, txtValue;
 		input = document.getElementById('searchbar');
@@ -159,7 +160,8 @@
 		  }
 		}
 
-	$(document).delegate('button', 'keydown', debounce(function(e) {
+	$(document).delegate('button', 'keyup', debounce(function(e) {
+		e.stopPropagation();
 		var keyId = e.which;
 		//takes arrows, wasd, and ijkl.
 		//If any other key is pressed, just default to return
@@ -190,7 +192,7 @@
 		window.location='byond://?src=\ref[src];move='+keyId;
 		e.preventDefault();
 		
-	 },100));
+	 },50));
 
 	//for these just add a save link to those list items
 	
@@ -300,27 +302,31 @@
 		</div>
 	</body>"}
 
-	user.Browse(dat, "window=security_camera_computer;title=Security Cameras;size=650x500")
-	onclose(user, "security_camera_computer", src)
-	winshow(user, "security_camera_computer", 1)
+	user.Browse(dat, "window=security_camera_computer;title=Security Cameras;size=650x500;can_resize=0")
+	// user.Subscribe(user.client)
+	// onclose(user, "security_camera_computer", src)
+	// winshow(user, "security_camera_computer", 1)
 
 
 /obj/machinery/computer/security/Topic(href, href_list)
 	if (!usr)
 		return
+	var x = href_list["close"]
+	world << x
+	boutput(usr, "<span style=\"color:blue\">~~~~~~~~[x]</span>")
 
-	if (href_list["close"])
+	if (href_list["close"] || (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1))))
 		usr.set_eye(null)
 		winshow(usr, "security_camera_computer", 0)
-
 		return
+
 
 	else if (href_list["camera"])
 		var/obj/machinery/camera/C = locate(href_list["camera"])
 		if (!istype(C, /obj/machinery/camera))
 			return
 
-		if ((!istype(usr, /mob/living/silicon/ai)) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1) || !( C.status )))
+		if (!C.status)
 			usr.set_eye(null)
 			winshow(usr, "security_camera_computer", 0)
 			return
@@ -333,32 +339,16 @@
 	else if (href_list["save"])
 		var/obj/machinery/camera/C = locate(href_list["save"])
 
-		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
-			usr.set_eye(null)
-			winshow(usr, "security_camera_computer", 0)
-			return
-
 		if (C && favorites.len < favorites_Max)
 			favorites += C
 	else if (href_list["remove"])
 		var/obj/machinery/camera/C = locate(href_list["remove"])
-
-		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
-			usr.set_eye(null)
-			winshow(usr, "security_camera_computer", 0)
-			return
 
 		if (C)
 			favorites -= C
 
 	//using arrowkeys/wasd/ijkl to move from camera to camera
 	else if (href_list["move"])
-
-		if (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1)))
-			usr.set_eye(null)
-			winshow(usr, "security_camera_computer", 0)
-			return
-
 		var/direction = href_list["move"]
 
 		//validate direction returned. JS tries to sanitize client side keypresses so we won't be getting any keys other than arrow keycodes hopefully. But I added the others here just cause...
@@ -375,6 +365,11 @@
 				direction = SOUTH
 
 		move_security_camera(direction,usr)
+	else
+		usr.set_eye(null)
+		// winshow(usr, "security_camera_computer", 0)
+		usr.Browse(null, "window=security_camera_computer")
+		return
 
 /obj/machinery/computer/security/attackby(I as obj, user as mob)
 	if(istype(I, /obj/item/screwdriver))
