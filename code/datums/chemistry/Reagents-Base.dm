@@ -147,7 +147,9 @@ datum
 							H.stuttering += rand(1,10)
 						if (H.canmove && isturf(H.loc) && prob(8))
 							step(H, pick(cardinal))
-					if (holder.get_reagent_amount(src.id) >= 275 && (H.organHolder && H.organHolder.liver && !H.organHolder.liver.robotic))
+
+					var/has_cyberliver = H.organHolder && H.organHolder.liver && H.organHolder.liver.robotic
+					if (holder.get_reagent_amount(src.id) >= 275 && !has_cyberliver)
 						if(prob(10))
 							H.emote(pick("hiccup", "fart", "mumble", "grumble"))
 						H.stuttering += 1
@@ -163,7 +165,7 @@ datum
 							new /obj/decal/cleanable/vomit(H.loc)
 						if(prob(15))
 							H.make_dizzy(5)
-					if (holder.get_reagent_amount(src.id) >= 300 && (H.organHolder && H.organHolder.liver && !H.organHolder.liver.robotic))
+					if (holder.get_reagent_amount(src.id) >= 300 && !has_cyberliver)
 						H.change_eye_blurry(10, 50)
 						if(prob(6)) H.drowsyness += 5
 						if(prob(5)) H.take_toxin_damage(rand(1,2))
