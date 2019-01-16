@@ -821,11 +821,10 @@
 					return 0
 
 			//moved out of for loop and just continue past "butt". I think this is slightly more efficient.
-			if (i == "butt")
-				var/obj/item/clothing/head/butt/B = organ_list["butt"]
-				//if it's not robotic we're done, return 0
-				if (istype(B) && !B.robotic)
-					return 0
+			var/obj/item/clothing/head/butt/B = organ_list["butt"]
+			//if it's not robotic we're done, return 0
+			if (istype(B) && !B.robotic)
+				return 0
 			return 1
 		return 0
 
