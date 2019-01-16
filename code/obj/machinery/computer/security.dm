@@ -337,12 +337,12 @@
 	else if (href_list["save"])
 		var/obj/machinery/camera/C = locate(href_list["save"])
 
-		if (C && favorites.len < favorites_Max)
+		if (istype(C) && favorites.len < favorites_Max)
 			favorites += C
 	else if (href_list["remove"])
 		var/obj/machinery/camera/C = locate(href_list["remove"])
 
-		if (C)
+		if (istype(C))
 			favorites -= C
 
 	//using arrowkeys/wasd/ijkl to move from camera to camera
@@ -361,6 +361,8 @@
 
 			if ("40", "83", "75")
 				direction = SOUTH
+			else
+				return
 
 		move_security_camera(direction,usr)
 	else
