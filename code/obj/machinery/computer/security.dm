@@ -286,6 +286,7 @@
 
 	var/dat = {"[script]
 	<body>
+		<a href='byond://?src=\ref[src];close=1' style='display:block;float:right;'>&times;</a>
 		<button type='button' autofocus id='movementButton' style='width:100%;display:block;color:green;background-color:black;'> Keyboard Movement Mode</button>
 		<div id='main_list'>
 
@@ -302,7 +303,7 @@
 		</div>
 	</body>"}
 
-	user.Browse(dat, "window=security_camera_computer;title=Security Cameras;size=650x500;can_resize=0")
+	user.Browse(dat, "window=security_camera_computer;title=Security Cameras;size=650x500;can_resize=0;can_close=0;")
 	// user.Subscribe(user.client)
 	// onclose(user, "security_camera_computer", src)
 	// winshow(user, "security_camera_computer", 1)
@@ -311,9 +312,6 @@
 /obj/machinery/computer/security/Topic(href, href_list)
 	if (!usr)
 		return
-	var x = href_list["close"]
-	world << x
-	boutput(usr, "<span style=\"color:blue\">~~~~~~~~[x]</span>")
 
 	if (href_list["close"] || (!istype(usr, /mob/living/silicon/ai) && (get_dist(usr, src) > 1 || usr.machine != src || !usr.sight_check(1))))
 		usr.set_eye(null)
