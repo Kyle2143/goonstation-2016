@@ -803,7 +803,31 @@
 				O.on_transplant(src.donor)
 			if (I.reagents)
 				I.reagents.trans_to(src.donor, 330)
+
+			if (is_full_robotic())
+				donor.unlock_medal("Spaceship of Theseus", 1)
 			return 1
+
+	//checks if this organholder has all cyberorgans instead of meat ones.
+	proc/is_full_robotic()
+		if (islist(organ_list))
+			for (var/i in organ_list)
+				//ignore these things which can't be robotic for a regular human atm. And butts cause they aren't real organs, plus removing butts is a crime.
+				if (i =="all" || i == "head" || i == "skull" || i == "brain" || i == "chest" || i == "butt")
+					continue
+				var/obj/item/organ/O = organ_list[i]
+				//if it's not robotic we're done, return 0
+				if (istype(O) && !O.robotic)
+					return 0
+
+			//moved out of for loop and just continue past "butt". I think this is slightly more efficient.
+			if (i == "butt")
+				var/obj/item/clothing/head/butt/B = organ_list["butt"]
+				//if it's not robotic we're done, return 0
+				if (istype(B) && !B.robotic)
+					return 0
+			return 1
+		return 0
 
 	//OK you're probably thinking why this in needed at all. It seemed the simplest way, to add and remove stamina based on the amount of lungs.
 	//Because I have it so that an organ can stop working when it hits 100+ damage, we need to check if we have to make stamina changes often.
@@ -1512,6 +1536,7 @@
 	rand_pos = 1
 	var/mob/living/carbon/human/donor = null
 	var/donor_name = null
+	var/robotic = 0
 
 	New()
 		..()
@@ -1640,6 +1665,7 @@
 	icon_state = "cyberbutt"
 	allow_staple = 0
 	toned = 0
+	robotic = 1
 // no this is not done and I dunno when it will be done
 // I am a bad person who accepts bribes of freaky macho butt drawings and then doesn't prioritize the request the bribe was for
 
