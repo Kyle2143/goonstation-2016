@@ -210,7 +210,6 @@
 /proc/organ_health_scan(var/input, var/mob/living/carbon/human/H, var/obfuscate = 0)
 	var/obj/item/organ/O = H.organHolder.organ_list[input]
 	if (O && istype(O, /obj/item/organ))
-		obfuscate_organ_health(O)
 		var/damage = O.get_damage()
 		if (obfuscate)
 			return obfuscate_organ_health(input, O)
