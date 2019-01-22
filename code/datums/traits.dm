@@ -483,7 +483,7 @@
 	points = 2
 	isPositive = 0
 	var/const/radius = 5
-	var/const/skip = 4		//how many life ticks to skip before calculating
+	var/const/skip = 5		//how many life ticks to skip before calculating
 	var/count = 0
 
 	onLife(var/mob/owner)
@@ -493,34 +493,24 @@
 		else
 			count = 0
 
-		//You're only afraid of space on the station z level. If you want to live on the derelict russian ship in peace, you can.
-		if (owner.z != 1)
-			return
-
-		var/scream = 0	//Are we afraid enough? This will be true if we're at the map edge or the random tile we found is space
-
-		//We're at the edge of the map, super scary. Always hit the prob statement.
-		//It could either be done this way or a second istype check in the following if statement. But I'm fairly sure this is more efficient.
-		if ((owner.x < 1+radius || owner.x > 299+radius) || (owner.y < 1+radius || owner.y > 299+radius))
-			scream = 1
-
-
 		if(!owner.stat)
-			//if we're not at map edge then pick a random tile
-			if (!scream)
-		 		//target coordinates
-				// var/x = owner.x + rand(-radius/2,radius+2)
-				// var/y = owner.y+rand(-radius/2,radius/2)
-				var/turf/T = locate(owner.x + rand(-radius/2,radius+2), owner.y+rand(-radius/2,radius/2), 1)
-				if (istype(T, /turf/space))
-					scream = 1
+			var/scream = 0	//Are we afraid enough? This will be true if we're at the map edge or the random tile we found is space
+			//target coordinates
+			// var/x = owner.x + rand(-radius/2,radius+2)
+			// var/y = owner.y+rand(-radius/2,radius/2)
+			var/turf/T = locate(owner.x + rand(-radius/2,radius+2), owner.y+rand(-radius/2,radius/2), 1)
+			if (istype(T, /turf/space))
+				scream = 1
+			else if (!T)
+				scream = 1
 
-			if(scream && prob(40))
-				owner.emote("faint")
-				owner.paralysis += 7
-			else if (prob(80))
-				owner.emote("scream")
-				owner.stunned += 2
+			if (scream)
+				if(prob(40))
+					owner.emote("faint")
+					owner.paralysis += 7
+				else if (prob(80))
+					owner.emote("scream")
+					owner.stunned += 2
 		return
 
 /obj/trait/robustgenetics
