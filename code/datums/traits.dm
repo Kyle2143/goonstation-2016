@@ -482,9 +482,33 @@
 	id = "spacephobia"
 	points = 2
 	isPositive = 0
-
+	var/const/radius = 3
+	var/const/skip = 5		//how many life ticks to skip before calculating
+	var/count = 0
+	
 	onLife(var/mob/owner)
-		if(!owner.stat && can_act(owner) && istype(owner.loc, /turf/space))
+		if (count < skip)
+			count++
+			return
+		else
+			count = 0
+
+		//You're only afraid of space on the station z level. If you want to live on the derelict russian ship in peace, you can.
+		if (z != 1)
+			return
+
+		var/scream = 0	//placeholder for action taken
+		//We're at the edge of the map, super scary. Always hit the prob statement.
+		if ((owner.x < 1+radius || owner.x > 299+radius) || (owner.y < 1+radius || owner.y > 299+radius))
+			scream = 1
+ 		
+ 		//target coordinates
+		// var/x = owner.x + rand(-radius/2,radius+2)
+		// var/y = owner.y+rand(-radius/2,radius/2)
+
+		var/turf/T = locate(owner.x + rand(-radius/2,radius+2), owner.y+rand(-radius/2,radius/2), 1)
+
+		if(scream || !owner.stat && can_act(owner) && istype(T, /turf/space))
 			if(prob(2))
 				owner.emote("faint")
 				owner.paralysis += 7
