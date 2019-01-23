@@ -72,7 +72,7 @@ chui/window/security_cameras
 					};
 					clearTimeout(timeout);
 					timeout = setTimeout(later, interval || 200);
-			  }
+				}
 			}
 
 		$(document).delegate('button', 'keyup', debounce(function(e) {
@@ -112,41 +112,41 @@ chui/window/security_cameras
 		//for these just add a save link to those list items
 
 		$(document).delegate('.fav', 'click', debounce(function(e) {
-		  var table = $(this).parent().parent().parent()
+			var table = $(this).parent().parent().parent()
 
-		  //check which list it's in. adding/removing.
-		  if (table.attr("id") == "cameraList") {
-		  	if ($('#savedCameras tr').length >= [owner.favorites_Max]) {
-		  		alert('Cannot have more than [owner.favorites_Max] favorites.');
-		  		return;
-		  	}
-
-
-
-		    var tr = $(this).parent();
-		    $(this).html('&#128165;');
-		    tr.appendTo(document.getElementById("savedCameras"));
-
-		    // make topic call from a href
-		    var href = tr.find('a').attr('href');
-		    var re = /.*camera=(.*)$/g;
-		    var cameraID = re.exec(href)\[1\];
+			//check which list it's in. adding/removing.
+			if (table.attr("id") == "cameraList") {
+				if ($('#savedCameras tr').length >= [owner.favorites_Max]) {
+					alert('Cannot have more than [owner.favorites_Max] favorites.');
+					return;
+				}
 
 
-		    window.location='byond://?src=\ref[src];save='+cameraID;
+
+			var tr = $(this).parent();
+			$(this).html('&#128165;');
+			tr.appendTo(document.getElementById("savedCameras"));
+
+			// make topic call from a href
+			var href = tr.find('a').attr('href');
+			var re = /.*camera=(.*)$/g;
+			var cameraID = re.exec(href)\[1\];
+
+
+			window.location='byond://?src=\ref[src];save='+cameraID;
 
 		  //Removing shit
 		  } else if(table.attr("id") == "savedCameras") {
-		    var tr = $(this).parent();
-		    $(this).html('&#128190');
-		    tr.appendTo(document.getElementById("cameraList"));
+			var tr = $(this).parent();
+			$(this).html('&#128190');
+			tr.appendTo(document.getElementById("cameraList"));
 
-		    var href = tr.find('a').attr('href');
-		    var re = /.*camera=(.*)$/g;
-		    var cameraID = re.exec(href)\[1\];
+			var href = tr.find('a').attr('href');
+			var re = /.*camera=(.*)$/g;
+			var cameraID = re.exec(href)\[1\];
 
 
-		    window.location='byond://?src=\ref[src];remove='+cameraID;
+			window.location='byond://?src=\ref[src];remove='+cameraID;
 			}
 
 	},50));
@@ -160,13 +160,6 @@ chui/window/security_cameras
 	    a {
 	      color:green;
 	    }
-	    div {
-			margin: 5px;
-	      	padding: 5px;
-			border: 3px solid green;
-			display: inline-block;
-	     	background-color: black;
-	    }
 	    p {
 	    	color:green
 	    }
@@ -177,15 +170,24 @@ chui/window/security_cameras
 			background-color:black;
 			border: 1px solid green;
 	    }
-    
 		#main_list {
-		  width: 275px;
-		  height: 600px;
-		  float: left;
-		  overflow: scroll;
+			margin: 5px;
+	    	padding: 5px;
+			border: 3px solid green;
+			display: inline-block;
+	    	background-color: black;
+			width: 275px;
+			height: 600px;
+			float: left;
+			overflow: scroll;
 		}
 
 		#fav_list {
+			margin: 5px;
+			padding: 5px;
+			border: 3px solid green;
+			display: inline-block;
+			background-color: black;
 			width: 275px;
 			height: 300px;
 			float: right;
