@@ -11,7 +11,8 @@
 	var/maplevel = 1
 	desc = "A computer that allows one to connect to a security camera network and view camera images."
 	var/chui/window/security_cameras/window
-	var/first_click = 1		//
+	var/first_click = 1				//for creating the chui on first use
+	var/skip_disabled = 1			//If we skip over disabled cameras in AI camera movement mode. Just leaving it in for admins maybe.
 
 	Del()
 		..()
@@ -54,7 +55,7 @@
 				closest = closest.c_west
 			//while(closest && !closest.status) //Skip disabled cameras - THIS NEEDS TO BE BETTER (static overlay imo)
 		else
-			closest = getCameraMove(user, direct) //Ok, let's do this then.
+			closest = getCameraMove(user, direct, skip_disabled) //Ok, let's do this then.
 
 		if(!closest)
 			return
