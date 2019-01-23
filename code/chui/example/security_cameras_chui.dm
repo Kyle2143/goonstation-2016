@@ -62,21 +62,80 @@ chui/window/security_cameras
 		</script>
 
 		<script type='text/javascript'>
-		//stole this debounce function from Kfir Zuberi at https://medium.com/walkme-engineering/debounce-and-throttle-in-real-life-scenarios-1cc7e2e38c68
-			function debounce (func, interval) {
-				var timeout;
-				return function () {
-					var context = this, args = arguments;
-					var later = function () {
-						timeout = null;
-						func.apply(context, args);
-					};
-					clearTimeout(timeout);
-					timeout = setTimeout(later, interval || 200);
-				}
+		<script src='[resource("js/jquery.min.js")]'></script>
+		/**		
+ * <script src='[resource("js/jquery.debounce-1.0.5.js")]'></script> //copy pasted it because resource management here for js makes no sense to me.
+ * Debounce and throttle function's decorator plugin 1.0.5
+ *
+ * Copyright (c) 2009 Filatov Dmitry (alpha@zforms.ru)
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl.html
+ *
+ */
+
+(function($) {
+
+$.extend({
+
+	debounce : function(fn, timeout, invokeAsap, ctx) {
+
+		if(arguments.length == 3 && typeof invokeAsap != 'boolean') {
+			ctx = invokeAsap;
+			invokeAsap = false;
+		}
+
+		var timer;
+
+		return function() {
+
+			var args = arguments;
+            ctx = ctx || this;
+
+			invokeAsap && !timer && fn.apply(ctx, args);
+
+			clearTimeout(timer);
+
+			timer = setTimeout(function() {
+				!invokeAsap && fn.apply(ctx, args);
+				timer = null;
+			}, timeout);
+
+		};
+
+	},
+
+	throttle : function(fn, timeout, ctx) {
+
+		var timer, args, needInvoke;
+
+		return function() {
+
+			args = arguments;
+			needInvoke = true;
+			ctx = ctx || this;
+
+			if(!timer) {
+				(function() {
+					if(needInvoke) {
+						fn.apply(ctx, args);
+						needInvoke = false;
+						timer = setTimeout(arguments.callee, timeout);
+					}
+					else {
+						timer = null;
+					}
+				})();
 			}
 
-		$(document).delegate('button', 'keyup', debounce(function(e) {
+		};
+
+	}
+
+});
+
+})(jQuery);
+		$(document).delegate('button', 'keyup', $.throttle(function(e) {
 			e.stopPropagation();
 			var keyId = e.which;
 			//takes arrows, wasd, and ijkl.
@@ -112,7 +171,7 @@ chui/window/security_cameras
 
 		//for these just add a save link to those list items
 
-		$(document).delegate('.fav', 'click', debounce(function(e) {
+		$(document).delegate('.fav', 'click', $.throttle(function(e) {
 			var table = $(this).parent().parent().parent()
 
 			//check which list it's in. adding/removing.
