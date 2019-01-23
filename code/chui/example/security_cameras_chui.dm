@@ -227,7 +227,7 @@ chui/window/security_cameras
 		return dat
 
 	OnTopic( href, href_list[] )
-		if (!usr || !href_list)
+		if (!usr || !islist(href_list))
 			return
 
 		else if (href_list["camera"])
