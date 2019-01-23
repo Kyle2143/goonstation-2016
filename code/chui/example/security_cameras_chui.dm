@@ -3,6 +3,7 @@ chui/window/security_cameras
 	name = "Security Cameras"
 	var/obj/machinery/computer/security/owner
 	//windowSize = "650x500"					//windowSize is not in 2016
+	flags = CHUI_FLAG_MOVABLE
 
 	New(var/obj/machinery/computer/security/seccomp)
 		..()
@@ -177,7 +178,7 @@ chui/window/security_cameras
 			display: inline-block;
 	    	background-color: black;
 			width: 275px;
-			height: 600px;
+			height: 375px;
 			float: left;
 			overflow: scroll;
 		}
@@ -189,7 +190,7 @@ chui/window/security_cameras
 			display: inline-block;
 			background-color: black;
 			width: 275px;
-			height: 300px;
+			height: 250px;
 			float: right;
 			overflow: hidden;
 		}
@@ -226,7 +227,7 @@ chui/window/security_cameras
 		return dat
 
 	OnTopic( href, href_list[] )
-		if (!usr)
+		if (!usr || !href_list)
 			return
 
 		else if (href_list["camera"])
