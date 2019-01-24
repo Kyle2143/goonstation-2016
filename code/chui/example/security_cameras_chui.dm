@@ -131,9 +131,9 @@ $.extend({
 	}
 
 });
-
 })(jQuery);
-		$(document).delegate('button', 'keyup', $.throttle(function(e) {
+
+		function handle_key_movement(e) {
 			var keyId = e.which;
 			//takes arrows, wasd, and ijkl.
 			//If any other key is pressed, just default to return
@@ -165,7 +165,13 @@ $.extend({
 			e.preventDefault();
 			e.stopPropagation();
 
-		 },2000));
+			e.preventDefault();
+			e.stopPropagation();
+		}
+    
+    
+		$(document).delegate('button', 'keyup', $.throttle(handle_key_movement,1000));
+
 
 		//for these just add a save link to those list items
 
