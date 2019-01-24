@@ -170,6 +170,9 @@ chui/window/security_cameras
 			background-color:black;
 			border: 1px solid green;
 		}
+		input {
+			style='width:100%;
+		}
 
 		input::placeholder {
 			caret-color: green;
@@ -178,14 +181,20 @@ chui/window/security_cameras
 
 		#main_list {
 			margin-top: 5px;
-	    	padding: 5px;
+			padding: 5px;
 			border: 3px solid green;
 			display: inline-block;
-	    	background-color: black;
+			background-color: black;
 			width: 275px;
 			height: 375px;
 			float: left;
-			overflow-y: auto;
+
+			-ms-overflow-style: none;
+			overflow: auto;
+		}
+
+		#main_list::-webkit-scrollbar{
+		    display:none
 		}
 
 		#fav_list {
@@ -216,7 +225,7 @@ chui/window/security_cameras
 			<button type='button' autofocus id='movementButton'> Keyboard Movement Mode</button>
 			<div id='main_list'>
 
-			<input type='text' id='searchbar' onkeyup='filterTable()' placeholder='Search for cameras..'>
+			<input type='text' id='searchbar' onkeyup='filterTable()' placeholder=' Search for cameras..'>
 			<table id='cameraList'>
 				[cameras_list]
 			</table>
