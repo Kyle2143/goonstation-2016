@@ -234,6 +234,18 @@ $.extend({
 			background-color:black;
 			border: 1px solid green;
 	    }
+		#searchbar {
+			width:100%;
+			display:block;
+			color:green;
+			background-color:black;
+			border: 1px solid green;
+		}
+
+		input::placeholder {
+			color:#556455;
+		}
+
 		#main_list {
 			margin: 5px;
 	    	padding: 5px;
@@ -243,7 +255,7 @@ $.extend({
 			width: 275px;
 			height: 375px;
 			float: left;
-			overflow: scroll;
+			overflow-y: scroll;
 		}
 
 		#fav_list {
