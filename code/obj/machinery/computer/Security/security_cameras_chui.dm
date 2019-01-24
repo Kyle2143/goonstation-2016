@@ -161,7 +161,7 @@ chui/window/security_cameras
 			display:block;
 			color:green;
 			background-color:black;
-			border: 1px solid green;
+			border: 3px solid green;
 	    }
 		#searchbar {
 			width:100%;
@@ -177,7 +177,7 @@ chui/window/security_cameras
 		}
 
 		#main_list {
-			margin: 5px;
+			margin-top: 5px;
 	    	padding: 5px;
 			border: 3px solid green;
 			display: inline-block;
@@ -189,7 +189,7 @@ chui/window/security_cameras
 		}
 
 		#fav_list {
-			margin: 5px;
+			margin-top: 5px;
 			padding: 5px;
 			border: 3px solid green;
 			display: inline-block;
