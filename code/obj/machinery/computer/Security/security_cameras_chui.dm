@@ -223,9 +223,9 @@ chui/window/security_cameras
 		var/dat = {"[script]
 		<body>
 			<button type='button' autofocus id='movementButton'> Keyboard Movement Mode</button>
+			<input type='text' id='searchbar' onkeyup='filterTable()' placeholder=' Search for cameras..'>
 			<div id='main_list'>
 
-			<input type='text' id='searchbar' onkeyup='filterTable()' placeholder=' Search for cameras..'>
 			<table id='cameraList'>
 				[cameras_list]
 			</table>
