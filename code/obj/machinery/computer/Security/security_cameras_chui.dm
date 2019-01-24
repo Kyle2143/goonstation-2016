@@ -153,7 +153,7 @@ chui/window/security_cameras
 	    a {
 	      color:green;
 	    }
-	    p {
+	    h3 {
 	    	color:green
 	    }
 	    button {
