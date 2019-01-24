@@ -38,7 +38,7 @@ chui/window/security_cameras
 		<script type='text/javascript'>
 		//stolen from W3Schools.com. Simple filtering, works well enough, didn't bother to make anything special for this.
 		function filterTable() {
-			var input, filter, table, tr, td, i, txtValue;
+			var input, filter, table, tr, cameraName, i, txtValue;
 			input = document.getElementById('searchbar');
 			filter = input.value.toUpperCase();
 			table = document.getElementById("cameraList");
@@ -46,9 +46,9 @@ chui/window/security_cameras
 
 			// Loop through all table rows, and hide those who don't match the search query
 			for (i = 0; i < tr.length; i++) {
-				td = tr\[i\].getElementsByTagName("td")\[0\];
-				if (td) {
-					txtValue = td.textContent || td.innerText;
+				cameraName = tr\[i\].getElementsByTagName("td")\[0\];
+				if (cameraName) {
+					txtValue = cameraName.textContent || cameraName.innerText;
 					if (txtValue.toUpperCase().indexOf(filter) > -1) {
 						tr\[i\].style.display = "";
 					} else {
@@ -243,6 +243,7 @@ $.extend({
 		}
 
 		input::placeholder {
+			caret-color: green;
 			color:#556455;
 		}
 
