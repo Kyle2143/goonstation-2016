@@ -30,7 +30,7 @@ chui/window/security_cameras
 				// &#128190; is save symbol
 				cameras_list += \
 	{"<tr>
-	<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>&#128190;</td>
+	<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'align='right'>&#128190;</td>
 	</tr>
 	"}
 
@@ -231,7 +231,7 @@ chui/window/security_cameras
 			</table>
 			</div>
 			<div id='fav_list'>
-				<p>Favorite Cameras: </p>
+				<h3>Favorite Cameras: </h3>
 				<table id='savedCameras'>
 					[fav_cameras]
 				</table>
