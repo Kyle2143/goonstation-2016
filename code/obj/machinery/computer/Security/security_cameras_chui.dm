@@ -185,7 +185,7 @@ chui/window/security_cameras
 			width: 275px;
 			height: 375px;
 			float: left;
-			overflow-y: scroll;
+			overflow-y: auto;
 		}
 
 		#fav_list {
