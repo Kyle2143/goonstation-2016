@@ -43,7 +43,7 @@
 
 		// if(user.classic_move)
 		var/obj/machinery/camera/closest = src.current
-		if(closest)
+		if(istype(closest))
 			//do
 			if(direct & NORTH)
 				closest = closest.c_north
@@ -53,13 +53,16 @@
 				closest = closest.c_east
 			else if(direct & WEST)
 				closest = closest.c_west
-			//while(closest && !closest.status) //Skip disabled cameras - THIS NEEDS TO BE BETTER (static overlay imo)
-		else
+			// while(closest && !closest.status) //Skip disabled cameras - THIS NEEDS TO BE BETTER (static overlay imo)
+		else	//This was for the AI, If there is no current camera, return to the camera nearest the user.
 			closest = getCameraMove(user, direct, skip_disabled) //Ok, let's do this then.
 
 		if(!closest)
 			return
-
+		else if (!closest.status)
+			boutput(user, "<span style=\"color:red\">ERROR. Cannot connect to camera.</span>")
+			playsound(src.loc, "sound/machines/buzz-sigh.ogg", 10, 0)
+			return
 		switchCamera(user, closest)
 
 /obj/machinery/computer/security/wooden_tv
