@@ -33,6 +33,8 @@ chui/theme
 			generated += "<script src='[resource("js/jquery.min.js")]'></script>"
 			generated += "<script src='[resource("js/jquery.nanoscroller.min.js")]'></script>"
 			generated += "<script src='[resource("js/chui/chui.js")]'></script>"
+			generated += "<script src='[resource("js/jquery.debounce-1.0.5.js")]'></script>"
+
 			generated += "\n"
 
 			//Theme specific
