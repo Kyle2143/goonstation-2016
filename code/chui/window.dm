@@ -68,7 +68,7 @@ chui/window
 		CDBG1( "[who] subscribed to [name]" )
 		subscribers += who
 		//theme.streamToClient( who )
-		who << browse( src.generate(who, src.GetBody()), "window=\ref[src];titlebar=0;can_close=0;can_resize=0;can_scroll=0;border=0" )
+		who << browse( src.generate(who, src.GetBody()), "window=\ref[src];titlebar=0;can_close=0;can_resize=0;can_scroll=0;border=0;size=650x500" )
 		winset( who, "\ref[src]", "on-close \".chui-close \ref[src]\"" )
 
 
