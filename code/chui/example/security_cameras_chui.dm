@@ -62,9 +62,7 @@ chui/window/security_cameras
 		</script>
 
 		<script type='text/javascript'>
-		<script src='[resource("js/jquery.min.js")]'></script>
 		/**		
- * <script src='[resource("js/jquery.debounce-1.0.5.js")]'></script> //copy pasted it because resource management here for js makes no sense to me.
  * Debounce and throttle function's decorator plugin 1.0.5
  *
  * Copyright (c) 2009 Filatov Dmitry (alpha@zforms.ru)
@@ -136,7 +134,6 @@ $.extend({
 
 })(jQuery);
 		$(document).delegate('button', 'keyup', $.throttle(function(e) {
-			e.stopPropagation();
 			var keyId = e.which;
 			//takes arrows, wasd, and ijkl.
 			//If any other key is pressed, just default to return
@@ -166,12 +163,13 @@ $.extend({
 			}
 			window.location='byond://?src=\ref[src];move='+keyId;
 			e.preventDefault();
+			e.stopPropagation();
 
-		 },50));
+		 },2000));
 
 		//for these just add a save link to those list items
 
-		$(document).delegate('.fav', 'click', $.throttle(function(e) {
+		$(document).delegate('.fav', 'click', function(e) {
 			var table = $(this).parent().parent().parent()
 
 			//check which list it's in. adding/removing.
@@ -209,7 +207,7 @@ $.extend({
 			window.location='byond://?src=\ref[src];remove='+cameraID;
 			}
 
-	},50));
+	});
 
 		</script>
 
