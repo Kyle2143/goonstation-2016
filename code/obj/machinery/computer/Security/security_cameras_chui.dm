@@ -154,8 +154,11 @@ chui/window/security_cameras
 	      color:green;
 	    }
 	    h3 {
-	    	color:green
+	    	color:green;
 	    }
+	    td.fav {
+			cursor: pointer;
+		}
 	    button {
 			width:100%;
 			display:block;
