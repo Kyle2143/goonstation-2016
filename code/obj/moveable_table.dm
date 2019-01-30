@@ -41,7 +41,7 @@
 
 
 			//if we're over the max amount a table can fit, have a chance to drop an item. Chance increases with items on tray
-			if (src.contents.len > max_to_move && prob(src.contents.len*1.5))
+			if (prob((src.contents.len-max_to_move)*1.5))
 				var/obj/item/falling = pick(src.contents)
 				// src.visible_message("[falling] falls off of [src]!")
 
