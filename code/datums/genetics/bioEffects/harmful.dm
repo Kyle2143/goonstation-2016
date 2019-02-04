@@ -475,6 +475,41 @@
 	emote_type = "scream"
 	emote_prob = 10
 
+/datum/bioEffect/emp_field
+	name = "Electromagnetic Field"
+	desc = "The subject produces small, random electromagnetic pulses around it."
+	id = "emp_field"
+	effectType = effectTypeDisability
+	blockCount = 1
+	probability = 50
+	isBad = 1
+	reclaim_fail = 15
+	stability_loss = -10
+
+	var/image/overlay_image_two = null
+
+	var/const/radius = 5
+
+	OnLife()
+		..()
+
+		var/turf/T
+		if (prob(20))
+			T = get_turf(owner)
+		else
+			T = locate(owner.x + rand(-radius/2,radius+2), owner.y+rand(-radius/2,radius/2), 1)
+
+		var/obj/overlay/pulse = new/obj/overlay(T)
+		pulse.icon = 'icons/effects/effects.dmi'
+		pulse.icon_state = "emppulse"
+		pulse.name = "emp pulse"
+		pulse.anchored = 1
+		spawn (20)
+			if (pulse) qdel(pulse)
+
+		for (var/atom/O in T.contents)
+			O.emp_act()
+
 ////////////////////////////
 // Disabled for *Reasons* //
 ////////////////////////////
