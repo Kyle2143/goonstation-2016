@@ -475,6 +475,27 @@
 	emote_type = "scream"
 	emote_prob = 10
 
+/datum/bioEffect/tinnitus
+	name = "Tinnitus"
+	desc = "Causes the subject to almost constantly hear a terrible/annoying ringing in their ears."
+	id = "tinnitus"
+	effectType = effectTypeDisability
+	isBad = 1
+	msgGain = "You hear a ringing in your ears."
+	msgLose = "The ringing has stopped...Finally. Thank the Space-Gods."
+	probability = 99
+	var/count = 0
+
+	OnLife()
+		if (count <= 6)
+			count++
+			return
+		else
+			count = 0
+
+		var/mob/living/L = owner//play sound for client.
+		
+
 ////////////////////////////
 // Disabled for *Reasons* //
 ////////////////////////////
