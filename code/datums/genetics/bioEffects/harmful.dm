@@ -485,10 +485,7 @@
 	isBad = 1
 	reclaim_fail = 15
 	stability_loss = -10
-
-	var/image/overlay_image_two = null
-
-	var/const/radius = 5
+	var/const/radius = 2
 
 	OnLife()
 		..()
