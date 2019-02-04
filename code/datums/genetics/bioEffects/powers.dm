@@ -1496,6 +1496,60 @@
 			the_item.color = I.color
 		return 0
 
+/datum/bioEffect/power/shoot_limb
+	name = "Vestigal Ballistics"
+	desc = "Allows the subject to expel one of their limbs with considerable force."
+	id = "shoot_limb"
+	msgGain = "You limbs feel swolen."
+	msgLose = "You limbs feel much better!"
+	cooldown = 300
+	occur_in_genepools = 0
+	is_bad = 1
+	stability_loss = 10
+	ability_path = /datum/targetable/geneticsAbility/bigpuke
+	var/range = 3
+
+/datum/targetable/geneticsAbility/shoot_limb
+	name = "Vestigal Ballistics"
+	desc = "OOOOWWWWWW!!!!!!!!"
+	icon_state = "shoot_limb"
+	targeted = 1
+
+	cast(atom/target)
+		if (..())
+			return 1
+
+		// var/turf/T = get_turf(target)
+		// var/list/affected_turfs = getline(owner, T)
+		// var/datum/bioEffect/power/bigpuke/BP = linked_power
+		// var/range = BP.range
+		// if (BP.power)
+		// 	range *= 2
+		// owner.visible_message("<span style=\"color:red\"><b>[owner] horfs up a huge stream of puke!</b></span>")
+		// logTheThing("combat", owner, target, "power-pukes [log_reagents(owner)] at [log_loc(owner)].")
+		// playsound(owner.loc, "sound/misc/meat_plop.ogg", 50, 0)
+		// owner.reagents.add_reagent("vomit",20)
+		// var/turf/currentturf
+		// var/turf/previousturf
+		// for(var/turf/F in affected_turfs)
+		// 	previousturf = currentturf
+		// 	currentturf = F
+		// 	if(currentturf.density || istype(currentturf, /turf/space))
+		// 		break
+		// 	if(previousturf && LinkBlocked(previousturf, currentturf))
+		// 		break
+		// 	if (F == get_turf(owner))
+		// 		continue
+		// 	if (get_dist(owner,F) > range)
+		// 		continue
+		// 	owner.reagents.reaction(F,TOUCH)
+		// 	for(var/mob/living/L in F.contents)
+		// 		owner.reagents.reaction(L,TOUCH)
+		// 	for(var/obj/O in F.contents)
+		// 		owner.reagents.reaction(O,TOUCH)
+		// owner.reagents.clear_reagents()
+		// return 0
+
 ////////////////
 // Admin Only //
 ////////////////
