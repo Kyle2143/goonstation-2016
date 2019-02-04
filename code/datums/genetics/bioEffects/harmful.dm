@@ -493,7 +493,9 @@
 		else
 			count = 0
 
-		var/mob/living/L = owner//play sound for client.
+		if (owner.client)
+			owner.client << sound("phone-ringing.wav")
+		// var/mob/living/L = owner//play sound for client.
 		
 
 ////////////////////////////
