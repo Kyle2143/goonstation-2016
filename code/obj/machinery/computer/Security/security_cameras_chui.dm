@@ -105,7 +105,6 @@ chui/window/security_cameras
 
 		function handle_button_click_movement(e) {
 			var buttonId = this.id;
-			alert(buttonId)
 			switch(buttonId) {
 				case '37':
 				case '38':
