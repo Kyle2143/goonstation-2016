@@ -2275,14 +2275,19 @@
 	edible = 0
 	mats = 6
 
-	New()
-		if (prob(50))
-			body_side = L_ORGAN
-			icon_state = "cyber-kidney-L"
+/obj/item/organ/kidney/cyber/left
+	name = "left kidney"
+	desc = "A fancy robotic kidney to replace one that someone's lost! It's the left kidney!"
+	organ_name = "cyber_kidney_L"
+	icon_state = "cyber-kidney-L"
+	body_side = L_ORGAN
 
-		else
-			body_side = R_ORGAN
-			icon_state = "cyber-kidney-R"
+/obj/item/organ/kidney/cyber/right
+	name = "right kidney"
+	desc = "A fancy robotic kidney to replace one that someone's lost! It's the right kidney!"
+	organ_name = "cyber_kidney_R"
+	icon_state = "cyber-kidney-R"
+	body_side = R_ORGAN
 
 /obj/item/organ/stomach
 	name = "stomach"
