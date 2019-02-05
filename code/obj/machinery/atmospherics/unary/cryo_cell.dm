@@ -98,6 +98,7 @@
 
 		var/dat = "<B>Cryo cell control system</B><BR>"
 		dat += "<B>Current cell temperature:</B> [temp_text]K<BR>"
+		dat += "<B>Eject Occupant:</B> [src.occupant ? "<A href='?src=\ref[src];eject_occupant=1'>Eject</A>" : "Eject"]<BR>"
 		dat += "<B>Cryo status:</B> [src.on ? "<A href='?src=\ref[src];start=1'>Off</A> <B>On</B>" : "<B>Off</B> <A href='?src=\ref[src];start=1'>On</A>"]<BR>"
 		dat += "[draw_beaker_text()]<BR>"
 		dat += "--------------------------------<BR>"
@@ -152,7 +153,8 @@
 				reagent_scan_active = !reagent_scan_active
 			if (href_list["defib"])
 				src.defib.attack(src.occupant, usr)
-
+			if (href_list["eject_occupant"])
+				go_out()
 			src.updateUsrDialog()
 			src.add_fingerprint(usr)
 			return
