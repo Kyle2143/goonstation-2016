@@ -301,7 +301,7 @@ chui/window/security_cameras
 					</table>
 				</div>
 				<div id='arrow' >
-					Camera Movement (Select Middle button for keyboard movement)
+					Camera Movement (&#x2BCC; = keyboard movement)
 					<button class='arrbutton' id='37'>&#x2BC7;</button>
 					<button class='arrbutton' id='39'>&#x2BC8;</button>
 					<button class='arrbutton' id='38'>&#x2BC5;</button>
