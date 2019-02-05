@@ -30,7 +30,7 @@ chui/window/security_cameras
 				// &#128190; is save symbol
 				cameras_list += \
 	{"<tr>
-	<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'align='right'>&#128190;</td>
+	<td><a class='link' href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'align='right'>&#128190;</td>
 	</tr>
 	"}
 
@@ -97,9 +97,22 @@ chui/window/security_cameras
 			e.preventDefault();
 			e.stopPropagation();
 		}
-    
-    
-		$(document).delegate('button', 'keyup', $.throttle(handle_key_movement,1000));
+		function handle_button_click_movement(e) {
+			var buttonId = this.id;
+				switch(buttonId) {
+				case '37':
+				case '38':
+				case '39':
+				case '40':
+					window.location = 'byond://?src=\ref[src];move=' + buttonId;
+					break;
+				default: 
+					return;
+			}
+		}
+		$(document).delegate('#abM', 'keyup', $.throttle(handle_key_movement,1000));
+		$(document).delegate('.arrbutton', 'click', $.throttle(handle_button_click_movement,1000));
+
 
 
 		//for these just add a save link to those list items
@@ -155,19 +168,15 @@ chui/window/security_cameras
 	    }
 	    h3 {
 	    	color:green;
+			margin:0px;
+
 	    }
 	    td.fav {
 			cursor: pointer;
 		}
-	    button {
-			width:100%;
-			display:block;
-			color:green;
-			background-color:black;
-			border: 3px solid green;
-	    }
 		#searchbar {
 			width:100%;
+			margin-left:-2px;
 			display:block;
 			color:green;
 			background-color:black;
@@ -189,7 +198,7 @@ chui/window/security_cameras
 			display: inline-block;
 			background-color: black;
 			width: 275px;
-			height: 375px;
+			height: 400px;
 			float: left;
 
 			-ms-overflow-style: none;
@@ -207,10 +216,60 @@ chui/window/security_cameras
 			display: inline-block;
 			background-color: black;
 			width: 275px;
-			height: 250px;
-			float: right;
-			overflow: hidden;
+			height: 175px;
+			overflow: auto;
 		}
+
+	#right{
+		float:right;
+	}
+
+	#arrow{
+		width: 275px;
+		height: 200px;
+		margin-top: 5px;
+		padding:5px;
+		border: 3px solid green;
+
+		background-color:black;
+		position: absolute;
+	}
+
+	.arrbutton {
+		padding: 12px 25px;
+		position: absolute;
+		background-color: grey; 
+		color: black;
+		border: 3px solid #4CAF50;
+	}
+    
+	\[id='37'\] {
+		top: 90px;
+		left:12px;
+	}
+	\[id='39'\] {
+		top: 90px;
+		left:194px;
+	}
+	\[id='38'\] {
+		top: 30px;
+		left:104px;
+	}
+	\[id='40'\] {
+		top: 150px;
+		left:104px;
+	}
+	#abM {
+		top: 90px;
+		left:104px;
+	}
+	#abM:focus{
+		background-color: #10AA10;
+	}
+
+	div{
+		color:green;
+	}
 		</style>
 		"}
 
@@ -220,12 +279,11 @@ chui/window/security_cameras
 				. = "[C.c_tag][C.status ? null : " (Deactivated)"]"
 				fav_cameras += \
 				{"<tr>
-				<td><a href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>&#128165;</td>
+				<td><a class='link' href='byond://?src=\ref[src];camera=\ref[C]' style='display:block;'>[.]</a></td> <td class='fav'>&#128165;</td>
 				</tr>"}
 
 		var/dat = {"[script]
 		<body>
-			<button type='button' autofocus id='movementButton'> Keyboard Movement Mode</button>
 			<div id='main_list'>
 
 			<input type='text' id='searchbar' onkeyup='filterTable()' placeholder=' Search for cameras..'>
@@ -233,18 +291,33 @@ chui/window/security_cameras
 				[cameras_list]
 			</table>
 			</div>
-			<div id='fav_list'>
-				<h3>Favorite Cameras: </h3>
-				<table id='savedCameras'>
-					[fav_cameras]
-				</table>
+			
+			<div id='right'>
+
+				<div id='fav_list'>
+					<h3>Favorite Cameras: </h3>
+					<table id='savedCameras'>
+						[fav_cameras]
+					</table>
+				</div>
+				<div id='arrow' >
+					Camera Movement
+					<button class='arrbutton' id='37'>&#x2BC7;</button>
+					<button class='arrbutton' id='39'>&#x2BC8;</button>
+					<button class='arrbutton' id='38'>&#x2BC5;</button>
+					<button class='arrbutton' id='40'>&#x2BC6;</button>
+					<button class='arrbutton' id='abM'>&#x2BCC;</button>
+				</div>
+
 			</div>
 		</body>"}
 
 		return dat
 
 	OnTopic( href, href_list[] )
-		if (!usr || !islist(href_list))
+		if (!islist(href_list))	//don't need to check for usr. that is done in chui/Topic()
+			usr.set_eye(null)
+			Unsubscribe(usr)
 			return
 
 		else if (href_list["camera"])
