@@ -8,7 +8,7 @@ chui/window/security_cameras
 	New(var/obj/machinery/computer/security/seccomp)
 		..()
 		owner = seccomp
-
+		theAtom = owner
 	GetBody()
 		var/list/L = list()
 		var/bool = 1
@@ -97,9 +97,16 @@ chui/window/security_cameras
 			e.preventDefault();
 			e.stopPropagation();
 		}
+		$(document).delegate('#abM', 'keyup', $.throttle(handle_key_movement,500));
+		$(document).delegate('#37', 'click', $.throttle(handle_button_click_movement,500));
+		$(document).delegate('#38', 'click', $.throttle(handle_button_click_movement,500));
+		$(document).delegate('#39', 'click', $.throttle(handle_button_click_movement,500));
+		$(document).delegate('#40', 'click', $.throttle(handle_button_click_movement,500));
+
 		function handle_button_click_movement(e) {
 			var buttonId = this.id;
-				switch(buttonId) {
+			alert(buttonId)
+			switch(buttonId) {
 				case '37':
 				case '38':
 				case '39':
@@ -110,11 +117,6 @@ chui/window/security_cameras
 					return;
 			}
 		}
-		$(document).delegate('#abM', 'keyup', $.throttle(handle_key_movement,1000));
-		$(document).delegate('.arrbutton', 'click', $.throttle(handle_button_click_movement,1000));
-
-
-
 		//for these just add a save link to those list items
 
 		$(document).delegate('.fav', 'click', function(e) {
