@@ -1500,24 +1500,88 @@
 	name = "Vestigal Ballistics"
 	desc = "Allows the subject to expel one of their limbs with considerable force."
 	id = "shoot_limb"
-	msgGain = "You limbs feel swolen."
-	msgLose = "You limbs feel much better!"
+	msgGain = "You feel intense pressure in your hip and shoulder joints."
+	msgLose = "You joints feel much better!"
 	cooldown = 300
-	occur_in_genepools = 0
-	is_bad = 1
-	stability_loss = 10
-	ability_path = /datum/targetable/geneticsAbility/bigpuke
-	var/range = 3
+	occur_in_genepools = 1
+	isBad = 1
+	stability_loss = 20
+	ability_path = /datum/targetable/geneticsAbility/shoot_limb
+	var/count = 0
+
+	OnLife()
+		..()
+
+		if (count < 60)
+			count++
+			return
+		else 
+			count = 0
+
+		if (!src.safety && prob(70))
+
+			boutput(owner, "<span style=\"color:red\">The pressure built up too high! One of your limbs flew off!</span>")
+			owner:weakened = 3
+
+			if (ispath(ability_path))
+				var/datum/targetable/geneticsAbility/AB = new ability_path(src)
+
+				//Do I really even need this? I'm just putting it there in case the random turf is null.
+				var/do_count = 0
+				do
+					var/turf/T = locate(owner.x + rand(-3/2,3+2), owner.y+rand(-3/2,3/2), 1)
+					if (T)
+						AB.cast(T)
+						return
+				while (do_count < 5)
+
 
 /datum/targetable/geneticsAbility/shoot_limb
 	name = "Vestigal Ballistics"
 	desc = "OOOOWWWWWW!!!!!!!!"
 	icon_state = "shoot_limb"
 	targeted = 1
+	var/range = 7
+	var/power = 1
 
 	cast(atom/target)
 		if (..())
 			return 1
+
+		
+		if (ishuman(owner))
+			var/mob/living/carbon/human/H = owner
+			var/obj/item/parts/thrown_limb = null
+
+			if (H.has_limb("l_arm"))
+				thrown_limb = H.limbs.l_arm.remove(0)
+			else if (H.has_limb("r_leg"))
+				thrown_limb = H.limbs.r_leg.remove(0)
+			else if (H.has_limb("l_leg"))
+				thrown_limb = H.limbs.l_leg.remove(0)
+			else if (H.has_limb("r_arm"))
+				thrown_limb = H.limbs.r_arm.remove(0)
+			else 
+				return 1
+
+			spawn(1)
+				if (istype(thrown_limb))					
+					//double power if the ability is empowered (doesn't really do anything, but w/e)
+					thrown_limb.throw_at(target, range, power * (linked_power.power+1))
+
+					if (!linked_power.safety)
+						new thrown_limb.streak_decal(owner.loc)
+						var/damage = rand(5,15)
+						random_brute_damage(H, damage)
+						take_bleeding_damage(H, damage)
+						if(prob(60)) owner.emote("scream")
+
+						var/datum/bioEffect/power/shoot_limb/pwr = linked_power
+						if (istype(pwr))
+							pwr.count = 0
+
+					owner.visible_message("<span style=\"color:red\"><b>[thrown_limb][linked_power.power ? " violently " : " "]bursts off of [owner] and flies towards [target]!</b></span>")
+					logTheThing("combat", owner, target, "shoot_limb [!linked_power.safety ? "Accidently" : ""] at [ismob(target)].")
 
 		// var/turf/T = get_turf(target)
 		// var/list/affected_turfs = getline(owner, T)
