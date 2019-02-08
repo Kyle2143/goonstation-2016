@@ -531,6 +531,31 @@
 
 		for (var/atom/O in T.contents)
 			O.emp_act()
+/datum/bioEffect/fitness-debuff
+	name = "Physically Unfit"
+	desc = "Causes the subject to be naturally less physically fit than the average spaceman."
+	id = "fitness_debuff"
+	probability = 60
+	isBad = 1
+	effectType = effectTypePower
+	blockCount = 2
+	blockGaps = 3
+	reclaim_mats = 30
+	msgGain = "You feel slightly more energetic."
+	msgLose = "You feel slightly less energetic."
+	lockProb = 20
+	lockedGaps = 1
+	lockedDiff = 3
+	lockedTries = 8
+	stability_loss = 5
+
+	OnAdd()
+		src.add_stam_mod_regen("g-fitness-debuff", -2)
+		src.add_stam_mod_max("g-fitness-debuff", -30)
+
+	OnRemove()
+ 		src.remove_stam_mod_regen("g-fitness-debuff")
+ 		src.remove_stam_mod_max("g-fitness-debuff")
 
 ////////////////////////////
 // Disabled for *Reasons* //

@@ -376,6 +376,31 @@ var/list/radio_brains = list()
 	lockedTries = 8
 	stability_loss = 10
 
+/datum/bioEffect/fitness-buff
+	name = "Physically Fit"
+	desc = "Causes the subject to be naturally more physically fit than the average spaceman."
+	id = "fitness_buff"
+	effectType = effectTypePower
+	probability = 50
+	blockCount = 2
+	blockGaps = 3
+	reclaim_mats = 30
+	msgGain = "You feel slightly more energetic."
+	msgLose = "You feel slightly less energetic."
+	lockProb = 20
+	lockedGaps = 1
+	lockedDiff = 3
+	lockedTries = 8
+	stability_loss = -5
+
+	OnAdd()
+		src.add_stam_mod_regen("g-fitness-buff", 2)
+		src.add_stam_mod_max("g-fitness-buff", 30)
+
+	OnRemove()
+ 		src.remove_stam_mod_regen("g-fitness-buff")
+ 		src.remove_stam_mod_max("g-fitness-buff")
+
 ///////////////////////////
 // Disabled/Inaccessible //
 ///////////////////////////
