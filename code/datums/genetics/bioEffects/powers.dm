@@ -1540,7 +1540,7 @@
 	name = "Vestigal Ballistics"
 	desc = "OOOOWWWWWW!!!!!!!!"
 	icon_state = "shoot_limb"
-	icon = "icons/effects/genetics2.dmi"
+	icon = 'icons/effects/genetics2.dmi'		//icons/mob/genetics_powers.dmi is where these are normally in code
 	targeted = 1
 	var/range = 7
 	var/power = 1
@@ -1570,7 +1570,7 @@
 				if (istype(thrown_limb))					
 					//double power if the ability is empowered (doesn't really do anything, but w/e)
 					var/tmp_force = thrown_limb.throwforce
-					thrown_limb.throwforce = limb_force
+					thrown_limb.throwforce = limb_force* (power+1)	//double damage if empowered
 					thrown_limb.throw_at(target, range, power * (linked_power.power+1))
 
 					if (!linked_power.safety)
