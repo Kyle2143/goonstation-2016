@@ -1505,7 +1505,7 @@
 	cooldown = 300
 	occur_in_genepools = 1
 	isBad = 1
-	stability_loss = 20
+	stability_loss = -15
 	ability_path = /datum/targetable/geneticsAbility/shoot_limb
 	var/count = 0
 
@@ -1540,9 +1540,11 @@
 	name = "Vestigal Ballistics"
 	desc = "OOOOWWWWWW!!!!!!!!"
 	icon_state = "shoot_limb"
+	icon = "icons/effects/genetics2.dmi"
 	targeted = 1
 	var/range = 7
 	var/power = 1
+	var/limb_force = 20
 
 	cast(atom/target)
 		if (..())
@@ -1567,6 +1569,8 @@
 			spawn(1)
 				if (istype(thrown_limb))					
 					//double power if the ability is empowered (doesn't really do anything, but w/e)
+					var/tmp_force = thrown_limb.throwforce
+					thrown_limb.throwforce = limb_force
 					thrown_limb.throw_at(target, range, power * (linked_power.power+1))
 
 					if (!linked_power.safety)
@@ -1580,9 +1584,12 @@
 						if (istype(pwr))
 							pwr.count = 0
 
+
 					owner.visible_message("<span style=\"color:red\"><b>[thrown_limb][linked_power.power ? " violently " : " "]bursts off of [owner] and flies towards [target]!</b></span>")
 					logTheThing("combat", owner, target, "shoot_limb [!linked_power.safety ? "Accidently" : ""] at [ismob(target)].")
-
+					spawn(10)
+						if (thrown_limb)
+							thrown_limb.throwforce = tmp_force
 		// var/turf/T = get_turf(target)
 		// var/list/affected_turfs = getline(owner, T)
 		// var/datum/bioEffect/power/bigpuke/BP = linked_power
