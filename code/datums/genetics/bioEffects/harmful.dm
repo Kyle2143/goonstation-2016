@@ -475,6 +475,31 @@
 	emote_type = "scream"
 	emote_prob = 10
 
+/datum/bioEffect/buzz
+	name = "Nectar Perspiration"
+	desc = "Causes the subject to perspire nectar that attracts abnormally small bees."
+	id = "buzz"
+	effectType = effectTypeDisability
+	isBad = 1
+	msgGain = "Your guts are rumbling."
+	msgLose = "Your guts settle down."
+	probability = 70
+	stability_loss = 10	//maybe 5
+	var/prob_sting = 10;
+
+	OnAdd()
+		if (ishuman(owner))
+			overlay_image = image("icon" = 'icons/effects/genetics2.dmi', "icon_state" = "buzz", layer = MOB_EFFECT_LAYER)
+		..()
+
+	OnLife()
+		var/mob/living/L = owner
+		if (!istype(L) || (L.stat == 2))
+			return
+		if (prob(prob_sting))
+			boutput(src, "<span style=\"color:red\">A bee in your cloud stung you! How rude!</span>")
+			L.reagents.add_reagent("histamine", 2)
+
 ////////////////////////////
 // Disabled for *Reasons* //
 ////////////////////////////
