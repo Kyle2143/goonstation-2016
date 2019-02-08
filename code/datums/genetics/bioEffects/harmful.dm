@@ -483,19 +483,13 @@
 	isBad = 1
 	msgGain = "You hear a ringing in your ears."
 	msgLose = "The ringing has stopped...Finally. Thank the Space-Gods."
+	stability_loss = -5
 	probability = 99
-	var/count = 0
-
+	var/ring_prob = 6
+	
 	OnLife()
-		if (count <= 6)
-			count++
-			return
-		else
-			count = 0
-
-		if (owner.client)
-			owner.client << sound("phone-ringing.wav")
-		// var/mob/living/L = owner//play sound for client.
+		if (prob(ring_prob) && owner.client)
+			owner.client << sound("phone-ringing.wav")		//play sound only for client. Untested, don't know the sound
 		
 
 ////////////////////////////
