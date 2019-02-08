@@ -557,6 +557,22 @@
  		src.remove_stam_mod_regen("g-fitness-debuff")
  		src.remove_stam_mod_max("g-fitness-debuff")
 
+/datum/bioEffect/tinnitus
+	name = "Tinnitus"
+	desc = "Causes the subject to almost constantly hear a terrible/annoying ringing in their ears."
+	id = "tinnitus"
+	effectType = effectTypeDisability
+	isBad = 1
+	msgGain = "You hear a ringing in your ears."
+	msgLose = "The ringing has stopped...Finally. Thank the Space-Gods."
+	stability_loss = -5
+	probability = 99
+	var/ring_prob = 6
+	
+	OnLife()
+		if (prob(ring_prob) && owner.client)
+			owner.client << sound("phone-ringing.wav")		//play sound only for client. Untested, don't know the sound
+		
 ////////////////////////////
 // Disabled for *Reasons* //
 ////////////////////////////
