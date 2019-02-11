@@ -88,100 +88,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/datum/bioEffect/power/apparition
-	name = "Apparition"
-	desc = "Allows the subject teleport to a previously visited location."
-	id = "apparition"
-	msgGain = "You feel like you can teleport."
-	msgLose = "You feel like you can't teleport anymore."
-	effectType = effectTypePower
-	cooldown = 10
-	probability = 5
-	blockCount = 3
-	blockGaps = 2
-	stability_loss = 10
-	using = 0
-	safety = 0
-	power = 0
-	ability_path = /datum/targetable/geneticsAbility/apparition
-
-
-/datum/targetable/geneticsAbility/apparition
-	name = "Apparition"
-	desc = "Allows the subject teleport to a previously visited location."
-	icon_state = "apparition"
-	targeted = 0
-	target_anything = 0
-	var/turf/destination = null
-
-	cast(atom/target)
-		if (..())
-			return 1
-
-		if (!destination)
-			destination = get_turf(owner)
-			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
-			return
-
-		boutput(usr, "You hold still and concentrate for a moment in preparation.")
-
-		if (do_after(owner, 30))
-			owner.say("Disapparate!")
-			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
-
-			var/turf/list/possible_destinations = new/list()
-			for (var/turf/T in orange(2, get_turf(destination)))
-				if (T.density == 0)
-					possible_destinations += T
-
-			var/turf/T = pick(possible_destinations)
-			owner.set_loc(T)
-			animate_blink(owner)
-			do_teleport(owner, T, 0, 1, 0) ///You will appear at the spot
-			animate_blink(owner)
-
-			//ability to teleport more than one person
-			if (linked_power.power)
-				//loop through mobs grabbed by caster and place them 
-				for (var/obj/item/grab/G in owner.contents)
-					if (G.state == G.state)	//aggressive grab. Not sure if this is stil used
-						animate_blink(G.affecting)
-						do_teleport(G.affecting, get_turf(owner), 1, 1, 0) ///You will appear adjacent to the beacon
-						animate_blink(G.affecting)
-
-			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
-			
-			//no chance to splinch if synchronized
-			if (!linked_power.safety && prob(10))
-				splinch(owner)
-
-			destination = null
-			boutput(usr, "/blue You decide that [destination.name] not where you want to apparate to.")
-
-		return
-	
-	// /mob/living/carbon/human/list_ejectables() looked pretty similar to what I wanted, but I wasn't sure about those probability stuff going in so I made this
-	//drop a non-vital organ or a limb //shamelessly stolen from Harry Potter as is this whole ability
-	proc/splinch(var/mob/M as mob)
-		if (istype(M, /mob/living/carbon/human))
-			var/mob/living/carbon/human/H = M
-
-			var/part_splinched
-			if (prob(50) && H.organHolder)
-				part_splinched = pick("left_eye", "right_eye", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "spleen", "pancreas", "appendix", "stomach", "intestines") //add more organs when they actually do something
-				H.organHolder.drop_organ(part_splinched)
-			else if (prob(50))
-				part_splinched = pick("l_arm", "r_arm", "l_leg", "l_leg")
-				H.sever_limb(part_splinched)
-
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and their [part_splinched] falls off!</span>")			
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /datum/bioEffect/power/mattereater
 	name = "Matter Eater"
@@ -1590,6 +1496,103 @@
 			owner.visible_message("<span style=\"color:red\">[owner] sprays ink onto [the_item]!</span>")
 			the_item.color = I.color
 		return 0
+
+/datum/bioEffect/power/apparition
+	name = "Apparition"
+	desc = "Allows the subject teleport to a previously visited location."
+	id = "apparition"
+	msgGain = "You feel like you can teleport."
+	msgLose = "You feel like you can't teleport anymore."
+	effectType = effectTypePower
+	cooldown = 10
+	probability = 5
+	blockCount = 3
+	blockGaps = 2
+	stability_loss = 10
+	using = 0
+	safety = 0
+	power = 0
+	ability_path = /datum/targetable/geneticsAbility/apparition
+
+/datum/targetable/geneticsAbility/apparition
+	name = "Apparition"
+	desc = "Allows the subject teleport to a previously visited location."
+	icon_state = "apparition"
+	targeted = 0
+	target_anything = 0
+	var/turf/destination = null
+
+
+	afterCast()
+		if (destination != null)
+			src.last_cast = world.time + src.cooldown
+
+	cast()
+		if (..())
+			return 1
+
+		//you can set dest immediately. Cooldown starts ticking after dest is set
+		//technically returning 1 here is a failed cast in terms of Ability_parent/proc/tryCast's return values. 
+		//I wanted this ability to work such that it has a long cooldown, but since it's sort of a two parter, the first part (setting the destination) does not trigger the cooldown
+		//This seemed the simplest way to get that effect, bypassing the Cooldown altogether instead of having to do some annoying math with world.time and storing cast times and such.
+		if (!destination)
+			destination = get_turf(owner)
+			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
+			return 1
+
+		boutput(usr, "You hold still and concentrate for a moment in preparation.")
+
+		var/cast_time = 30 / (linked_power.power + 1)
+		if (do_after(owner, cast_time))
+			// owner.say("Disapparate!")
+			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
+
+			animate_blink(owner)
+			do_teleport(owner, destination, 1, 1, 0) ///You will appear at the spot
+			animate_blink(owner)
+
+			//ability to teleport more than one person
+			if (linked_power.power)
+				//loop through mobs grabbed by caster and place them 
+				for (var/obj/item/grab/G in owner.contents)
+					if (G.state == G.state)	//aggressive grab. Not sure if this is stil used
+						animate_blink(G.affecting)
+						do_teleport(G.affecting, get_turf(owner), 1, 1, 0) ///You will appear adjacent to the beacon
+						animate_blink(G.affecting)
+
+			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
+			
+			//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing
+			if (!linked_power.safety && prob(10))
+				splinch(owner)
+
+			//reset dest
+			destination = null
+
+		return
+	
+	// /mob/living/carbon/human/list_ejectables() looked pretty similar to what I wanted, but I wasn't sure about those probability stuff going in so I made this
+	//drop a non-vital organ or a limb //shamelessly stolen from Harry Potter as is this whole ability
+	proc/splinch(var/mob/M as mob)
+		if (istype(M, /mob/living/carbon/human))
+			var/mob/living/carbon/human/H = M
+
+			var/part_splinched
+			if (prob(50) && H.organHolder)
+				part_splinched = pick("left_eye", "right_eye", "left_lung", "right_lung", "butt", "left_kidney", "right_kidney", "spleen", "pancreas", "appendix", "stomach", "intestines") //add more organs when they actually do something
+				H.organHolder.drop_organ(part_splinched)
+			else if (prob(50))
+				part_splinched = pick("l_arm", "r_arm", "l_leg", "l_leg")
+				H.sever_limb(part_splinched)
+
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and their [part_splinched] falls off!</span>")
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////
 // Admin Only //
