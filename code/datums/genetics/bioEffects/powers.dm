@@ -1517,7 +1517,7 @@
 /datum/targetable/geneticsAbility/apparition
 	name = "Apparition"
 	desc = "Allows the subject teleport to a previously visited location."
-	icon_state = "apparition"
+	icon_state = "apparition-0"
 	targeted = 0
 	target_anything = 0
 	var/turf/destination = null
@@ -1538,6 +1538,8 @@
 		if (!destination)
 			destination = get_turf(owner)
 			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
+			//set icon_state to apparate thing
+			icon_state = "apparition-1"
 			return 1
 
 		boutput(usr, "You hold still and concentrate for a moment in preparation.")
@@ -1570,6 +1572,7 @@
 
 			//reset dest
 			destination = null
+			icon_state = "apparition-0"
 
 		return
 	
