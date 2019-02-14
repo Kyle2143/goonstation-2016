@@ -1585,42 +1585,12 @@
 						if (istype(pwr))
 							pwr.count = 0
 
-
 					owner.visible_message("<span style=\"color:red\"><b>[thrown_limb][linked_power.power ? " violently " : " "]bursts off of [owner] and flies towards [target]!</b></span>")
 					logTheThing("combat", owner, target, "shoot_limb [!linked_power.safety ? "Accidently" : ""] at [ismob(target)].")
 					spawn(10)
 						if (thrown_limb)
 							thrown_limb.throwforce = tmp_force
-		// var/turf/T = get_turf(target)
-		// var/list/affected_turfs = getline(owner, T)
-		// var/datum/bioEffect/power/bigpuke/BP = linked_power
-		// var/range = BP.range
-		// if (BP.power)
-		// 	range *= 2
-		// owner.visible_message("<span style=\"color:red\"><b>[owner] horfs up a huge stream of puke!</b></span>")
-		// logTheThing("combat", owner, target, "power-pukes [log_reagents(owner)] at [log_loc(owner)].")
-		// playsound(owner.loc, "sound/misc/meat_plop.ogg", 50, 0)
-		// owner.reagents.add_reagent("vomit",20)
-		// var/turf/currentturf
-		// var/turf/previousturf
-		// for(var/turf/F in affected_turfs)
-		// 	previousturf = currentturf
-		// 	currentturf = F
-		// 	if(currentturf.density || istype(currentturf, /turf/space))
-		// 		break
-		// 	if(previousturf && LinkBlocked(previousturf, currentturf))
-		// 		break
-		// 	if (F == get_turf(owner))
-		// 		continue
-		// 	if (get_dist(owner,F) > range)
-		// 		continue
-		// 	owner.reagents.reaction(F,TOUCH)
-		// 	for(var/mob/living/L in F.contents)
-		// 		owner.reagents.reaction(L,TOUCH)
-		// 	for(var/obj/O in F.contents)
-		// 		owner.reagents.reaction(O,TOUCH)
-		// owner.reagents.clear_reagents()
-		// return 0
+
 /datum/bioEffect/power/apparition
 	name = "Apparition"
 	desc = "Allows the subject teleport to a previously visited location."
@@ -1653,8 +1623,6 @@
 		animate(teleporter, transform = M, pixel_y = 6, time = 5, alpha = 200, easing = SINE_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
 		do_teleport(owner, destination, 1, 1, 0) ///You will appear at the spot
 		animate(transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
-
-
 
 	afterCast()
 		if (destination != null)
@@ -1692,8 +1660,8 @@
 					if (G.state == G.state)	//aggressive grab. Not sure if this is stil used
 						AAAAPARATEEEEE(G.affecting)
 
-			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
+			playsound(get_turf(owner), "sound/effects/fingersnap.ogg", 50, 0)
+			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
 			
 			//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing
 			if (!linked_power.safety && prob(10))
@@ -1720,11 +1688,6 @@
 				H.sever_limb(part_splinched)
 
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and their [part_splinched] falls off!</span>")
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////
 // Admin Only //

@@ -376,7 +376,7 @@ var/list/radio_brains = list()
 	lockedTries = 8
 	stability_loss = 10
 
-/datum/bioEffect/fitness-buff
+/datum/bioEffect/fitness_buff
 	name = "Physically Fit"
 	desc = "Causes the subject to be naturally more physically fit than the average spaceman."
 	id = "fitness_buff"
@@ -394,12 +394,12 @@ var/list/radio_brains = list()
 	stability_loss = -5
 
 	OnAdd()
-		src.add_stam_mod_regen("g-fitness-buff", 2)
-		src.add_stam_mod_max("g-fitness-buff", 30)
+		src.owner.add_stam_mod_regen("g-fitness-buff", 2)
+		src.owner.add_stam_mod_max("g-fitness-buff", 30)
 
 	OnRemove()
- 		src.remove_stam_mod_regen("g-fitness-buff")
- 		src.remove_stam_mod_max("g-fitness-buff")
+		src.owner.remove_stam_mod_regen("g-fitness-buff")
+		src.owner.remove_stam_mod_max("g-fitness-buff")
 
 ///////////////////////////
 // Disabled/Inaccessible //

@@ -531,7 +531,8 @@
 
 		for (var/atom/O in T.contents)
 			O.emp_act()
-/datum/bioEffect/fitness-debuff
+
+/datum/bioEffect/fitness_debuff
 	name = "Physically Unfit"
 	desc = "Causes the subject to be naturally less physically fit than the average spaceman."
 	id = "fitness_debuff"
@@ -550,12 +551,12 @@
 	stability_loss = 5
 
 	OnAdd()
-		src.add_stam_mod_regen("g-fitness-debuff", -2)
-		src.add_stam_mod_max("g-fitness-debuff", -30)
+		src.owner.add_stam_mod_regen("g-fitness-debuff", -2)
+		src.owner.add_stam_mod_max("g-fitness-debuff", -30)
 
 	OnRemove()
- 		src.remove_stam_mod_regen("g-fitness-debuff")
- 		src.remove_stam_mod_max("g-fitness-debuff")
+		src.owner.remove_stam_mod_regen("g-fitness-debuff")
+		src.owner.remove_stam_mod_max("g-fitness-debuff")
 
 /datum/bioEffect/tinnitus
 	name = "Tinnitus"
@@ -571,7 +572,8 @@
 	
 	OnLife()
 		if (prob(ring_prob) && owner.client)
-			owner.client << sound("phone-ringing.wav")		//play sound only for client. Untested, don't know the sound
+			// owner.client << sound("phone-ringing.wav")		//play sound only for client. Untested, don't know the sound
+			owner.client << sound("sound/items/hellhorn_0.ogg")		//play sound only for client. Untested, don't know the sound
 		
 ////////////////////////////
 // Disabled for *Reasons* //
