@@ -1523,6 +1523,15 @@
 	var/turf/destination = null
 
 
+	proc/AAAAPARATEEEEE(var/mob/teleporter)
+		var/tmptransf = teleporter.transform
+		var/matrix/M = matrix(0.1, 0.1, MATRIX_SCALE)
+		animate(teleporter, transform = M, pixel_y = 6, time = 5, alpha = 200, easing = SINE_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
+		do_teleport(owner, destination, 1, 1, 0) ///You will appear at the spot
+		animate(transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
+
+
+
 	afterCast()
 		if (destination != null)
 			src.last_cast = world.time + src.cooldown
@@ -1550,18 +1559,14 @@
 			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
 
-			animate_blink(owner)
-			do_teleport(owner, destination, 1, 1, 0) ///You will appear at the spot
-			animate_blink(owner)
+			AAAAPARATEEEEE(owner)
 
 			//ability to teleport more than one person
 			if (linked_power.power)
 				//loop through mobs grabbed by caster and place them 
 				for (var/obj/item/grab/G in owner.contents)
 					if (G.state == G.state)	//aggressive grab. Not sure if this is stil used
-						animate_blink(G.affecting)
-						do_teleport(G.affecting, get_turf(owner), 1, 1, 0) ///You will appear adjacent to the beacon
-						animate_blink(G.affecting)
+						AAAAPARATEEEEE(G.affecting)
 
 			playsound(T.loc, "sound/effects/fingersnap.ogg", 50, 0)
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [T]!</span>")			
