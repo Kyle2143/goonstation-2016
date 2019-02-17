@@ -1598,14 +1598,11 @@
 	msgGain = "You feel like you can teleport."
 	msgLose = "You feel like you can't teleport anymore."
 	effectType = effectTypePower
-	cooldown = 10
-	probability = 5
+	cooldown = 20
+	probability = 1
 	blockCount = 3
 	blockGaps = 2
-	stability_loss = 10
-	using = 0
-	safety = 0
-	power = 0
+	stability_loss = 35
 	ability_path = /datum/targetable/geneticsAbility/apparition
 
 /datum/targetable/geneticsAbility/apparition
@@ -1615,17 +1612,19 @@
 	targeted = 0
 	target_anything = 0
 	var/turf/destination = null
+	var/interrupted = 0
 
 
 	proc/AAAAPARATEEEEE(var/mob/teleporter)
 		var/tmptransf = teleporter.transform
 		var/matrix/M = matrix(0.1, 0.1, MATRIX_SCALE)
 		animate(teleporter, transform = M, pixel_y = 6, time = 5, alpha = 200, easing = SINE_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
-		do_teleport(owner, destination, 1, 1, 0) ///You will appear at the spot
-		animate(transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
+		do_teleport(teleporter, destination, 1, 1, 0) ///You will appear within 1 tile of your destination
+		spawn(5)
+			animate(transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
 
 	afterCast()
-		if (destination != null)
+		if (interrupted || destination)
 			src.last_cast = world.time + src.cooldown
 
 	cast()
@@ -1643,33 +1642,7 @@
 			icon_state = "apparition-1"
 			return 1
 
-		boutput(usr, "You hold still and concentrate for a moment in preparation.")
-
-		var/cast_time = 30 / (linked_power.power + 1)
-		if (do_after(owner, cast_time))
-			// owner.say("Disapparate!")
-			playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
-
-			AAAAPARATEEEEE(owner)
-
-			//ability to teleport more than one person
-			if (linked_power.power)
-				//loop through mobs grabbed by caster and place them 
-				for (var/obj/item/grab/G in owner.contents)
-					if (G.state == G.state)	//aggressive grab. Not sure if this is stil used
-						AAAAPARATEEEEE(G.affecting)
-
-			playsound(get_turf(owner), "sound/effects/fingersnap.ogg", 50, 0)
-			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
-			
-			//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing
-			if (!linked_power.safety && prob(10))
-				splinch(owner)
-
-			//reset dest
-			destination = null
-			icon_state = "apparition-0"
+		actions.start(new/datum/action/bar/icon/apparate(src), owner)
 
 		return
 	
@@ -1688,6 +1661,61 @@
 				H.sever_limb(part_splinched)
 
 			owner.visible_message("<span style=\"color:red\"><b>[owner]</b> splinches themselves and their [part_splinched] falls off!</span>")
+
+/datum/action/bar/icon/apparate //Visible to everyone and has an icon.
+	duration = 30
+	// icon = 'icons/mob/screen1.dmi'	//original location
+	icon = 'icons/effects/genetics2.dmi'
+	icon_state = "apparating"
+	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_ACTION
+	var/datum/targetable/geneticsAbility/apparition/apparate
+
+	New(datum/targetable/geneticsAbility/apparition/apparate)
+		src.apparate = apparate
+		duration = apparate.linked_power.power ? 15 : 30
+
+		..()
+
+	onInterrupt()
+		..()
+		apparate.interrupted = 1
+		boutput(owner, __red("You were interrupted!"))
+
+	onStart()
+		..()
+		boutput(owner, "You hold still and concentrate for a moment in preparation.")
+
+	onEnd()
+		..()
+		// playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
+		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
+
+		var/turf/orig_turf = get_turf(owner)
+		apparate.AAAAPARATEEEEE(owner)
+
+		//ability to teleport more than one person
+		if (apparate.linked_power.power)
+			//loop through mobs grabbed by caster and place them 
+			for (var/obj/item/grab/G in owner.contents)
+				if (G.state == 2)	//aggressive grab. Not sure if this is stil used
+					apparate.AAAAPARATEEEEE(G.affecting)
+		sleep(9)
+		playsound(orig_turf, "sound/effects/fingersnap.ogg", 50, 0)
+		playsound(get_turf(owner), "sound/effects/fingersnap.ogg", 50, 0)
+		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
+		
+		//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing
+		if (!apparate.linked_power.safety && prob(10))
+			apparate.splinch(owner)
+
+		//reset dest
+		apparate.destination = null
+		apparate.icon_state = "apparition-0"
+
+
+	onDelete()
+		..()
+		apparate = null
 
 ////////////////
 // Admin Only //
