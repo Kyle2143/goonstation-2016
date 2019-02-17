@@ -882,7 +882,7 @@
 
 	if (target.bioHolder.HasEffect("buzz"))
 		boutput(src, "<span style=\"color:red\">Ouch! You just got stung by a bee!</span>")
-		L.reagents.add_reagent("histamine", 1)
+		src.reagents.add_reagent("histamine", 1)
 
 
 	if (src.bioHolder.HasEffect("revenant"))
