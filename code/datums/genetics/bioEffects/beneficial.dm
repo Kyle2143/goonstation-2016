@@ -401,6 +401,24 @@ var/list/radio_brains = list()
 		src.owner.remove_stam_mod_regen("g-fitness-buff")
 		src.owner.remove_stam_mod_max("g-fitness-buff")
 
+/datum/bioEffect/blood_overdrive
+	name = "Hemopoiesis"
+	desc = "Subject has regenerates blood far faster than the average spaceman."
+	id = "blood_overdrive"
+	probability = 20
+	effectType = effectTypePower
+	msgGain = "You feel like being stabbed isn't such a big deal anymore."
+	msgLose = "You are once again afraid of being stabbed."
+	stability_loss = 15
+
+	OnLife()
+
+		if (ishuman(owner))
+			var/mob/living/carbon/human/H = owner
+
+			if (H.blood_volume < 500 && H.blood_volume > 0)
+				H.blood_volume += 6
+
 ///////////////////////////
 // Disabled/Inaccessible //
 ///////////////////////////

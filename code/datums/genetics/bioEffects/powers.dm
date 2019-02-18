@@ -1581,6 +1581,7 @@
 						take_bleeding_damage(H, damage)
 						if(prob(60)) owner.emote("scream")
 
+						//reset the time until the ability spontaniously fires
 						var/datum/bioEffect/power/shoot_limb/pwr = linked_power
 						if (istype(pwr))
 							pwr.count = 0
@@ -1598,7 +1599,7 @@
 	msgGain = "You feel like you can teleport."
 	msgLose = "You feel like you can't teleport anymore."
 	effectType = effectTypePower
-	cooldown = 20
+	cooldown = 100
 	probability = 1
 	blockCount = 3
 	blockGaps = 2
@@ -1609,22 +1610,27 @@
 	name = "Apparition"
 	desc = "Allows the subject teleport to a previously visited location."
 	icon_state = "apparition-0"
+	icon = 'icons/effects/genetics2.dmi'		//icons/mob/genetics_powers.dmi is where these are normally in code
 	targeted = 0
 	target_anything = 0
 	var/turf/destination = null
 	var/interrupted = 0
+	var/const/interrupt_CD = 100		//when you can next try to teleport after failing due to an interruption
 
 
 	proc/AAAAPARATEEEEE(var/mob/teleporter)
 		var/tmptransf = teleporter.transform
 		var/matrix/M = matrix(0.1, 0.1, MATRIX_SCALE)
-		animate(teleporter, transform = M, pixel_y = 6, time = 5, alpha = 200, easing = SINE_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
-		do_teleport(teleporter, destination, 1, 1, 0) ///You will appear within 1 tile of your destination
+		animate(teleporter, transform = M, pixel_y = 6, time = 5, alpha = 255, easing = SINE_EASING|EASE_OUT)
 		spawn(5)
-			animate(transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
+			do_teleport(teleporter, destination, 1, 1, 0) ///You will appear within 1 tile of your destination
+			animate(teleporter, transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
 
 	afterCast()
-		if (interrupted || destination)
+		if (interrupted)
+			src.last_cast = world.time + interrupt_CD
+			interrupted = 0
+		else if (destination)
 			src.last_cast = world.time + src.cooldown
 
 	cast()
@@ -1679,7 +1685,6 @@
 	onInterrupt()
 		..()
 		apparate.interrupted = 1
-		boutput(owner, __red("You were interrupted!"))
 
 	onStart()
 		..()
@@ -1700,8 +1705,8 @@
 				if (G.state == 2)	//aggressive grab. Not sure if this is stil used
 					apparate.AAAAPARATEEEEE(G.affecting)
 		sleep(9)
-		playsound(orig_turf, "sound/effects/fingersnap.ogg", 50, 0)
-		playsound(get_turf(owner), "sound/effects/fingersnap.ogg", 50, 0)
+		playsound(orig_turf, "sound/effects/a-crack.ogg", 50, 0)
+		playsound(get_turf(owner), "sound/effects/a-crack.ogg", 50, 0)
 		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
 		
 		//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing

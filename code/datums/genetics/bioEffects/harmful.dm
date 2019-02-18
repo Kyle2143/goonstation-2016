@@ -575,6 +575,46 @@
 			// owner.client << sound("phone-ringing.wav")		//play sound only for client. Untested, don't know the sound
 			owner.client << sound("sound/items/hellhorn_0.ogg")		//play sound only for client. Untested, don't know the sound
 		
+/datum/bioEffect/anemia
+	name = "Anemia"
+	desc = "Subject has an abnormally low amount of red blood cells."
+	id = "anemia"
+	probability = 55
+	isBad = 1
+	effectType = effectTypePower
+	msgGain = "You feel lightheaded."
+	msgLose = "Your lightheadedness fades."
+	stability_loss = -5
+	var/run = 1
+
+	OnLife()
+
+		if (ishuman(owner))
+			var/mob/living/carbon/human/H = owner
+
+			if (H.blood_volume > 400 && H.blood_volume > 0)
+				H.blood_volume -= 2
+
+/datum/bioEffect/polycythemia
+	name = "Polycythemia"
+	desc = "Subject has an abnormally high amount of red blood cells."
+	id = "polycythemia"
+	probability = 45
+	isBad = 1
+	effectType = effectTypePower
+	msgGain = "Your breathing quickens."
+	msgLose = "Your breathing returns to normal."
+	stability_loss = -5
+	var/run = 1
+
+	OnLife()
+
+		if (ishuman(owner))
+			var/mob/living/carbon/human/H = owner
+
+			if (H.blood_volume < 600 && H.blood_volume > 0)
+				H.blood_volume += 2
+
 ////////////////////////////
 // Disabled for *Reasons* //
 ////////////////////////////
