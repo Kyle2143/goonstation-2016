@@ -1730,18 +1730,18 @@
 				if (G.state >= 1)	//aggressive grab. Not sure if this is stil used
 					apparate.AAAAPARATEEEEE(G.affecting)
 					// logTheThing("combat", owner, "used the [linked_power.name] power on [G.affecting].")
-					// logTheThing("combat", owner, target, "used the [linked_power.name] power on %target%.")
+					logTheThing("combat", owner, G.affecting, "used the [apparate.name] power on %target%.")
 
 		sleep(9)
-		playsound(orig_turf, "sound/effects/a_crack.ogg", 50, 0)
-		playsound(get_turf(owner), "sound/effects/a_crack.ogg", 50, 0)
+		playsound(orig_turf, "sound/effects/suck.ogg", 30, 0)
+		playsound(owner.loc, "sound/effects/suck.ogg", 30, 0)
 		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
 		
 		//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing
 		if (!apparate.linked_power.safety && prob(10))
 			apparate.splinch(owner)
 
-		//reset dest
+		//reset dest and icon
 		apparate.destination = null
 		apparate.change_button_image("apparition-0")
 
