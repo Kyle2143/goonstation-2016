@@ -880,7 +880,7 @@
 			sleep(3)
 			step_away(target,src,15)
 
-	if (target.bioHolder.HasEffect("buzz"))
+	if (target.bioHolder.HasEffect("buzz") && prob(20))
 		boutput(src, "<span style=\"color:red\">Ouch! You just got stung by a bee!</span>")
 		src.reagents.add_reagent("histamine", 1)
 

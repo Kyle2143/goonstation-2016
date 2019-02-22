@@ -506,7 +506,7 @@
 	id = "emp_field"
 	effectType = effectTypeDisability
 	blockCount = 1
-	probability = 50
+	probability = 20
 	isBad = 1
 	reclaim_fail = 15
 	stability_loss = -10
@@ -514,9 +514,12 @@
 
 	OnLife()
 		..()
+		if (prob(50))
+			return
 
 		var/turf/T
-		if (prob(20))
+		//don't really need this but to make it more harmful to the user.
+		if (prob(5))
 			T = get_turf(owner)
 		else
 			T = locate(owner.x + rand(-radius/2,radius+2), owner.y+rand(-radius/2,radius/2), 1)
@@ -529,6 +532,7 @@
 		spawn (20)
 			if (pulse) qdel(pulse)
 
+		//maybe have this only emp some things on the tile.
 		for (var/atom/O in T.contents)
 			O.emp_act()
 

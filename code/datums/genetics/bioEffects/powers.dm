@@ -1503,17 +1503,18 @@
 	id = "shoot_limb"
 	msgGain = "You feel intense pressure in your hip and shoulder joints."
 	msgLose = "You joints feel much better!"
-	cooldown = 300
+	cooldown = 600
 	occur_in_genepools = 1
 	isBad = 1
 	stability_loss = -15
 	ability_path = /datum/targetable/geneticsAbility/shoot_limb
 	var/count = 0
+	var/const/ticks_to_explode = 200
 
 	OnLife()
 		..()
 
-		if (count < 60)
+		if (count < ticks_to_explode)
 			count++
 			return
 		else 
@@ -1527,7 +1528,7 @@
 			if (ispath(ability_path))
 				var/datum/targetable/geneticsAbility/AB = new ability_path(src)
 
-				//Do I really even need this? I'm just putting it there in case the random turf is null.
+				//Do I really even need this? I'm just putting it there in case the random turf is null. Which should never happen.
 				var/do_count = 0
 				do
 					var/turf/T = locate(owner.x + rand(-3/2,3+2), owner.y+rand(-3/2,3/2), 1)
@@ -1551,7 +1552,6 @@
 		if (..())
 			return 1
 
-		
 		if (ishuman(owner))
 			var/mob/living/carbon/human/H = owner
 			var/obj/item/parts/thrown_limb = null
@@ -1574,6 +1574,7 @@
 					thrown_limb.throwforce = limb_force* (power+1)	//double damage if empowered
 					thrown_limb.throw_at(target, range, power * (linked_power.power+1))
 
+					//without snychronizer, you take damage and bleed on usage of the power
 					if (!linked_power.safety)
 						new thrown_limb.streak_decal(owner.loc)
 						var/damage = rand(5,15)
@@ -1593,15 +1594,15 @@
 							thrown_limb.throwforce = tmp_force
 
 /datum/bioEffect/power/apparition
-	name = "Apparition"
+	name = "Apparate"
 	desc = "Allows the subject teleport to a previously visited location."
-	id = "apparition"
+	id = "apparate"
 	msgGain = "You feel like you can teleport."
 	msgLose = "You feel like you can't teleport anymore."
 	effectType = effectTypePower
-	cooldown = 500
-	probability = 1
-	blockCount = 3
+	cooldown = 800
+	probability = 3
+	blockCount = 5
 	blockGaps = 2
 	stability_loss = 35
 	ability_path = /datum/targetable/geneticsAbility/apparition
@@ -1615,9 +1616,10 @@
 	target_anything = 0
 	var/turf/destination = null
 	// var/interrupted = 0
-	var/const/interrupt_CD = 180		//when you can next try to teleport after failing due to an interruption
+	var/const/interrupt_CD = 150		//when you can next try to teleport after failing due to an interruption
 
 
+	//teleports a mob and applies the animations to it. First animate shrinks it, then it teleports, then unshrinks.
 	proc/AAAAPARATEEEEE(var/mob/teleporter)
 		var/tmptransf = teleporter.transform
 		var/matrix/M = matrix(0.1, 0.1, MATRIX_SCALE)
@@ -1653,23 +1655,18 @@
 	cast()
 		if (..())
 			return 1
-
 		//you can set dest immediately. Cooldown starts ticking after dest is set
-		//technically returning 1 here is a failed cast in terms of Ability_parent/proc/tryCast's return values. 
-		//I wanted this ability to work such that it has a long cooldown, but since it's sort of a two parter, the first part (setting the destination) does not trigger the cooldown
-		//This seemed the simplest way to get that effect, bypassing the Cooldown altogether instead of having to do some annoying math with world.time and storing cast times and such.
 		if (!destination)
 			destination = get_turf(owner)
 			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
-			//set icon_state to apparate thing
 			change_button_image("apparition-1")
-
 			return 1
 
 		actions.start(new/datum/action/bar/icon/apparate(src), owner)
 
 		return
 	
+	//Because that ability button has two sprites, this changes the sprite and forces the human's ability hotbar to update
 	proc/change_button_image(var/state as text)
 		icon_state = state
 		src.object.icon_state = src.icon_state
@@ -1677,6 +1674,7 @@
 			var/mob/living/carbon/human/H = owner
 			H.hud.update_ability_hotbar()
 
+	/////////////////Make this a stability loss problem. Doens't exist in 2016 so I just have it called on a prob if the ability isn't synchronized
 	// /mob/living/carbon/human/list_ejectables() looked pretty similar to what I wanted, but I wasn't sure about those probability stuff going in so I made this
 	//drop a non-vital organ or a limb //shamelessly stolen from Harry Potter as is this whole ability
 	proc/splinch(var/mob/M as mob)
@@ -1703,7 +1701,6 @@
 
 	New(datum/targetable/geneticsAbility/apparition/apparate)
 		src.apparate = apparate
-		duration = apparate.linked_power.power ? 15 : 30
 
 		..()
 
@@ -1717,7 +1714,6 @@
 
 	onEnd()
 		..()
-		// playsound(owner.loc, "sound/effects/fingersnap.ogg", 50, 0)
 		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> disapparates from [get_turf(owner)]!</span>")
 
 		var/turf/orig_turf = get_turf(owner)
@@ -1733,8 +1729,8 @@
 					logTheThing("combat", owner, G.affecting, "used the [apparate.name] power on %target%.")
 
 		sleep(9)
-		playsound(orig_turf, "sound/effects/suck.ogg", 30, 0)
-		playsound(owner.loc, "sound/effects/suck.ogg", 30, 0)
+		playsound(orig_turf, "sound/effects/suck.ogg", 10, 0)
+		playsound(owner.loc, "sound/effects/suck.ogg", 10, 0)
 		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
 		
 		//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing

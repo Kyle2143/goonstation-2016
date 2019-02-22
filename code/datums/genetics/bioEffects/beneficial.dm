@@ -402,7 +402,7 @@ var/list/radio_brains = list()
 		src.owner.remove_stam_mod_max("g-fitness-buff")
 
 /datum/bioEffect/blood_overdrive
-	name = "Hemopoiesis"
+	name = "Hemopoiesis Overdrive"
 	desc = "Subject has regenerates blood far faster than the average spaceman."
 	id = "blood_overdrive"
 	probability = 20
