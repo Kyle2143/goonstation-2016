@@ -138,10 +138,6 @@
 
 // Powers
 
-/datum/geneticsrecipe/apparition
-	required_effects = list("telepathy", "involuntary_teleporting")
-	result = /datum/bioEffect/power/apparition
-
 /datum/geneticsrecipe/telekinesis // Discovered
 	required_effects = list("telepathy","radio_brain")
 	result = /datum/bioEffect/power/telekinesis_drag
@@ -321,3 +317,5 @@
 /datum/geneticsrecipe/skeleton_three
 	required_effects = list("xray","dead_scan")
 	result = /datum/bioEffect/mutantrace/skeleton
+
+
