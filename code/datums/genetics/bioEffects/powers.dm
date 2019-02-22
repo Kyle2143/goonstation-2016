@@ -1599,7 +1599,7 @@
 	msgGain = "You feel like you can teleport."
 	msgLose = "You feel like you can't teleport anymore."
 	effectType = effectTypePower
-	cooldown = 100
+	cooldown = 500
 	probability = 1
 	blockCount = 3
 	blockGaps = 2
@@ -1614,8 +1614,8 @@
 	targeted = 0
 	target_anything = 0
 	var/turf/destination = null
-	var/interrupted = 0
-	var/const/interrupt_CD = 100		//when you can next try to teleport after failing due to an interruption
+	// var/interrupted = 0
+	var/const/interrupt_CD = 180		//when you can next try to teleport after failing due to an interruption
 
 
 	proc/AAAAPARATEEEEE(var/mob/teleporter)
@@ -1626,12 +1626,29 @@
 			do_teleport(teleporter, destination, 1, 1, 0) ///You will appear within 1 tile of your destination
 			animate(teleporter, transform = tmptransf, time = 5, alpha = 255, pixel_y = 0, easing = ELASTIC_EASING)
 
-	afterCast()
-		if (interrupted)
-			src.last_cast = world.time + interrupt_CD
-			interrupted = 0
-		else if (destination)
-			src.last_cast = world.time + src.cooldown
+	doCooldown(var/interrupted=0 as num)
+		if (ishuman(owner))
+			var/mob/living/carbon/human/H = owner
+			boutput(usr, "doCool[interrupted]")
+
+			if (interrupted)
+				last_cast = world.time + interrupt_CD
+				H.hud.update_ability_hotbar()
+				spawn(interrupt_CD)
+					if(src)
+						H.hud.update_ability_hotbar()
+						boutput(usr, "updated hotbar")
+
+				return
+			else if (destination)
+				last_cast = world.time + linked_power.cooldown
+
+			if (linked_power.cooldown > 0)
+				spawn(linked_power.cooldown)
+					if(src)
+						H.hud.update_ability_hotbar()
+						boutput(usr, "updated hotbar")
+
 
 	cast()
 		if (..())
@@ -1645,13 +1662,21 @@
 			destination = get_turf(owner)
 			boutput(usr, "You decide that [destination.name] is the location you want to apparate to.")
 			//set icon_state to apparate thing
-			icon_state = "apparition-1"
+			change_button_image("apparition-1")
+
 			return 1
 
 		actions.start(new/datum/action/bar/icon/apparate(src), owner)
 
 		return
 	
+	proc/change_button_image(var/state as text)
+		icon_state = state
+		src.object.icon_state = src.icon_state
+		if (ishuman(owner))
+			var/mob/living/carbon/human/H = owner
+			H.hud.update_ability_hotbar()
+
 	// /mob/living/carbon/human/list_ejectables() looked pretty similar to what I wanted, but I wasn't sure about those probability stuff going in so I made this
 	//drop a non-vital organ or a limb //shamelessly stolen from Harry Potter as is this whole ability
 	proc/splinch(var/mob/M as mob)
@@ -1684,7 +1709,7 @@
 
 	onInterrupt()
 		..()
-		apparate.interrupted = 1
+		apparate.doCooldown(1)
 
 	onStart()
 		..()
@@ -1702,11 +1727,14 @@
 		if (apparate.linked_power.power)
 			//loop through mobs grabbed by caster and place them 
 			for (var/obj/item/grab/G in owner.contents)
-				if (G.state == 2)	//aggressive grab. Not sure if this is stil used
+				if (G.state >= 1)	//aggressive grab. Not sure if this is stil used
 					apparate.AAAAPARATEEEEE(G.affecting)
+					// logTheThing("combat", owner, "used the [linked_power.name] power on [G.affecting].")
+					// logTheThing("combat", owner, target, "used the [linked_power.name] power on %target%.")
+
 		sleep(9)
-		playsound(orig_turf, "sound/effects/a-crack.ogg", 50, 0)
-		playsound(get_turf(owner), "sound/effects/a-crack.ogg", 50, 0)
+		playsound(orig_turf, "sound/effects/a_crack.ogg", 50, 0)
+		playsound(get_turf(owner), "sound/effects/a_crack.ogg", 50, 0)
 		owner.visible_message("<span style=\"color:red\"><b>[owner]</b> apparates to [get_turf(owner)]!</span>")			
 		
 		//no chance to splinch if synchronized	//maybe this should just be moved to the low stability thing
@@ -1715,8 +1743,7 @@
 
 		//reset dest
 		apparate.destination = null
-		apparate.icon_state = "apparition-0"
-
+		apparate.change_button_image("apparition-0")
 
 	onDelete()
 		..()
