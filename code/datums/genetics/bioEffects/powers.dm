@@ -1505,11 +1505,14 @@
 	msgLose = "You joints feel much better!"
 	cooldown = 600
 	occur_in_genepools = 1
+	probability = 10
+
 	isBad = 1
 	stability_loss = -15
 	ability_path = /datum/targetable/geneticsAbility/shoot_limb
 	var/count = 0
-	var/const/ticks_to_explode = 200
+	var/const/ticks_to_explode = 6
+	var/datum/targetable/geneticsAbility/shoot_limb/AB = null
 
 	OnLife()
 		..()
@@ -1522,18 +1525,17 @@
 
 		if (!src.safety && prob(70))
 
-			boutput(owner, "<span style=\"color:red\">The pressure built up too high! One of your limbs flew off!</span>")
-			owner:weakened = 3
 
-			if (ispath(ability_path))
-				var/datum/targetable/geneticsAbility/AB = new ability_path(src)
 
+			if (ability)
 				//Do I really even need this? I'm just putting it there in case the random turf is null. Which should never happen.
 				var/do_count = 0
 				do
 					var/turf/T = locate(owner.x + rand(-3/2,3+2), owner.y+rand(-3/2,3/2), 1)
 					if (T)
-						AB.cast(T)
+						ability.cast(T)
+						boutput(owner, "<span style=\"color:red\">The pressure in one of your joints built up too high! One of your limbs flew off!</span>")
+						owner:weakened = 3
 						return
 				while (do_count < 5)
 
@@ -1545,11 +1547,11 @@
 	icon = 'icons/effects/genetics2.dmi'		//icons/mob/genetics_powers.dmi is where these are normally in code
 	targeted = 1
 	var/range = 7
-	var/power = 1
+	var/throw_power = 1
 	var/limb_force = 20
 
 	cast(atom/target)
-		if (..())
+		if (..())	
 			return 1
 
 		if (ishuman(owner))
@@ -1571,8 +1573,8 @@
 				if (istype(thrown_limb))					
 					//double power if the ability is empowered (doesn't really do anything, but w/e)
 					var/tmp_force = thrown_limb.throwforce
-					thrown_limb.throwforce = limb_force* (power+1)	//double damage if empowered
-					thrown_limb.throw_at(target, range, power * (linked_power.power+1))
+					thrown_limb.throwforce = limb_force* (throw_power+1)	//double damage if empowered
+					thrown_limb.throw_at(target, range, throw_power * (linked_power.power+1))
 
 					//without snychronizer, you take damage and bleed on usage of the power
 					if (!linked_power.safety)
@@ -1587,7 +1589,7 @@
 						if (istype(pwr))
 							pwr.count = 0
 
-					owner.visible_message("<span style=\"color:red\"><b>[thrown_limb][linked_power.power ? " violently " : " "]bursts off of [owner] and flies towards [target]!</b></span>")
+					owner.visible_message("<span style=\"color:red\"><b>[thrown_limb][linked_power.power ? " violently " : " "]bursts off of its socket and flies towards [target]!</b></span>")
 					logTheThing("combat", owner, target, "shoot_limb [!linked_power.safety ? "Accidently" : ""] at [ismob(target)].")
 					spawn(10)
 						if (thrown_limb)
@@ -1601,7 +1603,8 @@
 	msgLose = "You feel like you can't teleport anymore."
 	effectType = effectTypePower
 	cooldown = 800
-	probability = 3
+	//occur_in_genepools = 0
+	probability = 1
 	blockCount = 5
 	blockGaps = 2
 	stability_loss = 35
