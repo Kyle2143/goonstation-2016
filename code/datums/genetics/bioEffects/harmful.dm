@@ -484,7 +484,7 @@
 	msgGain = "Your guts are rumbling."
 	msgLose = "Your guts settle down."
 	probability = 70
-	stability_loss = 10	//maybe 5
+	stability_loss = -10	//maybe 5
 	var/prob_sting = 10;
 
 	OnAdd()
