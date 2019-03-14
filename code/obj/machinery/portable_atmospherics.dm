@@ -13,6 +13,8 @@
 	var/init_connected = 0
 
 	var/contained = 0
+	var/static/image/connection_tube = image('icons/obj/zzz-canister-connection.dmi', "connection")
+
 
 	onMaterialChanged()
 		..()
@@ -27,6 +29,7 @@
 
 		air_contents.volume = volume
 		air_contents.temperature = T20C
+		// src.connection_tube = image('icons/obj/zzz-canister-connection.dmi', "connection")
 
 		if(init_connected)
 			var/obj/machinery/atmospherics/portables_connector/possible_port = locate(/obj/machinery/atmospherics/portables_connector/) in loc
@@ -45,7 +48,7 @@
 		if (air_contents)
 			pool(air_contents)
 			air_contents = null
-
+		// connection_tube = null
 		..()
 
 	proc
@@ -70,6 +73,7 @@
 			connected_port.connected_device = src
 			connected_port.on = 1
 
+			src.UpdateOverlays(connection_tube, "connection_tube")
 			anchored = 1 //Prevent movement
 
 			//Actually enforce the air sharing
@@ -86,6 +90,7 @@
 			var/datum/pipe_network/network = connected_port.return_network(src)
 			if(network)
 				network.gases -= air_contents
+			UpdateOverlays(null, "connection_tube")
 
 			anchored = 0
 
