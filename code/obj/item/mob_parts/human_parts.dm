@@ -107,8 +107,13 @@
 				src.standImage.color = newrgb
 
 	surgery(var/obj/item/tool)
-		if(remove_stage > 1 && tool.type == /obj/item/staple_gun)
-			remove_stage = 0
+
+		if(remove_stage > 1)
+			if (tool.type == /obj/item/staple_gun)
+				remove_stage = 0
+			else if (tool.type == /obj/item/suture)
+				actions.start(new/datum/action/bar/icon/suture_limb(tool.the_mob, src), usr)
+				return
 
 		else if(remove_stage == 0 || remove_stage == 2)
 			if(istype(tool, /obj/item/scalpel) || istype(tool, /obj/item/raw_material/shard) || istype(tool, /obj/item/kitchen/utensil/knife) || istype(tool, /obj/item/knife_butcher) || istype(tool,/obj/item/razor_blade))

@@ -1100,6 +1100,11 @@
 
 		else
 			return 0
+	else if (surgeon.zone_sel.selecting in list("l_arm","r_arm","l_leg","r_leg"))
+		var/obj/item/parts/surgery_limb = patient.limbs.vars[surgeon.zone_sel.selecting]
+		if (istype(surgery_limb))
+			if (surgery_limb.surgery(src))
+				return 1
 	else
 		return 0
 

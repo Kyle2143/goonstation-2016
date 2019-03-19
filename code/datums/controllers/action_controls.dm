@@ -871,6 +871,51 @@ var/datum/action_controller/actions
 		..()
 		picker.dropItem()
 
+/datum/action/bar/icon/suture_limb //This is used when you try suture a limb to someone.
+	duration = 3
+	interrupt_flags = INTERRUPT_MOVE | INTERRUPT_ACT | INTERRUPT_STUNNED | INTERRUPT_ACTION
+	id = "suture_limb"
+	icon = 'icons/obj/surgery.dmi'
+	icon_state = "suture"
+	var/mob/living/carbon/human/target
+	var/obj/item/parts/target_limb			//just the name of the limb slot. left/right arm or left/right leg
+
+	New(Target, var/obj/item/parts/Target_limb )
+		target = Target
+		src.target_limb = Target_limb
+		..()
+
+	onUpdate()
+		..()
+		if(get_dist(owner, target) > 1 || target == null || owner == null || target_limb.remove_stage == 3)
+			interrupt(INTERRUPT_ALWAYS)
+			return
+
+	onStart()
+		..()
+		if(get_dist(owner, target) > 1 || target == null || owner == null)
+			interrupt(INTERRUPT_ALWAYS)
+			return
+
+		target_limb.remove_stage = 1
+		for(var/mob/O in AIviewers(owner))
+			O.show_message("<span style=\"color:red\"><B>[owner] begins suturing [target_limb.name] to [target]!</B></span>", 1)
+	
+	onInterrupt() //Called when the action fails / is interrupted.
+		..()
+		if (target_limb)
+			target_limb.remove_stage = 2
+			//copy the fall off
+			spawn(rand(150,200))
+				if(target_limb.remove_stage == 2) target_limb.remove()
+
+	onEnd()
+		..()
+		if(owner && target && target_limb.remove_stage != 3)
+			target_limb.remove_stage = 0
+			for(var/mob/O in AIviewers(owner))
+				O.show_message("<span style=\"color:red\"><B>[owner] manages to successfully suture [target]'s handcuffs!</B></span>", 1)
+
 //DEBUG STUFF
 
 /datum/action/bar/private/bombtest
