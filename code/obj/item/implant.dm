@@ -515,6 +515,10 @@ IMPLANT GUN
 	var/bleed_timer = 0
 	var/forensic_ID = null // match a bullet to a gun holy heckkkkk
 
+	bullet_nine_mm_NATO
+		name = "9mm NATO round"
+		desc = "A reliable bullet, used ubiquitously in law enforcement and armed forces a century ago."
+
 	bullet_357
 		name = ".357 round"
 		desc = "A powerful revolver bullet, likely of criminal origin."

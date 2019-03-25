@@ -288,6 +288,21 @@
 		current_projectile = new/datum/projectile/bullet/derringer
 		..()
 
+/obj/item/gun/kinetic/clock_117
+	desc = "A reliable weapon used the world over... 50 years ago. Uses 9mm NATO rounds."
+	name = "Clock 117"
+	icon_state = "clock-117"
+	item_state = "clock-117"
+	w_class = 2.0
+	force = 7.0
+	caliber = 0.355
+	max_ammo_capacity = 17
+
+	New()
+		ammo = new/obj/item/ammo/bullets/nine_mm_NATO
+		current_projectile = new/datum/projectile/bullet/nine_mm_NATO
+		..()
+
 /obj/item/gun/kinetic/detectiverevolver
 	desc = "An old surplus police-issue revolver. Uses .38-Special rounds."
 	name = ".38 revolver"

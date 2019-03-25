@@ -75,6 +75,21 @@ toxic - poisons
 	caliber = 0.22
 	icon_turf_hit = "bhole-small"
 
+/datum/projectile/bullet/nine_mm_NATO
+	name = "bullet"
+	// shot_sound = 'sound/weapons/Gunshot-Glock-17.ogg'
+
+	power = 40
+	ks_ratio = 0.375		//means 15 damage, 25 stun
+	dissipation_rate = 5
+	dissipation_delay = 8
+	damage_type = D_KINETIC
+	hit_type = DAMAGE_BLUNT
+	implanted = /obj/item/implant/projectile/bullet_nine_mm_NATO
+	caliber = 0.355	
+	icon_turf_hit = "bhole-small"
+	casing = /obj/item/casing/small
+
 /datum/projectile/bullet/revolver_357
 	name = "bullet"
 	power = 60 // okay this can be made worse again now that crit isn't naptime
