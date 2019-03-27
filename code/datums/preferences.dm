@@ -53,6 +53,11 @@ datum/preferences
 	var/target_cursor = "Default"
 	var/hud_style = "New"
 
+	//Parallax
+	var/space_parallax = 1
+	var/space_dust = 1
+	var/parallax_speed = 1
+
 	New()
 		randomize_name()
 		..()
@@ -160,6 +165,10 @@ datum/preferences
 		user << browse_rsc(icon(hud_style_selection[hud_style], "preview"), "hud_preview.png")
 
 		var/dat = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/></head><body><title>Character Setup</title>"
+		
+		dat += "<b>Space Parallax:</b> <a href='?_src_=prefs;preference=parallax'><b>[space_parallax ? "Enabled" : "Disabled"]</b></a><br>"
+		dat += "<b>Parallax Speed:</b> <a href='?_src_=prefs;preference=p_speed'><b>[parallax_speed]</b></a><br>"
+		dat += "<b>Space Dust:</b> <a href='?_src_=prefs;preference=dust'><b>[space_dust ? "Yes" : "No"]</b></a><br>"
 
 		dat += "<b>Profile Name:</b> "
 		dat += "<a href=\"byond://?src=\ref[user];preferences=1;profile_name=input\"><b>[src.profile_name ? src.profile_name : "Unnamed"]</b></a> "
@@ -784,6 +793,21 @@ datum/preferences
 			else
 				src.gender = MALE
 				AH.gender = MALE
+		if(link_tags["parallax"])
+			space_parallax = !space_parallax
+
+			if(usr && usr.hud_used)
+				usr.hud_used.update_parallax_and_dust()
+
+		if(link_tags["dust"])
+			space_dust = !space_dust
+
+			if(usr && usr.hud_used)
+				usr.hud_used.update_parallax_and_dust()
+
+		if(link_tags["p_speed"])
+			parallax_speed = min(max(input(user, "Enter a number between 0 and 5 included (default=2)","Parallax Speed Preferences",parallax_speed),0),5)
+
 
 		if (link_tags["changelog"])
 			src.view_changelog = !(src.view_changelog)

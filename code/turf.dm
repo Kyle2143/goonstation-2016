@@ -153,6 +153,7 @@ var/global/client/ff_debugger = null
 	icon = 'icons/turf/space.dmi'
 	name = "space"
 	icon_state = "placeholder"
+	plane = PLANE_SPACE_BACKGROUND
 #ifndef HALLOWEEN
 	RL_Ignore = 1
 #endif
@@ -165,6 +166,15 @@ var/global/client/ff_debugger = null
 
 /turf/space/New()
 	..()
+	//Parallax
+	//if not the warp transit overlay //Get to that later
+	var/image/I = image('icons/turf/space_parallax1.dmi',"[icon_state]")
+	I.plane = PLANE_SPACE_DUST
+	I.alpha = 80
+	I.blend_mode = BLEND_ADD
+	overlays += I
+
+
 	//icon = 'icons/turf/space.dmi'
 	if (icon_state == "placeholder") icon_state = "[rand(1,25)]"
 	if (icon_state == "aplaceholder") icon_state = "a[rand(1,10)]"

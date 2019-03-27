@@ -65,6 +65,10 @@ proc/qdel(var/datum/O)
 // -------------------- GLOBAL VARS --------------------
 
 var/global
+	//SPACE PARALLAX
+	var/parallax_initialized = 0
+	var/space_color = "#050505"
+	var/list/parallax_icon[27] 
 
 	obj/datacore/data_core = null
 	obj/overlay/plmaster = null

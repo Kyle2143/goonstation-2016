@@ -73,6 +73,18 @@
 	var/datum/tooltip/tooltip = null
 	
 	var/delete_state = DELETE_STOP
+	
+	////////////
+	//PARALLAX//
+	////////////
+	var/updating_parallax = 0
+	var/list/parallax = list()
+	var/list/parallax_offset = list()
+	var/turf/previous_turf = null
+	var/obj/screen/plane_master/parallax_master/parallax_master = null
+	var/obj/screen/plane_master/parallax_dustmaster/parallax_dustmaster = null
+	var/obj/screen/plane_master/parallax_spacemaster/parallax_spacemaster = null
+	var/last_parallax_shift
 
 /client/Del()
 	if (ticker && ticker.current_state < GAME_STATE_FINISHED)
