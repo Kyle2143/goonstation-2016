@@ -793,17 +793,17 @@ datum/preferences
 			else
 				src.gender = MALE
 				AH.gender = MALE
-		if(link_tags["parallax"])
-			space_parallax = !space_parallax
+		// if(link_tags["parallax"])
+		// 	space_parallax = !space_parallax
 
-			if(usr && usr.hud_used)
-				usr.hud_used.update_parallax_and_dust()
+		// 	if(usr && usr.hud_used)
+		// 		usr.hud_used.update_parallax_and_dust()
 
-		if(link_tags["dust"])
-			space_dust = !space_dust
+		// if(link_tags["dust"])
+		// 	space_dust = !space_dust
 
-			if(usr && usr.hud_used)
-				usr.hud_used.update_parallax_and_dust()
+		// 	if(usr && usr.hud_used)
+		// 		usr.hud.update_parallax_and_dust()
 
 		if(link_tags["p_speed"])
 			parallax_speed = min(max(input(user, "Enter a number between 0 and 5 included (default=2)","Parallax Speed Preferences",parallax_speed),0),5)

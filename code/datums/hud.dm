@@ -63,7 +63,7 @@
 		for (var/client/C in src.clients)
 			C.screen += S
 
-		update_parallax_and_dust()
+			update_parallax_and_dust(C.mob)
 
 		return S
 

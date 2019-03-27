@@ -2,7 +2,10 @@
  * This file handles all parallax-related business once the parallax itself is initialized with the rest of the HUD
  */
 
-var/list/parallax_on_clients = list()
+var/global/list/parallax_on_clients = list()
+/client/verb/get_thingthingthing()
+	for (var/i in parallax_on_clients)
+		world << i
 
 /obj/screen/parallax
 	var/base_offset_x = 0
@@ -44,9 +47,18 @@ var/list/parallax_on_clients = list()
 /obj/screen/plane_master/parallax_dustmaster
 	plane = PLANE_SPACE_DUST
 
+/datum/hud/proc/get_mob()
+	for (var/mob/M in mobs)
+		return M
+	return null
+
 /datum/hud/proc/update_parallax()
+	var/mob/living/mymob = get_mob()
+	if (!istype(mymob)) return
+
 	var/client/C = mymob.client
-	if(!parallax_initialized || C.updating_parallax) return
+	if(!parallax_initialized || C.updating_parallax) 
+		return
 
 	for(var/turf/space/T in trange(C.view,get_turf(C.eye)))
 		C.updating_parallax = 1
@@ -64,8 +76,12 @@ var/list/parallax_on_clients = list()
 		C.updating_parallax = 0
 
 /datum/hud/proc/update_parallax_and_dust()
+	var/mob/living/mymob = get_mob()
+	if (!istype(mymob))
+		return
 	var/client/C = mymob.client
-	if(!parallax_initialized || C.updating_parallax) return
+	if(!parallax_initialized || C.updating_parallax) 
+		return
 	C.updating_parallax = 1
 	if(update_parallax1())
 		update_parallax2(1)
@@ -75,9 +91,12 @@ var/list/parallax_on_clients = list()
 		C.updating_parallax = 0
 
 /datum/hud/proc/update_parallax1()
+	var/mob/living/mymob = get_mob()
+	if (!istype(mymob)) return
+
 	var/client/C = mymob.client
 	//DO WE UPDATE PARALLAX
-	if(C.prefs.space_parallax)//have to exclude Centcom so parallax doens't appear during hyperspace
+	if(C.preferences.space_parallax)//have to exclude Centcom so parallax doens't appear during hyperspace
 		parallax_on_clients |= C
 	else
 		for(var/obj/screen/parallax/bgobj in C.parallax)
@@ -97,6 +116,9 @@ var/list/parallax_on_clients = list()
 	return 1
 
 /datum/hud/proc/update_parallax2(forcerecalibrate = 0)
+	var/mob/living/mymob = get_mob()
+	if (!istype(mymob)) return
+
 	var/client/C = mymob.client
 	//DO WE HAVE TO REPLACE ALL THE LAYERS
 
@@ -122,7 +144,7 @@ var/list/parallax_on_clients = list()
 		C.screen |= C.parallax_spacemaster
 		C.screen |= C.parallax_dustmaster
 		C.parallax_dustmaster.color = list(0,0,0,0)
-		if(C.prefs.space_dust)
+		if(C.preferences.space_dust)
 			C.parallax_dustmaster.color = list(
 			1,0,0,0,
 			0,1,0,0,
@@ -134,6 +156,8 @@ var/list/parallax_on_clients = list()
 		C.parallax_offset["vertical"] = 0
 
 /datum/hud/proc/update_parallax3()
+	var/mob/living/mymob = mobs[1]
+	if (!istype(mymob)) return
 	var/client/C = mymob.client
 	//ACTUALLY MOVING THE PARALLAX
 	var/turf/posobj = get_turf(C.eye)
@@ -158,8 +182,8 @@ var/list/parallax_on_clients = list()
 
 	for(var/obj/screen/parallax/bgobj in C.parallax)
 		if(bgobj.parallax_speed)//only the middle and front layers actually move
-			var/accumulated_offset_x = bgobj.base_offset_x - round(C.parallax_offset["horizontal"] * bgobj.parallax_speed * (C.prefs.parallax_speed/2))
-			var/accumulated_offset_y = bgobj.base_offset_y - round(C.parallax_offset["vertical"] * bgobj.parallax_speed * (C.prefs.parallax_speed/2))
+			var/accumulated_offset_x = bgobj.base_offset_x - round(C.parallax_offset["horizontal"] * bgobj.parallax_speed * (C.preferences.parallax_speed/2))
+			var/accumulated_offset_y = bgobj.base_offset_y - round(C.parallax_offset["vertical"] * bgobj.parallax_speed * (C.preferences.parallax_speed/2))
 
 			bgobj.last_accumulated_offset_x = accumulated_offset_x
 			bgobj.last_accumulated_offset_y = accumulated_offset_y
@@ -184,7 +208,7 @@ var/list/parallax_on_clients = list()
 #define PARALLAX3_ICON_NUMBER 14
 #define PARALLAX2_ICON_NUMBER 10
 
-/datum/controller/game_controller/proc/cachespaceparallax()
+/datum/controller/gameticker/proc/cachespaceparallax()
 	var/list/plane1 = list()
 	var/list/plane2 = list()
 	var/list/plane3 = list()
