@@ -166,13 +166,14 @@ var/global/client/ff_debugger = null
 
 /turf/space/New()
 	..()
-	//Parallax
+	//Parallax - Space Dust // I don't like the space dust
 	//if not the warp transit overlay //Get to that later
-	var/image/I = image('icons/turf/space_parallax1.dmi',"[icon_state]")
-	I.plane = PLANE_SPACE_DUST
-	I.alpha = 80
-	I.blend_mode = BLEND_ADD
-	overlays += I
+	// icon_state = "[((x + y) ^ ~(x * y) + z) % 25]"
+	// var/image/I = image('icons/turf/space_parallax1.dmi',"[icon_state]")
+	// I.plane = PLANE_SPACE_DUST
+	// I.alpha = 80
+	// I.blend_mode = BLEND_ADD
+	// overlays += I
 
 
 	//icon = 'icons/turf/space.dmi'
