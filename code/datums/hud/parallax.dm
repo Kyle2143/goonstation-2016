@@ -204,9 +204,9 @@ var/global/list/parallax_on_clients = list()
 
 //Parallax generation code below
 
-#define PARALLAX4_ICON_NUMBER 20
-#define PARALLAX3_ICON_NUMBER 14
-#define PARALLAX2_ICON_NUMBER 10
+#define PARALLAX4_ICON_AMT 20
+#define PARALLAX3_ICON_AMT 14
+#define PARALLAX2_ICON_AMT 10
 
 /datum/controller/gameticker/proc/cachespaceparallax()
 	var/list/plane1 = list()
@@ -228,7 +228,7 @@ var/global/list/parallax_on_clients = list()
 
 		var/list/L = list()
 		for(var/j in 1 to 225)
-			if(plane1[j+i*225] <= PARALLAX4_ICON_NUMBER)
+			if(plane1[j+i*225] <= PARALLAX4_ICON_AMT)
 				var/image/I = image('icons/turf/space_parallax4.dmi',"[plane1[j+i*225]]")
 				I.pixel_x = pixel_x[j]
 				I.pixel_y = pixel_y[j]
@@ -247,7 +247,7 @@ var/global/list/parallax_on_clients = list()
 
 		var/list/L = list()
 		for(var/j in 1 to 225)
-			if(plane2[j+i*225] <= PARALLAX3_ICON_NUMBER)
+			if(plane2[j+i*225] <= PARALLAX3_ICON_AMT)
 				var/image/I = image('icons/turf/space_parallax3.dmi',"[plane2[j+i*225]]")
 				I.pixel_x = pixel_x[j]
 				I.pixel_y = pixel_y[j]
@@ -265,7 +265,7 @@ var/global/list/parallax_on_clients = list()
 		var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
 		var/list/L = list()
 		for(var/j in 1 to 225)
-			if(plane3[j+i*225] <= PARALLAX2_ICON_NUMBER)
+			if(plane3[j+i*225] <= PARALLAX2_ICON_AMT)
 				var/image/I = image('icons/turf/space_parallax2.dmi',"[plane3[j+i*225]]")
 				I.pixel_x = pixel_x[j]
 				I.pixel_y = pixel_y[j]
@@ -300,6 +300,6 @@ var/global/list/parallax_on_clients = list()
 		if(7,8,9)
 			p_layer.base_offset_y = -480
 
-#undef PARALLAX4_ICON_NUMBER
-#undef PARALLAX3_ICON_NUMBER
-#undef PARALLAX2_ICON_NUMBER
+#undef PARALLAX4_ICON_AMT
+#undef PARALLAX3_ICON_AMT
+#undef PARALLAX2_ICON_AMT
