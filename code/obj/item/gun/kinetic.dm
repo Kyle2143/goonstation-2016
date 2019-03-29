@@ -86,8 +86,8 @@
 		else
 			..()
 
-	attack_self(mob/user as mob)
-		return
+	// attack_self(mob/user as mob)
+	// 	return
 
 	attack_hand(mob/user as mob)
 	// Added this to make manual reloads possible (Convair880).
@@ -288,19 +288,25 @@
 		current_projectile = new/datum/projectile/bullet/derringer
 		..()
 
-/obj/item/gun/kinetic/clock_117
+/obj/item/gun/kinetic/clock_188
 	desc = "A reliable weapon used the world over... 50 years ago. Uses 9mm NATO rounds."
-	name = "Clock 117"
-	icon_state = "clock-117"
-	item_state = "clock-117"
+	name = "Clock 188"
+	icon = 'icons/obj/gun188.dmi'
+	icon_state = "clock-188-beige"
+	//item_state = "clock-118"
 	w_class = 2.0
 	force = 7.0
 	caliber = 0.355
 	max_ammo_capacity = 17
 
 	New()
+		if (prob(20))
+			icon_state = "clock-188-black"
+
 		ammo = new/obj/item/ammo/bullets/nine_mm_NATO
 		current_projectile = new/datum/projectile/bullet/nine_mm_NATO
+		projectiles = list(current_projectile,new/datum/projectile/bullet/nine_mm_NATO/burst)
+
 		..()
 
 /obj/item/gun/kinetic/detectiverevolver

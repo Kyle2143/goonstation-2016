@@ -285,7 +285,7 @@
 /obj/item/ammo/bullets/nine_mm_NATO
 	sname = "9mm NATO"
 	name = "9mm magazine"
-	icon_state = "pistol_clip"	//9mm_clip
+	icon_state = "pistol_clip"	//9mm_clip that exists already. Also, put this in hacked manufacturers cause these bullets are not good.
 	amount_left = 17.0
 	max_amount = 17.0
 	ammo_type = new/datum/projectile/bullet/bullet_22

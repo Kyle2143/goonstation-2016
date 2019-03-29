@@ -79,16 +79,22 @@ toxic - poisons
 	name = "bullet"
 	// shot_sound = 'sound/weapons/Gunshot-Glock-17.ogg'
 
-	power = 40
-	ks_ratio = 0.375		//means 15 damage, 25 stun
+	power = 8
+	ks_ratio = 0.75		//means ends up, 6 brute damage, 60 stamina damage
 	dissipation_rate = 5
 	dissipation_delay = 8
 	damage_type = D_KINETIC
-	hit_type = DAMAGE_BLUNT
+	hit_type = DAMAGE_CUT
 	implanted = /obj/item/implant/projectile/bullet_nine_mm_NATO
+	shot_sound = 'sound/effects/9x19NATO.ogg'
 	caliber = 0.355	
 	icon_turf_hit = "bhole-small"
 	casing = /obj/item/casing/small
+
+/datum/projectile/bullet/nine_mm_NATO/burst
+	shot_number = 3
+	cost = 3
+	sname = "burst fire"
 
 /datum/projectile/bullet/revolver_357
 	name = "bullet"
