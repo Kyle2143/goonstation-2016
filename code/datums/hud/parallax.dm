@@ -21,6 +21,11 @@ var/global/list/parallax_on_clients = list()
 	var/last_accumulated_offset_x = 0
 	var/last_accumulated_offset_y = 0
 
+/obj/screen/parallax/planet
+	icon = 'icons/turf/parallax480.dmi'
+	icon_state = "planet"
+	screen_loc = "CENTER"
+
 /obj/screen/plane_master
 	appearance_flags = PLANE_MASTER
 	screen_loc = "1,1"
@@ -83,7 +88,7 @@ var/global/list/parallax_on_clients = list()
 	if(!parallax_initialized || C.updating_parallax) 
 		return
 	C.updating_parallax = 1
-	if(update_parallax1())
+	if(update_parallax1(mymob))
 		update_parallax2(1)
 		update_parallax3()
 		C.updating_parallax = 0
@@ -209,75 +214,89 @@ var/global/list/parallax_on_clients = list()
 #define PARALLAX2_ICON_AMT 10
 
 /datum/controller/gameticker/proc/cachespaceparallax()
-	var/list/plane1 = list()
-	var/list/plane2 = list()
-	var/list/plane3 = list()
-	var/list/pixel_x = list()
-	var/list/pixel_y = list()
-	var/index = 1
-	for(var/i = 0 to 224)
-		for(var/j = 1 to 9)
-			plane1 += rand(1,26)
-			plane2 += rand(1,26)
-			plane3 += rand(1,26)
-		pixel_x += 32 * (i%15)
-		pixel_y += 32 * round(i/15)
+	// var/list/plane1 = list()
+	// var/list/plane2 = list()
+	// var/list/plane3 = list()
+	// var/list/pixel_x = list()
+	// var/list/pixel_y = list()
+	// var/index = 1
+	// for(var/i = 0 to 224)
+	// 	for(var/j = 1 to 9)
+	// 		plane1 += rand(1,26)
+	// 		plane2 += rand(1,26)
+	// 		plane3 += rand(1,26)
+	// 	pixel_x += 32 * (i%15)
+	// 	pixel_y += 32 * round(i/15)
 
-	for(var/i in 0 to 8)
-		var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
+	// for(var/i in 0 to 8)
+	// 	var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
 
-		var/list/L = list()
-		for(var/j in 1 to 225)
-			if(plane1[j+i*225] <= PARALLAX4_ICON_AMT)
-				var/image/I = image('icons/turf/space_parallax4.dmi',"[plane1[j+i*225]]")
-				I.pixel_x = pixel_x[j]
-				I.pixel_y = pixel_y[j]
-				I.plane = PLANE_SPACE_PARALLAX
-				L += I
+	// 	var/list/L = list()
+	// 	for(var/j in 1 to 225)
+	// 		if(plane1[j+i*225] <= PARALLAX4_ICON_AMT)
+	// 			var/image/I = image('icons/turf/space_parallax4.dmi',"[plane1[j+i*225]]")
+	// 			I.pixel_x = pixel_x[j]
+	// 			I.pixel_y = pixel_y[j]
+	// 			I.plane = PLANE_SPACE_PARALLAX
+	// 			L += I
 
-		parallax_layer.overlays = L
-		parallax_layer.parallax_speed = 0
-		parallax_layer.plane = PLANE_SPACE_PARALLAX
-		calibrate_parallax(parallax_layer,i+1)
-		parallax_icon[index] = parallax_layer
-		index++
+	// 	parallax_layer.overlays = L
+	// 	parallax_layer.parallax_speed = 0
+	// 	parallax_layer.plane = PLANE_SPACE_PARALLAX
+	// 	calibrate_parallax(parallax_layer,i+1)
+	// 	parallax_icon[index] = parallax_layer
+	// 	index++
 
-	for(var/i in 0 to 8)
-		var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
+	// for(var/i in 0 to 8)
+	// 	var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
 
-		var/list/L = list()
-		for(var/j in 1 to 225)
-			if(plane2[j+i*225] <= PARALLAX3_ICON_AMT)
-				var/image/I = image('icons/turf/space_parallax3.dmi',"[plane2[j+i*225]]")
-				I.pixel_x = pixel_x[j]
-				I.pixel_y = pixel_y[j]
-				I.plane = PLANE_SPACE_PARALLAX
-				L += I
+	// 	var/list/L = list()
+	// 	for(var/j in 1 to 225)
+	// 		if(plane2[j+i*225] <= PARALLAX3_ICON_AMT)
+	// 			var/image/I = image('icons/turf/space_parallax3.dmi',"[plane2[j+i*225]]")
+	// 			I.pixel_x = pixel_x[j]
+	// 			I.pixel_y = pixel_y[j]
+	// 			I.plane = PLANE_SPACE_PARALLAX
+	// 			L += I
 
-		parallax_layer.overlays = L
-		parallax_layer.parallax_speed = 1
-		parallax_layer.plane = PLANE_SPACE_PARALLAX
-		calibrate_parallax(parallax_layer,i+1)
-		parallax_icon[index] = parallax_layer
-		index++
+	// 	parallax_layer.overlays = L
+	// 	parallax_layer.parallax_speed = 1
+	// 	parallax_layer.plane = PLANE_SPACE_PARALLAX
+	// 	calibrate_parallax(parallax_layer,i+1)
+	// 	parallax_icon[index] = parallax_layer
+	// 	index++
 
-	for(var/i in 0 to 8)
-		var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
-		var/list/L = list()
-		for(var/j in 1 to 225)
-			if(plane3[j+i*225] <= PARALLAX2_ICON_AMT)
-				var/image/I = image('icons/turf/space_parallax2.dmi',"[plane3[j+i*225]]")
-				I.pixel_x = pixel_x[j]
-				I.pixel_y = pixel_y[j]
-				I.plane = PLANE_SPACE_PARALLAX
-				L += I
+	// for(var/i in 0 to 8)
+	// 	var/obj/screen/parallax/parallax_layer = new /obj/screen/parallax()
+	// 	var/list/L = list()
+	// 	for(var/j in 1 to 225)
+	// 		if(plane3[j+i*225] <= PARALLAX2_ICON_AMT)
+	// 			var/image/I = image('icons/turf/space_parallax2.dmi',"[plane3[j+i*225]]")
+	// 			I.pixel_x = pixel_x[j]
+	// 			I.pixel_y = pixel_y[j]
+	// 			I.plane = PLANE_SPACE_PARALLAX
+	// 			L += I
 
-		parallax_layer.overlays = L
-		parallax_layer.parallax_speed = 2
-		parallax_layer.plane = PLANE_SPACE_PARALLAX
-		calibrate_parallax(parallax_layer,i+1)
-		parallax_icon[index] = parallax_layer
-		index++
+	// 	parallax_layer.overlays = L
+	// 	parallax_layer.parallax_speed = 2
+	// 	parallax_layer.plane = PLANE_SPACE_PARALLAX
+	// 	calibrate_parallax(parallax_layer,i+1)
+	// 	parallax_icon[index] = parallax_layer
+	// 	index++
+	
+
+	var/obj/screen/parallax/planet/parallax_layer = new /obj/screen/parallax()
+	var/image/I = image('icons/turf/planet480.dmi',"plasma_giant")
+	I.plane = PLANE_SPACE_PARALLAX
+	I.pixel_x = 10
+	I.pixel_y = 10
+
+	parallax_layer.overlays += I
+	parallax_layer.parallax_speed = 2
+	parallax_layer.plane = PLANE_SPACE_PARALLAX
+	calibrate_parallax(parallax_layer,3)
+	parallax_icon[1] = parallax_layer
+
 
 	parallax_initialized = 1
 

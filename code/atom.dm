@@ -449,6 +449,7 @@ obj
 				for (var/datum/hud/hud in  C.mob.huds)
 					if((get_turf(C.eye) == destination) && (hud))
 						hud.update_parallax()
+						break
 
 /mob/update_client_hook(atom/destination)
 	if(locate(/mob) in src)
@@ -457,10 +458,13 @@ obj
 				for (var/datum/hud/hud in  C.mob.huds)
 					if((get_turf(C.eye) == destination) && (hud))
 						hud.update_parallax()
+						break
+
 	else if(client && hud_used)
 		if(islist(client.mob.huds))
 			for (var/datum/hud/hud in  client.mob.huds)
 				hud.update_parallax()
+				break
 
 /atom/movable/verb/pull()
 	set name = "Pull"
