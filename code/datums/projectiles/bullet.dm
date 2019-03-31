@@ -77,8 +77,8 @@ toxic - poisons
 
 /datum/projectile/bullet/nine_mm_NATO
 	name = "bullet"
-	// shot_sound = 'sound/weapons/Gunshot-Glock-17.ogg'
-
+	shot_sound = 'sound/effects/9x19NATO.ogg'
+	projectile_speed = 36
 	power = 8
 	ks_ratio = 0.75		//means ends up, 6 brute damage, 60 stamina damage
 	dissipation_rate = 5
@@ -86,7 +86,6 @@ toxic - poisons
 	damage_type = D_KINETIC
 	hit_type = DAMAGE_CUT
 	implanted = /obj/item/implant/projectile/bullet_nine_mm_NATO
-	shot_sound = 'sound/effects/9x19NATO.ogg'
 	caliber = 0.355	
 	icon_turf_hit = "bhole-small"
 	casing = /obj/item/casing/small

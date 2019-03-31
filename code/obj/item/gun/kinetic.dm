@@ -308,6 +308,15 @@
 		projectiles = list(current_projectile,new/datum/projectile/bullet/nine_mm_NATO/burst)
 
 		..()
+	attack_self(mob/user as mob)
+		..()
+		if (istype(current_projectile, /datum/projectile/bullet/nine_mm_NATO/burst))
+			spread_angle = 5
+		else
+			spread_angle = 0
+
+
+
 
 /obj/item/gun/kinetic/detectiverevolver
 	desc = "An old surplus police-issue revolver. Uses .38-Special rounds."
