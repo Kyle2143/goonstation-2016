@@ -293,30 +293,26 @@
 	name = "Clock 188"
 	icon = 'icons/obj/gun188.dmi'
 	icon_state = "clock-188-beige"
-	//item_state = "clock-118"
 	w_class = 2.0
 	force = 7.0
 	caliber = 0.355
 	max_ammo_capacity = 17
 
 	New()
-		if (prob(20))
+		if (prob(30))
 			icon_state = "clock-188-black"
 
 		ammo = new/obj/item/ammo/bullets/nine_mm_NATO
 		current_projectile = new/datum/projectile/bullet/nine_mm_NATO
 		projectiles = list(current_projectile,new/datum/projectile/bullet/nine_mm_NATO/burst)
+		..()
 
-		..()
 	attack_self(mob/user as mob)
-		..()
+		..()	//burst shot has a slight spread.
 		if (istype(current_projectile, /datum/projectile/bullet/nine_mm_NATO/burst))
 			spread_angle = 5
 		else
 			spread_angle = 0
-
-
-
 
 /obj/item/gun/kinetic/detectiverevolver
 	desc = "An old surplus police-issue revolver. Uses .38-Special rounds."
