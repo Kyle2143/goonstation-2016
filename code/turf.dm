@@ -7,6 +7,7 @@ var/global/client/ff_debugger = null
 	var/allows_vehicles = 1
 
 	var/tagged = 0 // Gang wars thing
+	//parallax
 
 	level = 1.0
 
@@ -162,6 +163,7 @@ var/global/client/ff_debugger = null
 	pathable = 0
 	mat_changename = 0
 	mat_changedesc = 0
+	plane = PLANE_SPACE
 
 /turf/space/New()
 	..()

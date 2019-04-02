@@ -247,7 +247,8 @@
 		src.x++
 	if((direct & WEST) && src.x > 1)
 		src.x--
-
+	update_parallax_contents()
+	
 /mob/dead/observer/can_use_hands()	return 0
 /mob/dead/observer/is_active()		return 0
 
@@ -286,6 +287,7 @@
 			continue
 		L+=T
 	usr.set_loc(pick(L))
+	update_parallax_contents()
 
 /mob/dead/observer/proc/becomeDrone()
 	set name = "Become Drone"
@@ -475,3 +477,4 @@
 	else if (src.client) //Wire: Fix for Cannot modify null.mob.
 		src.client.mob = newobs
 	set_loc(newobs)
+	update_parallax_contents()

@@ -71,7 +71,7 @@
 	var/datum/chatOutput/chatOutput = null
 	var/resourcesLoaded = 0 //Has this client done the mass resource downloading yet?
 	var/datum/tooltip/tooltip = null
-	
+
 	var/delete_state = DELETE_STOP
 
 /client/Del()
@@ -83,6 +83,12 @@
 		onlineAdmins.Remove(src)
 		src.holder.dispose()
 		src.holder = null
+
+	if(movingmob != null)
+		if (movingmob.client_mobs_in_contents && movingmob.client_mobs_in_contents.len > 0)
+			movingmob.client_mobs_in_contents -= mob
+			movingmob.client_mobs_in_contents = null
+
 	return ..()
 
 var/global/list/hellbans = null

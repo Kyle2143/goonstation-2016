@@ -73,5 +73,8 @@ proc/__btime__timeofhour()
 #endif
 
 #define CLAMP(V, MN, MX) max(MN, min(MX, V))
+// Similar to clamp but the bottom rolls around to the top and vice versa. min is inclusive, max is exclusive
+#define WRAP(val, min, max) ( min == max ? min : (val) - (round(((val) - (min))/((max) - (min))) * ((max) - (min))) )
+#define CEILING(x, y) ( -round(-(x) / (y)) * (y) )
 
 #define LAGCHECK(x) while (world.tick_usage > x) sleep(world.tick_lag)

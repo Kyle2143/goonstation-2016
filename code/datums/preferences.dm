@@ -1,3 +1,14 @@
+#define PARALLAX_INSANE -1 //for show offs
+#define PARALLAX_HIGH    0 //default.
+#define PARALLAX_MED     1
+#define PARALLAX_LOW     2
+#define PARALLAX_DISABLE 3 //this option must be the highest number
+
+#define PARALLAX_DELAY_DEFAULT world.tick_lag
+#define PARALLAX_DELAY_MED     1
+#define PARALLAX_DELAY_LOW     2 
+#define PARALLAX_LOOP_TIME 25 
+
 datum/preferences
 	var/profile_name
 	var/real_name
@@ -52,6 +63,7 @@ datum/preferences
 
 	var/target_cursor = "Default"
 	var/hud_style = "New"
+	var/parallax = PARALLAX_HIGH
 
 	New()
 		randomize_name()
@@ -243,6 +255,24 @@ datum/preferences
 			dat += "<br>"
 		dat += "<a href='byond://?src=\ref[user];preferences=1;reset_all=1'><b>Reset</b></a> - "
 		dat += "<a href='byond://?src=\ref[user];preferences=1;real_name=random'><b>Randomize</b></A><br>"
+
+		//////////////PARALLAX//////////////
+		// dat += "<b>FPS:</b> <a href='?_src_=prefs;preference=clientfps;task=input'>[clientfps]</a><br>"
+
+		dat += "<b>Parallax (Fancy Space):</b> <a href='?_src_=prefs;preference=parallaxdown' oncontextmenu='window.location.href=\"?_src_=prefs;preference=parallaxup\";return false;'>"
+		switch (parallax)
+			if (PARALLAX_LOW)
+				dat += "Low"
+			if (PARALLAX_MED)
+				dat += "Medium"
+			if (PARALLAX_INSANE)
+				dat += "Insane"
+			if (PARALLAX_DISABLE)
+				dat += "Disabled"
+			else
+				dat += "High"
+		dat += "</a><br>"
+
 		dat += "</body></html>"
 
 		traitPreferences.updateTraits(user)
@@ -886,6 +916,17 @@ datum/preferences
 				src.be_random_look = !src.be_random_look
 			else
 				src.be_random_look = 1
+
+		if (link_tags["parallaxup"])
+			// parallax = WRAP(parallax + 1, PARALLAX_INSANE, PARALLAX_DISABLE + 1)
+			// if (user.client && user.client.mob && user.client.mob.hud_used)
+			// 	user.client.mob.hud.update_parallax_pref()
+
+		if (link_tags["parallaxdown"])
+			// parallax = WRAP(parallax - 1, PARALLAX_INSANE, PARALLAX_DISABLE + 1)
+			// if (user.client && user.client.mob && user.client.mob.hud_used)
+			// 	user.client.mob.hud.update_parallax_pref()
+
 
 		/* Wire: a little thing i'll finish up eventually
 		if (link_tags["set_will"])

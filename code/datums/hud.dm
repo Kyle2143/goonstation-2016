@@ -62,6 +62,8 @@
 		src.objects += S
 		for (var/client/C in src.clients)
 			C.screen += S
+		create_parallax()
+
 		return S
 
 	proc/add_object(atom/movable/A, layer = HUD_LAYER, loc)

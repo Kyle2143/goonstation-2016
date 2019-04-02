@@ -394,6 +394,8 @@ obj
 	var/throw_range = 7
 	var/throwforce = 1
 	var/soundproofing = 5
+	//parallax
+	var/list/client_mobs_in_contents // This contains all the client mobs within this container
 
 /atom/movable/overlay
 	var/atom/master = null
@@ -427,6 +429,7 @@ obj
 					step(src, WEST)
 				else if (step(src, WEST))
 					step(src, SOUTH)
+
 		return // this should in turn fire off its own slew of move calls, so don't do anything here
 
 	var/atom/A = src.loc
@@ -438,6 +441,8 @@ obj
 		for(var/atom/movable/M in attached_objs)
 			M.set_loc(src.loc)
 		actions.interrupt(src, INTERRUPT_MOVE)
+	// if (client_mobs_in_contents && client_mobs_in_contents.len)
+	update_parallax_contents()
 
 /atom/movable/verb/pull()
 	set name = "Pull"

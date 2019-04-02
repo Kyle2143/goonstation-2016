@@ -73,6 +73,7 @@
 	var/sound = 'sound/ambience/ambigen1.ogg'
 	var/sound_group = null
 	var/sound_environment = 1 //default environment for sounds - see sound datum vars documentation for the presets.
+	var/parallax_movedir = 0
 
 	Entered(var/atom/movable/A)
 		if ((isliving(A) || iswraith(A)) || locate(/mob) in A)
