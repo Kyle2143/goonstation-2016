@@ -211,7 +211,8 @@
 			L.transform = matrix(1, 0, offset_x*L.speed, 0, 1, offset_y*L.speed)
 			animate(L, transform=matrix(), time = last_delay)
 
-		L.screen_loc = "CENTER-7:[round(L.offset_x,1)],CENTER-7:[round(L.offset_y,1)]"
+		// L.screen_loc = "CENTER-7:[round(L.offset_x,1)],CENTER-7:[round(L.offset_y,1)]"
+		L.screen_loc = "CENTER-[C.view]:[round(L.offset_x,1)],CENTER-[C.view]:[round(L.offset_y,1)]"
 
 /atom/movable/proc/update_parallax_contents()
 	// if(length(client_mobs_in_contents))
@@ -239,6 +240,7 @@
 	blend_mode = BLEND_ADD
 	plane = PLANE_SPACE_PARALLAX
 	screen_loc = "CENTER-7,CENTER-7"
+
 	mouse_opacity = 0
 
 
@@ -267,17 +269,19 @@
 /obj/screen/parallax_layer/layer_1
 	icon_state = "layer1"
 	speed = 0.6
-	layer = 2
+	layer = 1
 
 /obj/screen/parallax_layer/layer_2
 	icon_state = "layer2"
 	speed = 1
-	layer = 3
+	layer = 2
 
 /obj/screen/parallax_layer/planet
 	icon_state = "plasma_giant"
 	speed = 2
-	layer = 1
+	layer = 30
+	plane = PLANE_SPACE_PARALLAX
+	blend_mode = BLEND_OVERLAY
 
 /obj/screen/parallax_pmaster
 	appearance_flags = PLANE_MASTER
