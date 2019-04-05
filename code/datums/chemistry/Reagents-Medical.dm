@@ -1024,19 +1024,21 @@ datum
 
 			on_add()
 				if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"add_stam_mod_max"))
-					remove_buff = holder.my_atom:add_stam_mod_max("consumable_good", 5)
+					remove_buff = holder.my_atom:add_stam_mod_max("atropine", -40)
 				return
 
 			on_remove()
 				if(remove_buff)
 					if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"remove_stam_mod_max"))
-						holder.my_atom:remove_stam_mod_max("consumable_good")
+						holder.my_atom:remove_stam_mod_max("atropine")
 				return
 
 			on_mob_life(var/mob/M)
 				if(!M) M = holder.my_atom
 				M.make_dizzy(1)
-				M.change_misstep_chance(5)
+				if (M.misstep_chance < 45)
+					M.change_misstep_chance(5)
+
 				if(M.bodytemperature < M.base_body_temp)
 					M.bodytemperature = max(M.base_body_temp + 10, M.bodytemperature-10)
 				if(prob(4)) M.emote("collapse")
@@ -1048,7 +1050,9 @@ datum
 					if(M.get_toxin_damage())
 						M.take_toxin_damage(-1)
 					M.HealDamage("All", 3, 3)
-				else if (M.health > -60)
+					if (M.get_brain_damage())
+						M.take_brain_damage(-3)
+				else if (M.health > 15 && M.get_toxin_damage() < 70)
 					M.take_toxin_damage(1)
 				if(M.reagents.has_reagent("sarin"))
 					M.reagents.remove_reagent("sarin",20)
