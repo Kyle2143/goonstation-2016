@@ -1025,19 +1025,21 @@ datum
 			on_add()
 				if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"add_stam_mod_max"))
 					remove_buff = holder.my_atom:add_stam_mod_max("atropine", -40)
+				M.change_misstep_chance(20)
 				return
 
 			on_remove()
 				if(remove_buff)
 					if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"remove_stam_mod_max"))
 						holder.my_atom:remove_stam_mod_max("atropine")
+				M.change_misstep_chance(-40)
 				return
 
 			on_mob_life(var/mob/M)
 				if(!M) M = holder.my_atom
 				M.make_dizzy(1)
-				if (M.misstep_chance < 45)
-					M.change_misstep_chance(5)
+				// if (M.misstep_chance < 45)
+				M.change_misstep_chance(5)
 
 				if(M.bodytemperature < M.base_body_temp)
 					M.bodytemperature = max(M.base_body_temp + 10, M.bodytemperature-10)
