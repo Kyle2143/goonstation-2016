@@ -836,3 +836,55 @@ obj/item/device/radio/signaler/attackby(obj/item/W as obj, mob/user as mob)
 		usr << browse(null, "window=radio")
 		return
 	return
+//////////////////////////////////////////////////
+
+/obj/item/device/radio/loudspeaker/initialize()
+	return
+/obj/item/device/radio/loudspeaker/attack_self(mob/user as mob)
+	broadcasting = !broadcasting
+
+/obj/item/device/radio/loudspeaker/transmitter
+	name = "Loudspeaker Transmitter"
+	icon_state = "intercom"
+	anchored = 1.0
+	speaker_range = 0
+	mats = 0
+	device_color = RADIOC_INTERCOM
+	var/number = 0
+	rand_pos = 0
+	desc = "A HAM radio transmitter...Basically...It only transmits to loudspeakers."
+
+	frequency = R_FREQ_LOUDSPEAKERS
+
+/obj/item/device/radio/intercom/attack_ai(mob/user as mob)
+	src.add_fingerprint(user)
+	spawn (0)
+		attack_self(user)
+
+/obj/item/device/radio/intercom/attack_hand(mob/user as mob)
+	src.add_fingerprint(user)
+	spawn (0)
+		attack_self(user)
+
+obj/item/device/radio/intercom/attack_self(mob/user as mob)
+    broadcasting = !broadcasting
+    if (broadcasting)
+        ..()
+        
+
+// /obj/item/device/radio/intercom/send_hear()
+// 	if (src.listening)
+// 		return hearers(7, src.loc)
+
+
+/obj/item/device/radio/loudspeaker/speaker
+	name = "Loudspeaker"
+	icon_state = "intercom"
+	anchored = 1.0
+	speaker_range = 7
+	mats = 0
+	device_color = RADIOC_INTERCOM
+	var/number = 0
+	frequency = R_FREQ_LOUDSPEAKERS
+	rand_pos = 0
+	desc = "A Loudspeaker."
