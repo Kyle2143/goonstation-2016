@@ -857,7 +857,7 @@ obj/item/device/radio/signaler/attackby(obj/item/W as obj, mob/user as mob)
 	set category = "Local"
 
 	..()
-	boutput(user, "[src] is[src.listening ? " " : " not "]transmitting!")
+	boutput(usr, "[src] is[src.listening ? " " : " not "]transmitting!")
 
 	return
 
@@ -901,5 +901,15 @@ obj/item/device/radio/intercom/loudspeaker/transmitter/attack_self(mob/user as m
 // /obj/item/device/radio/intercom/send_hear()
 // 	if (src.listening)
 // 		return hearers(7, src.loc)
+/obj/item/device/radio/intercom/loudspeaker/send_hear()
+	..()
+	animate_storage_rustle(src)
+	//play loudspeaker sound
 
+/proc/animate_storage_rustle(var/atom/A)
+    var/matrix/M1 = A.transform
+    var/matrix/M2 = matrix()
+    M2.Scale(1.2,0.8)
 
+    animate(A, transform = M2, time = 30, easing = ELASTIC_EASING, flags = ANIMATION_END_NOW)
+    animate(A, transform = M1, time = 20, easing = ELASTIC_EASING)
