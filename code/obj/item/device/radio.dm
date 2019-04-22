@@ -387,6 +387,7 @@ Frequency:
 	last_transmission = world.time
 	if ((src.listening && src.wires & 2))
 		var/list/hear = hearers(src.speaker_range, src.loc) // changed so station bounce radios will be loud and headsets will only be heard on their tile
+		src.visible_message("[src] <AAAAAAAAAAAAAAAA")
 
 		// modified so that a mob holding the radio is always a hearer of it
 		// this fixes radio problems when inside something (e.g. mulebot)
@@ -838,73 +839,81 @@ obj/item/device/radio/signaler/attackby(obj/item/W as obj, mob/user as mob)
 	return
 //////////////////////////////////////////////////
 /obj/item/device/radio/intercom/loudspeaker
-	name = "Loudspeaker"
+	name = "Loudspeaker Transmitter"
 	icon = 'icons/loudspeakers.dmi'
-	icon_state = "loudspeaker"
+	icon_state = "transmitter"
 	anchored = 1.0
-	speaker_range = 7
+	speaker_range = 0
 	mats = 0
-	broadcasting = 1
-	listening = 0
 	device_color = RADIOC_INTERCOM
-	// var/number = 0
-	frequency = R_FREQ_LOUDSPEAKERS
+	//Best I can figure, you need broadcasting and listening to both be TRUE for it to make a signal and send the words spoken next to it. Why? Fuck whoever named these, that's why.
+	broadcasting = 0
+	listening = 1
+	density = 1
 	rand_pos = 0
-	desc = "A Loudspeaker."
+	desc = "A HAM radio transmitter...Basically...It only transmits to loudspeakers on a secure frequency."
+
+	frequency = R_FREQ_LOUDSPEAKERS
+
+//Must be standing next to it to talk into it
+/obj/item/device/radio/intercom/loudspeaker/hear_talk(mob/M as mob, msgs, real_name, lang_id)
+	if (src.broadcasting)
+		if (get_dist(src, M) <= 1)
+			talk_into(M, msgs, null, real_name, lang_id)
 
 /obj/item/device/radio/intercom/loudspeaker/examine()
 	set src in view()
 	set category = "Local"
 
 	..()
-	boutput(usr, "[src] is[src.listening ? " " : " not "]transmitting!")
+	boutput(usr, "[src] is[src.broadcasting ? " " : " not "]active!")
 
 	return
 
-/obj/item/device/radio/intercom/loudspeaker/attack_hand(mob/user as mob)
-	boutput(user, "This loudspeaker is tuned to [src.frequency]")
-	return
-
-// /obj/item/device/radio/intercom/loudspeaker/send_hear()
-
-/obj/item/device/radio/intercom/loudspeaker/transmitter
-	name = "Loudspeaker Transmitter"
-	icon_state = "transmitter"
-	anchored = 1.0
-	speaker_range = 0
-	mats = 0
-	device_color = RADIOC_INTERCOM
-	broadcasting = 0
-	listening = 1
-	density = 1
-	// var/number = 0
-	rand_pos = 0
-	desc = "A HAM radio transmitter...Basically...It only transmits to loudspeakers."
-
-	frequency = R_FREQ_LOUDSPEAKERS
-
-
-obj/item/device/radio/intercom/loudspeaker/transmitter/attack_self(mob/user as mob)
-	if (listening)
-		listening = 0
+obj/item/device/radio/intercom/loudspeaker/attack_self(mob/user as mob)
+	if (!broadcasting)
+		broadcasting = 1
 		boutput(user, "Now transmitting.")
 	else 
-		listening = 1
+		broadcasting = 0
 		boutput(user, "No longer transmitting.")
 
-	// broadcasting = !broadcasting
-	// boutput(user, "Now [broadcasting ? "broadcasting": "not broadcasting"]")
-	// if (broadcasting)
-	// 	..()
-        
+//This is the main parent, also is the actual speakers that will be attached to the walls.
+/obj/item/device/radio/intercom/loudspeaker/speaker
+	name = "Loudspeaker"
+	icon_state = "loudspeaker"
+	anchored = 1.0
+	speaker_range = 7
+	mats = 0
+	broadcasting = 1
+	listening = 1
+	device_color = RADIOC_INTERCOM
+	frequency = R_FREQ_LOUDSPEAKERS
+	rand_pos = 0
+	desc = "A Loudspeaker."
 
-// /obj/item/device/radio/intercom/send_hear()
-// 	if (src.listening)
-// 		return hearers(7, src.loc)
-/obj/item/device/radio/intercom/loudspeaker/send_hear()
+	north
+		dir = NORTH
+	south
+		dir = SOUTH
+	east
+		dir = EAST
+	west
+		dir = WEST
+
+//You can't talk into it to send a message
+/obj/item/device/radio/intercom/loudspeaker/speaker/hear_talk()
+	return
+
+/obj/item/device/radio/intercom/loudspeaker/speaker/send_hear()
 	..()
 	animate_storage_rustle(src)
 	//play loudspeaker sound
+
+/obj/item/device/radio/intercom/loudspeaker/speaker/attack_hand(mob/user as mob)
+	boutput(user, "This loudspeaker is tuned to [src.frequency]")
+	return
+
 
 /proc/animate_storage_rustle(var/atom/A)
     var/matrix/M1 = A.transform
