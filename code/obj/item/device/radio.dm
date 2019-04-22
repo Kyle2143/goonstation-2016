@@ -905,6 +905,8 @@ obj/item/device/radio/intercom/loudspeaker/attack_self(mob/user as mob)
 /obj/item/device/radio/intercom/loudspeaker/speaker/hear_talk()
 	return
 
+	//listening seems to refer to the device listening to the signals, not listening to voice
+
 /obj/item/device/radio/intercom/loudspeaker/speaker/send_hear()
 	..()
 	animate_storage_rustle(src)
