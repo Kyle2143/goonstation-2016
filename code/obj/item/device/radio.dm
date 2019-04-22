@@ -837,39 +837,65 @@ obj/item/device/radio/signaler/attackby(obj/item/W as obj, mob/user as mob)
 		return
 	return
 //////////////////////////////////////////////////
+/obj/item/device/radio/intercom/loudspeaker
+	name = "Loudspeaker"
+	icon = 'icons/loudspeakers.dmi'
+	icon_state = "loudspeaker"
+	anchored = 1.0
+	speaker_range = 7
+	mats = 0
+	broadcasting = 1
+	listening = 0
+	device_color = RADIOC_INTERCOM
+	// var/number = 0
+	frequency = R_FREQ_LOUDSPEAKERS
+	rand_pos = 0
+	desc = "A Loudspeaker."
 
-/obj/item/device/radio/loudspeaker/initialize()
+/obj/item/device/radio/intercom/loudspeaker/examine()
+	set src in view()
+	set category = "Local"
+
+	..()
+	boutput(user, "[src] is[src.listening ? " " : " not "]transmitting!")
+
 	return
-/obj/item/device/radio/loudspeaker/attack_self(mob/user as mob)
-	broadcasting = !broadcasting
 
-/obj/item/device/radio/loudspeaker/transmitter
+/obj/item/device/radio/intercom/loudspeaker/attack_hand(mob/user as mob)
+	boutput(user, "This loudspeaker is tuned to [src.frequency]")
+	return
+
+// /obj/item/device/radio/intercom/loudspeaker/send_hear()
+
+/obj/item/device/radio/intercom/loudspeaker/transmitter
 	name = "Loudspeaker Transmitter"
-	icon_state = "intercom"
+	icon_state = "transmitter"
 	anchored = 1.0
 	speaker_range = 0
 	mats = 0
 	device_color = RADIOC_INTERCOM
-	var/number = 0
+	broadcasting = 0
+	listening = 1
+	density = 1
+	// var/number = 0
 	rand_pos = 0
 	desc = "A HAM radio transmitter...Basically...It only transmits to loudspeakers."
 
 	frequency = R_FREQ_LOUDSPEAKERS
 
-/obj/item/device/radio/intercom/attack_ai(mob/user as mob)
-	src.add_fingerprint(user)
-	spawn (0)
-		attack_self(user)
 
-/obj/item/device/radio/intercom/attack_hand(mob/user as mob)
-	src.add_fingerprint(user)
-	spawn (0)
-		attack_self(user)
+obj/item/device/radio/intercom/loudspeaker/transmitter/attack_self(mob/user as mob)
+	if (listening)
+		listening = 0
+		boutput(user, "Now transmitting.")
+	else 
+		listening = 1
+		boutput(user, "No longer transmitting.")
 
-obj/item/device/radio/intercom/attack_self(mob/user as mob)
-    broadcasting = !broadcasting
-    if (broadcasting)
-        ..()
+	// broadcasting = !broadcasting
+	// boutput(user, "Now [broadcasting ? "broadcasting": "not broadcasting"]")
+	// if (broadcasting)
+	// 	..()
         
 
 // /obj/item/device/radio/intercom/send_hear()
@@ -877,14 +903,3 @@ obj/item/device/radio/intercom/attack_self(mob/user as mob)
 // 		return hearers(7, src.loc)
 
 
-/obj/item/device/radio/loudspeaker/speaker
-	name = "Loudspeaker"
-	icon_state = "intercom"
-	anchored = 1.0
-	speaker_range = 7
-	mats = 0
-	device_color = RADIOC_INTERCOM
-	var/number = 0
-	frequency = R_FREQ_LOUDSPEAKERS
-	rand_pos = 0
-	desc = "A Loudspeaker."
