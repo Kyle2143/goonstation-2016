@@ -1032,15 +1032,13 @@ datum
 					if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"remove_stam_mod_max"))
 						holder.my_atom:remove_stam_mod_max("atropine")
 				if (M.misstep_chance > 50)
-					M.change_misstep_chance(-40)
+					M.change_misstep_chance(-50)
 				return
 
 			on_mob_life(var/mob/M)
 				if(!M) M = holder.my_atom
 				M.make_dizzy(1)
-				// if (M.misstep_chance < 45)
 				M.change_misstep_chance(5)
-
 				if(M.bodytemperature < M.base_body_temp)
 					M.bodytemperature = max(M.base_body_temp + 10, M.bodytemperature-10)
 				if(prob(4)) M.emote("collapse")
