@@ -1025,14 +1025,14 @@ datum
 			on_add()
 				if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"add_stam_mod_max"))
 					remove_buff = holder.my_atom:add_stam_mod_max("atropine", -40)
-				M.change_misstep_chance(20)
 				return
 
 			on_remove()
 				if(remove_buff)
 					if(istype(holder) && istype(holder.my_atom) && hascall(holder.my_atom,"remove_stam_mod_max"))
 						holder.my_atom:remove_stam_mod_max("atropine")
-				M.change_misstep_chance(-40)
+				if (M.misstep_chance > 50)
+					M.change_misstep_chance(-40)
 				return
 
 			on_mob_life(var/mob/M)
@@ -1053,7 +1053,7 @@ datum
 						M.take_toxin_damage(-1)
 					M.HealDamage("All", 3, 3)
 					if (M.get_brain_damage())
-						M.take_brain_damage(-3)
+						M.take_brain_damage(-2)
 				else if (M.health > 15 && M.get_toxin_damage() < 70)
 					M.take_toxin_damage(1)
 				if(M.reagents.has_reagent("sarin"))
