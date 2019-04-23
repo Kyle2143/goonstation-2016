@@ -387,7 +387,6 @@ Frequency:
 	last_transmission = world.time
 	if ((src.listening && src.wires & 2))
 		var/list/hear = hearers(src.speaker_range, src.loc) // changed so station bounce radios will be loud and headsets will only be heard on their tile
-		src.visible_message("[src] <AAAAAAAAAAAAAAAA")
 
 		// modified so that a mob holding the radio is always a hearer of it
 		// this fixes radio problems when inside something (e.g. mulebot)
@@ -848,12 +847,15 @@ obj/item/device/radio/signaler/attackby(obj/item/W as obj, mob/user as mob)
 	device_color = RADIOC_INTERCOM
 	//Best I can figure, you need broadcasting and listening to both be TRUE for it to make a signal and send the words spoken next to it. Why? Fuck whoever named these, that's why.
 	broadcasting = 0
-	listening = 1
+	listening = 0		//maybe this doesn't need to be on. It shouldn't be relaying signals.
 	density = 1
 	rand_pos = 0
 	desc = "A HAM radio transmitter...Basically...It only transmits to loudspeakers on a secure frequency."
-
 	frequency = R_FREQ_LOUDSPEAKERS
+	var/image/active_light = null
+
+	New()
+		// active_light = new ()
 
 //Must be standing next to it to talk into it
 /obj/item/device/radio/intercom/loudspeaker/hear_talk(mob/M as mob, msgs, real_name, lang_id)
@@ -867,6 +869,7 @@ obj/item/device/radio/signaler/attackby(obj/item/W as obj, mob/user as mob)
 
 	..()
 	boutput(usr, "[src] is[src.broadcasting ? " " : " not "]active!")
+	boutput(usr, "It is tuned to [format_frequency(src.frequency)]Hz.")
 
 	return
 
@@ -877,6 +880,13 @@ obj/item/device/radio/intercom/loudspeaker/attack_self(mob/user as mob)
 	else 
 		broadcasting = 0
 		boutput(user, "No longer transmitting.")
+
+/obj/item/device/radio/intercom/loudspeaker/initialize()
+	world.log << "[src] ([src.type]) has a frequency of [src.frequency], sanitizing."
+
+	set_frequency(frequency)
+	if(src.secure_frequencies)
+		set_secure_frequencies()
 
 //This is the main parent, also is the actual speakers that will be attached to the walls.
 /obj/item/device/radio/intercom/loudspeaker/speaker
@@ -908,12 +918,21 @@ obj/item/device/radio/intercom/loudspeaker/attack_self(mob/user as mob)
 	//listening seems to refer to the device listening to the signals, not listening to voice
 
 /obj/item/device/radio/intercom/loudspeaker/speaker/send_hear()
-	..()
-	animate_storage_rustle(src)
+	var/list/hear = ..()
+	if (hear)
+		animate_storage_rustle(src)
+
+	for (var/mob/M in hear)
+		src.visible_message("[src] playing to [M]")
+
+	return hear
+
+	// animate_storage_rustle(src)
+	// return ..()
+
 	//play loudspeaker sound
 
 /obj/item/device/radio/intercom/loudspeaker/speaker/attack_hand(mob/user as mob)
-	boutput(user, "This loudspeaker is tuned to [src.frequency]")
 	return
 
 
