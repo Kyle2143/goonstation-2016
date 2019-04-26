@@ -80,6 +80,11 @@
 	// shit to hand out to people who didn't get one of the main limited slot jobs
 	var/list/low_priority_jobs = list()
 
+	var/list/medical_staff = list()
+	var/list/engineering_staff = list()
+	var/list/research_staff = list()
+
+
 	for(var/datum/job/JOB in job_controls.staple_jobs)
 		// If it's hi-pri, add it to that list. Simple enough
 		if (JOB.high_priority_job)
@@ -169,6 +174,13 @@
 		// If there's an open job slot for it, give the player the job and remove them from
 		// the list of unassigned players, hey presto everyone's happy (except clarks probly)
 		if (JOB.limit < 0 || !(JOB.assigned >= JOB.limit))
+			if (istype(JOB, /datum/jobs/engineering))
+				engineering_staff += candidate
+			else if (istype(JOB, /datum/jobs/research/scientist))
+				research_staff += candidate
+			else if (istype(JOB, /datum/jobs/research)))
+				medical_staff += candidate
+
 			logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [player] took [JOB.name] from favorite selector")
 			player.mind.assigned_role = JOB.name
 			logTheThing("debug", player, null, "assigned job: [player.mind.assigned_role]")
@@ -190,6 +202,13 @@
 		for(var/mob/new_player/candidate in pick2)
 			if (JOB.assigned >= JOB.limit || unassigned.len == 0)
 				break
+			if (istype(JOB, /datum/jobs/engineering))
+				engineering_staff += candidate
+			else if (istype(JOB, /datum/jobs/research/scientist))
+				research_staff += candidate
+			else if (istype(JOB, /datum/jobs/research)))
+				medical_staff += candidate
+
 			logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Level 2 Job Picker")
 			candidate.mind.assigned_role = JOB.name
 			logTheThing("debug", candidate, null, "assigned job: [candidate.mind.assigned_role]")
@@ -210,11 +229,43 @@
 		pick3 = FindOccupationCandidates(unassigned,JOB.name,3)
 		for(var/mob/new_player/candidate in pick3)
 			if (JOB.assigned >= JOB.limit || unassigned.len == 0) break
+			if (istype(JOB, /datum/jobs/engineering))
+				engineering_staff += candidate
+			else if (istype(JOB, /datum/jobs/research/scientist))
+				research_staff += candidate
+			else if (istype(JOB, /datum/jobs/research)))
+				medical_staff += candidate
+
 			logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Level 3 Job Picker")
 			candidate.mind.assigned_role = JOB.name
 			logTheThing("debug", candidate, null, "assigned job: [candidate.mind.assigned_role]")
 			unassigned -= candidate
 			JOB.assigned++
+
+
+	//Find the command jobs, if they are unfilled, pick a random person from within that department to be that command officer
+	for(var/datum/job/JOB in available_job_roles)
+		//cheaper to discout this first than type check here *I think*
+		if (JOB.limit > 0 && JOB.assigned < JOB.limit)
+			if (istype(JOB, /datum/jobs/command/chief_engineer))
+				var/mob/new_player/candidate = pick(engineering_staff)
+				logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Job Promotion Picker")
+				candidate.mind.assigned_role = JOB.name
+				logTheThing("debug", candidate, null, "reassigned job: [candidate.mind.assigned_role]")
+				JOB.assigned++
+			else if (istype(JOB, /datum/jobs/command/research_director))
+				var/mob/new_player/candidate = pick(research_staff)
+				logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Job Promotion Picker")
+				candidate.mind.assigned_role = JOB.name
+				logTheThing("debug", candidate, null, "reassigned job: [candidate.mind.assigned_role]")
+				JOB.assigned++
+			else if (istype(JOB, /datum/jobs/command/medical_director))
+				var/mob/new_player/candidate = pick(medical_staff)
+				logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Job Promotion Picker")
+				candidate.mind.assigned_role = JOB.name
+				logTheThing("debug", candidate, null, "reassigned job: [candidate.mind.assigned_role]")
+				JOB.assigned++
+
 
 /* commenting this out because it's causing people to randomly become monkeys and shit and I guess it was set up before special jobs were enabled on default
 	// If there are any special jobs that have been made available pre-round, sort any
