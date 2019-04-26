@@ -248,19 +248,28 @@
 		//cheaper to discout this first than type check here *I think*
 		if (JOB.limit > 0 && JOB.assigned < JOB.limit)
 			if (istype(JOB, /datum/jobs/command/chief_engineer))
-				var/mob/new_player/candidate = pick(engineering_staff)
+				var/list/picks = FindPromotionCandidates(engineering_staff, JOB)
+				if (!picks || !picks.len)
+					continue
+				var/mob/new_player/candidate = pick(picks)
 				logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Job Promotion Picker")
 				candidate.mind.assigned_role = JOB.name
 				logTheThing("debug", candidate, null, "reassigned job: [candidate.mind.assigned_role]")
 				JOB.assigned++
 			else if (istype(JOB, /datum/jobs/command/research_director))
-				var/mob/new_player/candidate = pick(research_staff)
+				var/list/picks = FindPromotionCandidates(research_staff, JOB)
+				if (!picks || !picks.len)
+					continue
+				var/mob/new_player/candidate = pick(picks)
 				logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Job Promotion Picker")
 				candidate.mind.assigned_role = JOB.name
 				logTheThing("debug", candidate, null, "reassigned job: [candidate.mind.assigned_role]")
 				JOB.assigned++
 			else if (istype(JOB, /datum/jobs/command/medical_director))
-				var/mob/new_player/candidate = pick(medical_staff)
+				var/list/picks = FindPromotionCandidates(medical_staff, JOB)
+				if (!picks || !picks.len)
+					continue
+				var/mob/new_player/candidate = pick(picks)
 				logTheThing("debug", null, null, "<b>I Said No/Jobs:</b> [candidate] took [JOB.name] from Job Promotion Picker")
 				candidate.mind.assigned_role = JOB.name
 				logTheThing("debug", candidate, null, "reassigned job: [candidate.mind.assigned_role]")
@@ -296,6 +305,16 @@
 		logTheThing("debug", player, null, "assigned job: [player.mind.assigned_role]")
 
 	return 1
+
+//Given a list of candidates returns candidates that are acceptable to be promoted based on their medium/low priorities
+//ideally JOB should only be a command position. eg. CE, RD, MD
+/proc/FindPromotionCandidates(list/staff, JOB)
+	var/list/picks = FindOccupationCandidates(staff,JOB.name,1)
+
+	//If there are no acceptable candidates (no traitors, no job bans) for the command role
+	if (!picks.len)
+		picks = FindOccupationCandidates(staff,JOB.name,2)
+	return picks
 
 /mob/living/carbon/human/proc/Equip_Rank(rank, joined_late)
 
