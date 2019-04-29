@@ -291,71 +291,55 @@
 		src.holder.playeropt(M)
 	return
 
-/datum/admins/proc/ckey_opt(var/ckey as text)
-	var/client/c = new /client
-	c.key = ckey
+/client/proc/cmd_admin_ckeyopt(var/ckey as text in world)
+	set name = "Byond User Options"
+	set category = null
+	if (src.holder)
+		src.holder.ckey_opt(ckey)
 
-	// if (!ismob(M))
-	// 	alert("Unable to auto-refresh the panel. Manual refresh required.")
-	// 	return
-	if (c)
-		var/dat = "<html><head><title>Options for [c.key]</title></head><body>"
-		dat += {"<style>
-					a {text-decoration:none}
-					body {padding: 5px;margin: 0;background:white}
-					.optionGroup {padding:5px; margin-bottom:8px; border:1px solid black}
-					.optionGroup .title {display:block; color:white; background:black; padding: 2px 5px; margin: -5px -5px 2px -5px}
-				</style>"}
-		//Admin control options
-		dat += "<div class='optionGroup' style='border-color:#FF6961'><b class='title' style='background:#FF6961'>Control</b>"
+	return
+
+/datum/admins/proc/ckey_opt(var/ckey as text)
+	if (!ckey) return
+
+	var/dat = "<html><head><title>Options for [ckey]</title></head><body>"
+	dat += {"<style>
+				a {text-decoration:none}
+				body {padding: 5px;margin: 0;background:white}
+				.optionGroup {padding:5px; margin-bottom:8px; border:1px solid black}
+				.optionGroup .title {display:block; color:white; background:black; padding: 2px 5px; margin: -5px -5px 2px -5px}
+			</style>"}
+	//Admin control options
+	dat += "<div class='optionGroup' style='border-color:#FF6961'><b class='title' style='background:#FF6961'>Control</b>"
+	if (ckey)
 		var/adminRow1
 		var/adminRow2
-		if (c)
-			adminRow1 += {"<a href='?src=\ref[src];action=showrules;targetckey=[c.ckey];origin=adminplayeropts'>Show Rules</a> |
-					<a href='?src=\ref[src];action=prom_demot;targetckey=[c.ckey];origin=adminplayeropts'>Promote/Demote</a> |
-					<a href='?src=\ref[src];action=toggle_dj;targetckey=[c.ckey];origin=adminplayeropts'>Give/Remove DJ</a> |
-					<a href='?src=\ref[src];action=forcespeech;targetckey=[c.ckey];origin=adminplayeropts'>Force to Say</a> |"}
-			if (c.ismuted())
-				adminRow1 += " <a href='?src=\ref[src];action=mute;targetckey=[c.ckey];origin=adminplayeropts'>Unmute</a>"
+		if (ckey)
+			adminRow1 += {"<a href='?src=\ref[src];action=showrules;targetckey=[ckey];origin=adminplayeropts'>Show Rules</a> |
+					<a href='?src=\ref[src];action=prom_demot;targetckey=[ckey];origin=adminplayeropts'>Promote/Demote</a> |
+					<a href='?src=\ref[src];action=toggle_dj;targetckey=[ckey];origin=adminplayeropts'>Give/Remove DJ</a> |
+					<a href='?src=\ref[src];action=forcespeech;targetckey=[ckey];origin=adminplayeropts'>Force to Say</a> |"}
+			adminRow2 += {"[!ckey ? " | " : ""]<a href='?src=\ref[src];action=warn;targetckey=[ckey];origin=adminplayeropts'>Warn</a> |
+							<a href='?src=\ref[src];action=boot;targetckey=[ckey];origin=adminplayeropts'>Kick</a>"}
+		if (ckey)
+			adminRow2 += {"<a href='?src=\ref[src];action=addban;targetckey=[ckey];origin=adminplayeropts'>Ban</a> |
+					<a href='?src=\ref[src];action=jobbanpanel;targetckey=[ckey];origin=adminplayeropts'>Jobban</a> |
+					<a href='?src=\ref[src];action=notes;targetckey=[ckey];origin=adminplayeropts'>Notes</a> |
+					<a href='?src=\ref[src];action=viewcompids;targetckey=[ckey];origin=adminplayeropts'>CompIDs</a> | "}
+			if (oocban_isbanned_byckey(ckey))
+				adminRow2 += " <a href='?src=\ref[src];action=banooc;targetckey=[ckey];origin=adminplayeropts'>OOC - Unban</a>  "
 			else
-				adminRow1 += {" Mute \[<a href='?src=\ref[src];action=mute;targetckey=[c.ckey];origin=adminplayeropts'>Perm</a> |
-					<a href='?src=\ref[src];action=tempmute;targetckey=[c.ckey];origin=adminplayeropts'>Temp</a>\]"}
+				adminRow2 += " <a href='?src=\ref[src];action=banooc;targetckey=[ckey];origin=adminplayeropts'>OOC - Ban</a>  "
 
-			adminRow2 += {"[!c.ckey ? " | " : ""]<a href='?src=\ref[src];action=warn;targetckey=[c.ckey];origin=adminplayeropts'>Warn</a> |
-							<a href='?src=\ref[src];action=boot;targetckey=[c.ckey];origin=adminplayeropts'>Kick</a>"}
-		if (c.ckey)
-			adminRow2 += {"[c ? " | " : ""]<a href='?src=\ref[src];action=addban;targetckey=[c.ckey];origin=adminplayeropts'>Ban</a> |
-					<a href='?src=\ref[src];action=jobbanpanel;targetckey=[c.ckey];origin=adminplayeropts'>Jobban</a> |
-					<a href='?src=\ref[src];action=notes;targetckey=[c.ckey];origin=adminplayeropts'>Notes</a> |
-					<a href='?src=\ref[src];action=viewcompids;targetckey=[c.ckey];origin=adminplayeropts'>CompIDs</a> | "}
-			if (oocban_isbanned_byckey(c))
-				adminRow2 += " <a href='?src=\ref[src];action=banooc;targetckey=[c.ckey];origin=adminplayeropts'>OOC - Unban</a>  "
-			else
-				adminRow2 += " <a href='?src=\ref[src];action=banooc;targetckey=[c.ckey];origin=adminplayeropts'>OOC - Ban</a>  "
+			adminRow2 += "|  <a href='?src=\ref[src];action=giveantagtoken;targetckey=[ckey];origin=adminplayeropts'>Antag Tokens</a>"
 
-			adminRow2 += "|  <a href='?src=\ref[src];action=giveantagtoken;targetckey=[c.ckey];origin=adminplayeropts'>Antag Tokens</a>"
-
-			adminRow1 += "[c ? " | " : ""]<a href='?src=\ref[src];action=respawntarget;targetckey=[c.ckey];origin=adminplayeropts'>Respawn</a>"
+			adminRow1 += "<a href='?src=\ref[src];action=respawntarget;targetckey=[ckey];origin=adminplayeropts'>Respawn</a>"
 		dat += "[adminRow1]<br>[adminRow2]"
 		dat += "</div>"
 
-	var/windowHeight
-	if (src.level == LEVEL_SHITGUY)
-		windowHeight = "390"
-	else if (src.level == LEVEL_CODER)
-		windowHeight = "410"
-	else
-		windowHeight = "310"
+		dat += "</body></html>"
+		usr << browse(dat, "window=adminplayeropts[ckey];size=505x310")
 
-	dat += "</body></html>"
-	usr << browse(dat, "window=adminplayeropts[M.ckey];size=505x[windowHeight]")
-
-/proc/oocban_isbanned_byckey(var/client/c)
-	if (!c) return
-	if(oocban_keylist.Find(text("[c.ckey]")))
-		return 1
-	else
-		return 0
 
 /datum/admins/proc/playeropt(mob/M)
 	if (!ismob(M))
