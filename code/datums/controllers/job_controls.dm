@@ -5,6 +5,7 @@ var/datum/job_controller/job_controls
 	var/list/special_jobs = list()
 	var/allow_special_jobs = 1 // hopefully this doesn't break anything!!
 	var/datum/job/job_creator = null
+	var/list/command_promotion_jobs = null
 
 	New()
 		..()
@@ -21,7 +22,11 @@ var/datum/job_controller/job_controls
 			new /datum/job/civilian/chaplain ())
 
 		else
-			for (var/A in typesof(/datum/job/command)) src.staple_jobs += new A(src)
+			for (var/A in typesof(/datum/job/command))
+				src.staple_jobs += new A(src)
+				//If this map has a CE/RD/MD. Add them here so we can promote crew to it in job selection
+				if (istype(A, /datum/job/command/captain) || istype(A, /datum/job/command/head_of_personnel) || istype(A, /datum/job/command/head_of_security))
+					src.command_promotion_jobs += new A(src)
 			for (var/A in typesof(/datum/job/security)) src.staple_jobs += new A(src)
 			for (var/A in typesof(/datum/job/research)) src.staple_jobs += new A(src)
 			for (var/A in typesof(/datum/job/engineering)) src.staple_jobs += new A(src)
