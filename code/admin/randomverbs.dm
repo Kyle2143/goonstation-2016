@@ -291,7 +291,7 @@
 		src.holder.playeropt(M)
 	return
 
-/client/proc/cmd_admin_ckeyopt(var/ckey as text in world)
+/client/proc/cmd_admin_ckeyopt(var/ckey as text)
 	set name = "Byond User Options"
 	set category = null
 	if (src.holder)
@@ -338,7 +338,7 @@
 		dat += "</div>"
 
 		dat += "</body></html>"
-		usr << browse(dat, "window=adminplayeropts[ckey];size=505x310")
+		usr << browse(dat, "window=adminplayeropts[ckey];size=505x150")
 
 
 /datum/admins/proc/playeropt(mob/M)
