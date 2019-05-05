@@ -12,6 +12,7 @@
 	var/see_in_dark = SEE_DARK_HUMAN + 3
 	var/see_invisible = 2
 	var/scanning = 0
+	var/obj/tracking_target = null
 	icon_state = "sensor"
 
 	mob_deactivate(mob/M as mob)
@@ -29,10 +30,15 @@
 		var/dat = "<TT><B>[src] Console</B><BR><HR><BR>"
 		if(src.active)
 			dat += {"<BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
+			if (src.tracking_target)
+				dat += {"\nCurrently Tracking: [src.tracking_target.name]
+				<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a>"}
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
 				for(var/shipname in shiplist)
-					dat += {"<HR>[shipname] | "}
+					// dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[shipname]\">[shipname]</a> [shiplist[shipname]]"}
+					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=[shipname]\">[shipname]</a> [shiplist[shipname]]"}
+
 			dat += {"<HR>[lifeforms] Lifeforms Detected:</B><BR>"}
 			if(lifelist.len)
 				for(var/lifename in lifelist)
@@ -53,6 +59,11 @@
 			if (href_list["scan"] && !scanning)
 				scan(usr)
 
+			if (href_list["tracking_ship"])
+				obtain_tracking_target(href_list["tracking_ship"])
+			if (href_list["stop_tracking"])
+				end_tracking()
+
 			src.add_fingerprint(usr)
 			for(var/mob/M in ship)
 				if ((M.client && M.machine == src))
@@ -61,6 +72,86 @@
 			usr << browse(null, "window=ship_sensor")
 			return
 		return
+
+	//change the HuD icon location based on its current direction
+	proc/update_icon_position()
+		var/obj/hud/pod/tracking/T = src.ship.myhud.tracking
+		if (istype(T))
+			var/dir = T.dir
+
+			switch(dir)
+				if (1)
+					return "CENTER+1,CENTER"
+				if (2)
+					return "CENTER-1,CENTER"
+				if (4)
+					return "CENTER,CENTER+1"
+				if (8)
+					return "CENTER,CENTER-1"
+				if (5)
+					return "CENTER+1,CENTER+1"
+				if (6)
+					return "CENTER-1,CENTER+1"
+				if (9)
+					return "CENTER+1,CENTER-1"
+				if (10)
+					return "CENTER-1,CENTER-1"
+
+
+	proc/begin_tracking()
+		// src.ship.tracking = create_screen("leave", "Leave Pod", 'icons/mob/hud_pod.dmi', "arrow", "SOUTH+1,WEST+1")
+		src.ship.myhud.tracking.icon_state = "arrow"
+		track_target()
+
+	proc/end_tracking()
+		src.ship.myhud.tracking.icon_state = "off"
+
+	proc/track_target()
+		var/last_dir = 0
+		while (src.tracking_target && src.ship.myhud && src.ship.myhud.tracking)
+			last_dir = src.ship.myhud.tracking.dir
+			src.ship.myhud.tracking.dir = get_dir(ship, src.tracking_target)
+			if (last_dir != src.ship.myhud.tracking.dir)
+				update_icon_position()
+			sleep(10)
+
+	proc/obtain_tracking_target(var/O as text)
+		src.tracking_target = null
+		boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint energy source...</span>")
+		// sleep(10)
+		boutput(usr, "<span style=\"color:blue\">object passed: [O]</span>")
+
+		for (var/obj/v in range(src.seekrange,ship.loc))
+			if (istype(v, /obj/machinery/vehicle/) || istype(v, /obj/critter/gunbot/drone/))
+				boutput(usr, "<span style=\"color:blue\">looping::: [v.name]</span>")
+
+				if(v.name == O)
+					src.tracking_target = v
+					break
+		src.updateDialog()
+
+		// //For tracking pods
+		// if (istype(O, /obj/machinery/vehicle))
+		// 	var/obj/machinery/vehicle/target_vehicle = O
+		// 	for (var/obj/machinery/vehicle/V in range(src.seekrange,ship.loc))
+		// 		if(V == target_vehicle)
+		// 			src.tracking_target = V
+		// 			break
+					
+		// //For tracking critter drones
+		// if (istype(O, /obj/critter/gunbot/drone))
+		// 	var/obj/critter/gunbot/drone/target_drone = O
+		// 	for (var/obj/critter/gunbot/drone/V in range(src.seekrange,ship.loc))
+		// 		if(V == target_drone)
+		// 			src.tracking_target = V
+		// 			break
+
+		if (src.tracking_target)
+			boutput(usr, "<span style=\"color:blue\">Tracking target: [src.tracking_target.name]</span>")
+			begin_tracking()
+		else
+			boutput(usr, "<span style=\"color:blue\">Unable to locate target: [src.tracking_target.name]</span>")
+
 
 	proc/dir_name(var/direction)
 		switch (direction)
@@ -107,10 +198,10 @@
 		for (var/obj/machinery/vehicle/V in range(src.seekrange,ship.loc))
 			if(V != ship)
 				ships++
-				shiplist += "[V.name] [dir_name(get_dir(ship, V))]"
+				shiplist[V.name] = "[dir_name(get_dir(ship, V))]"
 		for (var/obj/critter/gunbot/drone/V in range(src.seekrange,ship.loc))
 			ships++
-			shiplist += "[V.name] [dir_name(get_dir(ship, V))]"
+			shiplist[V.name] ="[dir_name(get_dir(ship, V))]"
 		src.updateDialog()
 		sleep(10)
 		scanning = 0
