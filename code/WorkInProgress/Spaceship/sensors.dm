@@ -12,7 +12,7 @@
 	var/see_in_dark = SEE_DARK_HUMAN + 3
 	var/see_invisible = 2
 	var/scanning = 0
-	var/obj/tracking_target = null
+	var/atom/tracking_target = null
 	icon_state = "sensor"
 
 	mob_deactivate(mob/M as mob)
@@ -29,6 +29,9 @@
 
 		var/dat = "<TT><B>[src] Console</B><BR><HR><BR>"
 		if(src.active)
+			dat += "<A href='byond://?src=\ref[src];getcords=1'>Get Local Coordinates</A><BR>"
+			dat += "<A href='byond://?src=\ref[src];getcords=1'>Get Local Coordinates</A><BR>"
+			obtain_tracking_target_coords
 			dat += {"<BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
 			if (src.tracking_target)
 				dat += {"\nCurrently Tracking: [src.tracking_target.name]
@@ -63,6 +66,10 @@
 				obtain_tracking_target(href_list["tracking_ship"])
 			if (href_list["stop_tracking"])
 				end_tracking()
+			if(href_list["getcords"])
+				boutput(usr, "<span style=\"color:blue\">Located at: <b>X</b>: [src.ship.x], <b>Y</b>: [src.ship.y]</span>")
+			if(href_list["tracking_coordinates"])
+				obtain_tracking_target_coords(href_list["tracking_coordinates"])
 
 			src.add_fingerprint(usr)
 			for(var/mob/M in ship)
@@ -75,27 +82,27 @@
 
 	//change the HuD icon location based on its current direction
 	proc/update_icon_position()
-		var/obj/hud/pod/tracking/T = src.ship.myhud.tracking
-		if (istype(T))
-			var/dir = T.dir
+		// var/obj/hud/pod/tracking/T = src.ship.myhud.tracking
+		// if (istype(T))
+		var/dir = src.ship.myhud.tracking.dir
 
-			switch(dir)
-				if (1)
-					return "CENTER+1,CENTER"
-				if (2)
-					return "CENTER-1,CENTER"
-				if (4)
-					return "CENTER,CENTER+1"
-				if (8)
-					return "CENTER,CENTER-1"
-				if (5)
-					return "CENTER+1,CENTER+1"
-				if (6)
-					return "CENTER-1,CENTER+1"
-				if (9)
-					return "CENTER+1,CENTER-1"
-				if (10)
-					return "CENTER-1,CENTER-1"
+		switch(dir)
+			if (1)
+				src.ship.myhud.tracking.screen_loc = "CENTER,CENTER+1"
+			if (2)
+				src.ship.myhud.tracking.screen_loc = "CENTER,CENTER-1"
+			if (4)
+				src.ship.myhud.tracking.screen_loc = "CENTER+1,CENTER"
+			if (8)
+				src.ship.myhud.tracking.screen_loc = "CENTER-1,CENTER"
+			if (5)
+				src.ship.myhud.tracking.screen_loc = "CENTER+1,CENTER+1"
+			if (6)
+				src.ship.myhud.tracking.screen_loc = "CENTER+1,CENTER-1"
+			if (9)
+				src.ship.myhud.tracking.screen_loc = "CENTER-1,CENTER+1"
+			if (10)
+				src.ship.myhud.tracking.screen_loc = "CENTER-1,CENTER-1"
 
 
 	proc/begin_tracking()
@@ -105,6 +112,7 @@
 
 	proc/end_tracking()
 		src.ship.myhud.tracking.icon_state = "off"
+		src.updateDialog()
 
 	proc/track_target()
 		var/last_dir = 0
@@ -113,18 +121,18 @@
 			src.ship.myhud.tracking.dir = get_dir(ship, src.tracking_target)
 			if (last_dir != src.ship.myhud.tracking.dir)
 				update_icon_position()
+
 			sleep(10)
+
+	proc/obtain_tracking_target_coords(var/x as num, var/y as num)
 
 	proc/obtain_tracking_target(var/O as text)
 		src.tracking_target = null
 		boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint energy source...</span>")
-		// sleep(10)
-		boutput(usr, "<span style=\"color:blue\">object passed: [O]</span>")
+		sleep(10)
 
 		for (var/obj/v in range(src.seekrange,ship.loc))
 			if (istype(v, /obj/machinery/vehicle/) || istype(v, /obj/critter/gunbot/drone/))
-				boutput(usr, "<span style=\"color:blue\">looping::: [v.name]</span>")
-
 				if(v.name == O)
 					src.tracking_target = v
 					break
@@ -146,7 +154,7 @@
 		// 			src.tracking_target = V
 		// 			break
 
-		if (src.tracking_target)
+		if (src.tracking_target && get_dist(src,src.tracking_target) <= seekrange)
 			boutput(usr, "<span style=\"color:blue\">Tracking target: [src.tracking_target.name]</span>")
 			begin_tracking()
 		else
