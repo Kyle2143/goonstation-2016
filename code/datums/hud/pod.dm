@@ -14,6 +14,7 @@
 		use_comms
 		leave
 		tracking
+		sensor_lock
 
 	click_check = 0
 	var/image/missing
@@ -38,6 +39,8 @@
 		leave = create_screen("leave", "Leave Pod", 'icons/mob/hud_pod.dmi', "leave", "SOUTH,EAST", tooltipTheme = "pod-alt")
 		tracking = create_screen("tracking", "Tracking Indicator", 'icons/mob/hud_pod.dmi', "off", "CENTER, CENTER")
 		tracking.mouse_opacity = 0
+		sensor_lock = create_screen("sensor_lock", "Sensor Lock", 'icons/mob/hud_pod.dmi', "off", "SOUTH+1,EAST")
+		sensor_lock.mouse_opacity = 0
 		health_bar = new(3)
 		health_bar.add_to_hud(src)
 		if (master)

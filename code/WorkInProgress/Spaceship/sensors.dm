@@ -5,6 +5,7 @@
 	system = "Sensors"
 	var/ships = 0
 	var/list/obj/shiplist = list()
+	var/list/obj/whos_tracking_me = list()
 	var/lifeforms = 0
 	var/list/lifelist = list()
 	var/seekrange = 30
@@ -41,7 +42,6 @@
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
 				for(var/obj/ship in shiplist)
-					// dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[shipname]\">[shipname]</a> [shiplist[shipname]]"}
 					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[ship]\">[ship.name]</a> "}
 
 			dat += {"<HR>[lifeforms] Lifeforms Detected:</B><BR>"}
@@ -82,7 +82,7 @@
 				src.tracking_target = T
 				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y], Z</b>: [T.z]</span>")
 				scanning = 0		//remove this if we want to force the user to manually stop tracking before trying to track something else
-				begin_tracking(1)
+				begin_tracking()
 		sleep(10)
 		scanning = 0
 		#undef DEFAULT_Z_VALUE
@@ -138,12 +138,30 @@
 
 	//If our target is a turf from the GPS coordinate picker. Our range will be much higher
 	proc/begin_tracking()
-		// src.ship.tracking = create_screen("leave", "Leave Pod", 'icons/mob/hud_pod.dmi', "arrow", "SOUTH+1,WEST+1")
+		if (src.tracking_target)
+			var/obj/machinery/vehicle/target_pod = src.tracking_target
+			if (istype(target_pod))
+				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
+				if (istype(sensor))
+					sensor.whos_tracking_me |= src
+					target_pod.myhud.sensor_lock.icon_state = "master-caution-s" //master-caution
+					target_pod.myhud.sensor_lock.mouse_opacity = 1
+
 		src.ship.myhud.tracking.icon_state = "dots"
 		track_target()
 
 	//nulls the tracking target, sets the hud object to turn off end center on the ship and updates the dilaogue
 	proc/end_tracking()
+		if (src.tracking_target)
+			var/obj/machinery/vehicle/target_pod = src.tracking_target
+			if (istype(target_pod))
+				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
+				if (istype(sensor))
+					sensor.whos_tracking_me -= src
+					if (islist(sensor.whos_tracking_me) && sensor.whos_tracking_me.len == 0)
+						target_pod.myhud.sensor_lock.icon_state = "off" //master-caution
+						target_pod.myhud.sensor_lock.mouse_opacity = 0
+
 		src.tracking_target = null
 		src.ship.myhud.tracking.dir = 1
 		src.ship.myhud.tracking.screen_loc = "CENTER,CENTER"
@@ -177,6 +195,7 @@
 				//if we're twice as far out or off the z-level, lose the signal
 				if ((cur_dist > seekrange*2))
 					end_tracking()
+					for(var/mob/M in ship)
 					boutput(usr, "<span style=\"color:red\">Tracking signal lost.</span>")
 					playsound(src.loc, "sound/machines/whistlebeep.ogg", 50, 1)
 					break;
