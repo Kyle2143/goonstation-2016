@@ -4,7 +4,7 @@
 	power_used = 20
 	system = "Sensors"
 	var/ships = 0
-	var/list/shiplist = list()
+	var/list/obj/shiplist = list()
 	var/lifeforms = 0
 	var/list/lifelist = list()
 	var/seekrange = 30
@@ -24,44 +24,6 @@
 		end_tracking()
 		scanning = 0
 
-	proc/build_html_gps_form()
-//		<form name="consoleinput" action="byond://?src=\ref[src]" method="get" onsubmit="javascript:return lineEnter()">
-
-		return {"
-			<A href='byond://?src=\ref[src];getcords=1'>Get Local Coordinates</A><BR>
-			<button id='dest' onClick='(showInput())' >Destination Coordinates</button><BR>
-			<div style='display:none' id = 'destInput'>
-				X Coordinate: <input id='idX'  type='number' min='0' max='500' name='X' value='0'><br>
-				Y Coordinate: <input id='idY' type='number' min='0' max='500' name='Y' value='0'><br>
-				<div style='display: none;'>
-					Z Coordinate: <input id='idZ' type='number' name='Z' value='-1'><br>
-				</div>
-
-				<button onclick='send()'>Enter</button>
-			</div>
-			<script>
-				function showInput() {
-				  var x = document.getElementById('destInput');
-				  if (x.style.display === 'none') {
-				    x.style.display = 'block';
-				  } else {
-				    x.style.display = 'none';
-				  }
-				}
-
-				function send() {
-					var x = document.getElementById('idX').value;
-					var y = document.getElementById('idY').value;
-					var z = document.getElementById('idZ').value;
-
-					window.location='byond://?src=\ref[src];dest_cords=1;x='+x+';y='+y+';z='+z;
-
-				}
-			</script>
-
-			"}
-
-
 	opencomputer(mob/user as mob)
 		if(user.loc != src.ship)
 			return
@@ -72,15 +34,15 @@
 
 			dat += build_html_gps_form()
 
-			dat += {"<BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
+			dat += {"<HR><BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
 			if (src.tracking_target)
-				dat += {"<BR>Currently Tracking: [src.tracking_target.name]
+				dat += {"<BR>Currently Tracking: [src.tracking_target.name] 
 				<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a>"}
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
-				for(var/shipname in shiplist)
+				for(var/obj/ship in shiplist)
 					// dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[shipname]\">[shipname]</a> [shiplist[shipname]]"}
-					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=[shipname]\">[shipname]</a> [shiplist[shipname]]"}
+					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[ship]\">[ship.name]</a> "}
 
 			dat += {"<HR>[lifeforms] Lifeforms Detected:</B><BR>"}
 			if(lifelist.len)
@@ -92,6 +54,7 @@
 		onclose(user, "ship_sensor")
 		return
 
+//Doing nothing with the Z-level value right now.
 	proc/obtain_target_from_coords(href_list)
 	//The default Z coordinate given. Just use current Z-Level where the object is. Pods won't
 		#define DEFAULT_Z_VALUE -1		
@@ -102,7 +65,7 @@
 			var/y = text2num(href_list["y"])
 			var/z = text2num(href_list["z"])
 			if (!x || !y || !z)
-				boutput(usr, "<span style=\"color:red\">Bad Topic call, if you see this something has gone wrong. And it's probably YOUR FAULT!</span>")
+				boutput(usr, "<span style=\"color:red\">Bad Topc call, if you see this something has gone wrong. And it's probably YOUR FAULT!</span>")
 				return
 			//Using -1 as the default value
 			if (z == DEFAULT_Z_VALUE)
@@ -118,6 +81,7 @@
 			if (isturf(T))
 				src.tracking_target = T
 				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y], Z</b>: [T.z]</span>")
+				scanning = 0		//remove this if we want to force the user to manually stop tracking before trying to track something else
 				begin_tracking(1)
 		sleep(10)
 		scanning = 0
@@ -133,7 +97,7 @@
 				scan(usr)
 
 			if (href_list["tracking_ship"] && !scanning)
-				obtain_tracking_target(href_list["tracking_ship"])
+				obtain_tracking_target(locate(href_list["tracking_ship"]))
 			if (href_list["stop_tracking"])
 				end_tracking()
 			if(href_list["getcords"])
@@ -173,10 +137,10 @@
 				src.ship.myhud.tracking.screen_loc = "CENTER-1,CENTER-1"
 
 	//If our target is a turf from the GPS coordinate picker. Our range will be much higher
-	proc/begin_tracking(var/gps=0)
+	proc/begin_tracking()
 		// src.ship.tracking = create_screen("leave", "Leave Pod", 'icons/mob/hud_pod.dmi', "arrow", "SOUTH+1,WEST+1")
 		src.ship.myhud.tracking.icon_state = "dots"
-		track_target(gps)
+		track_target()
 
 	//nulls the tracking target, sets the hud object to turn off end center on the ship and updates the dilaogue
 	proc/end_tracking()
@@ -188,7 +152,7 @@
 		src.updateDialog()
 
 	//Tracking loop
-	proc/track_target(var/gps)
+	proc/track_target()
 		var/last_dir = 0
 		var/cur_dist = 0
 
@@ -211,8 +175,7 @@
 				src.ship.myhud.tracking.screen_loc = "CENTER,CENTER+1"
 
 				//if we're twice as far out or off the z-level, lose the signal
-				//If it's a static gps target from the coordinate picker, we can track from 5x away
-				if ((cur_dist > seekrange*2) || (gps && cur_dist > seekrange*5))
+				if ((cur_dist > seekrange*2))
 					end_tracking()
 					boutput(usr, "<span style=\"color:red\">Tracking signal lost.</span>")
 					playsound(src.loc, "sound/machines/whistlebeep.ogg", 50, 1)
@@ -221,26 +184,24 @@
 			sleep(10)
 
 
-	proc/obtain_tracking_target(var/O as text)
+	proc/obtain_tracking_target(var/obj/O)
+		if (!O)
+			boutput(usr, "<span style=\"color:blue\">NOTHING FOUND IN O...</span>")
+			return 
 		scanning = 1
-		src.tracking_target = null
+		src.tracking_target = O
 		boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint energy source...</span>")
 		playsound(ship.loc, "sound/machines/signal.ogg", 50, 0)
 		sleep(10)
-
-		for (var/obj/v in range(src.seekrange,ship.loc))
-			if (istype(v, /obj/machinery/vehicle/) || istype(v, /obj/critter/gunbot/drone/))
-				if(v.name == O)
-					src.tracking_target = v
-					break
-
 		if (src.tracking_target && get_dist(src,src.tracking_target) <= seekrange)
+			sleep(10)
+			src.updateDialog()
+			scanning = 0		//remove this if we want to force the user to manually stop tracking before trying to track something else
 			boutput(usr, "<span style=\"color:blue\">Tracking target: [src.tracking_target.name]</span>")
 			begin_tracking()
-			src.updateDialog()
 		else
-			boutput(usr, "<span style=\"color:blue\">Unable to locate target: [src.tracking_target.name]</span>")
-		sleep(10)
+			boutput(usr, "<span style=\"color:blue\">Unable to locate target.</span>")
+
 		scanning = 0
 
 	proc/dir_name(var/direction)
@@ -288,15 +249,50 @@
 		for (var/obj/machinery/vehicle/V in range(src.seekrange,ship.loc))
 			if(V != ship)
 				ships++
-				shiplist[V.name] = "[dir_name(get_dir(ship, V))]"
+				shiplist[V] = "[dir_name(get_dir(ship, V))]"
 		for (var/obj/critter/gunbot/drone/V in range(src.seekrange,ship.loc))
 			ships++
-			shiplist[V.name] ="[dir_name(get_dir(ship, V))]"
+			shiplist[V] ="[dir_name(get_dir(ship, V))]"
 		src.updateDialog()
 		sleep(10)
 		scanning = 0
 		return
 
+//Sends topic call with "dest_cords" and "X", "Y", "Z" as params
+proc/build_html_gps_form(var/atom/A, var/show_Z=0)
+	return {"
+		<A href='byond://?src=\ref[A];getcords=1'>Get Local Coordinates</A><BR>
+		<button id='dest' onClick='(showInput())' >Destination Coordinates</button><BR>
+		<div style='display:none' id = 'destInput'>
+			X Coordinate: <input id='idX'  type='number' min='0' max='500' name='X' value='0'><br>
+			Y Coordinate: <input id='idY' type='number' min='0' max='500' name='Y' value='0'><br>
+			<div[show_Z ? "" : " style='display: none;'"]>
+				Z Coordinate: <input id='idZ' type='number' name='Z' value='[show_Z ? "0" : "-1"]'><br>
+			</div>
+
+			<button onclick='send()'>Enter</button>
+		</div>
+		<script>
+			function showInput() {
+			  var x = document.getElementById('destInput');
+			  if (x.style.display === 'none') {
+			    x.style.display = 'block';
+			  } else {
+			    x.style.display = 'none';
+			  }
+			}
+
+			function send() {
+				var x = document.getElementById('idX').value;
+				var y = document.getElementById('idY').value;
+				var z = document.getElementById('idZ').value;
+
+				window.location='byond://?src=\ref[A];dest_cords=1;x='+x+';y='+y+';z='+z;
+
+			}
+		</script>
+
+		"}
 
 /obj/item/shipcomponent/sensor/ecto
 	name = "Ecto-Sensor 900"
