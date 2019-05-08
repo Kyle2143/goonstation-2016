@@ -198,7 +198,7 @@
 		M = M.Turn(ang)
 		M = M.Translate(32 * sin(ang),32 * cos(ang))
 		
-		animate(A, transform = M, time = SENSOR_REFRESH_RATE, loop = 0)
+		animate(A, transform = M, time = 10, loop = 0)
 
 	//arguments: O is the target to track. If O is within sensor range after .1 seconds, it is tracked by the sensor
 	proc/obtain_tracking_target(var/obj/O)
