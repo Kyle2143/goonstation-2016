@@ -4,8 +4,7 @@
 	power_used = 20
 	system = "Sensors"
 	var/ships = 0
-	var/list/obj/shiplist = list()
-	var/list/obj/whos_tracking_me = list()
+	var/list/shiplist = list()
 	var/lifeforms = 0
 	var/list/lifelist = list()
 	var/seekrange = 30
@@ -37,12 +36,13 @@
 
 			dat += {"<HR><BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
 			if (src.tracking_target)
-				dat += {"<BR>Currently Tracking: [src.tracking_target.name] 
+				dat += {"<BR>Currently Tracking: [src.tracking_target.name]
 				<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a>"}
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
-				for(var/obj/ship in shiplist)
-					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[ship]\">[ship.name]</a> "}
+				for(var/shipname in shiplist)
+					// dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[shipname]\">[shipname]</a> [shiplist[shipname]]"}
+					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=[shipname]\">[shipname]</a> [shiplist[shipname]]"}
 
 			dat += {"<HR>[lifeforms] Lifeforms Detected:</B><BR>"}
 			if(lifelist.len)
@@ -57,7 +57,7 @@
 //Doing nothing with the Z-level value right now.
 	proc/obtain_target_from_coords(href_list)
 	//The default Z coordinate given. Just use current Z-Level where the object is. Pods won't
-		#define DEFAULT_Z_VALUE -1		
+		#define DEFAULT_Z_VALUE -1
 		scanning = 1
 		if (href_list["dest_cords"])
 			tracking_target = null
@@ -75,14 +75,14 @@
 			boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint: <b>X</b>: [x], <b>Y</b>: [y], Z</b>: [z]</span>")
 			playsound(ship.loc, "sound/machines/signal.ogg", 50, 0)
 			sleep(10)
-			var/turf/T = locate(x,y,z) 
+			var/turf/T = locate(x,y,z)
 
 			//Set located turf to be the tracking_target
 			if (isturf(T))
 				src.tracking_target = T
 				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y], Z</b>: [T.z]</span>")
 				scanning = 0		//remove this if we want to force the user to manually stop tracking before trying to track something else
-				begin_tracking()
+				begin_tracking(1)
 		sleep(10)
 		scanning = 0
 		#undef DEFAULT_Z_VALUE
@@ -96,8 +96,8 @@
 			if (href_list["scan"] && !scanning)
 				scan(usr)
 
-			if (href_list["tracking_ship"] && !scanning)
-				obtain_tracking_target(locate(href_list["tracking_ship"]))
+			if (href_list["tracking_ship"] && href_list["src"] && !scanning)
+				obtain_tracking_target(locate(href_list["src"]))
 			if (href_list["stop_tracking"])
 				end_tracking()
 			if(href_list["getcords"])
@@ -138,30 +138,12 @@
 
 	//If our target is a turf from the GPS coordinate picker. Our range will be much higher
 	proc/begin_tracking()
-		if (src.tracking_target)
-			var/obj/machinery/vehicle/target_pod = src.tracking_target
-			if (istype(target_pod))
-				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
-				if (istype(sensor))
-					sensor.whos_tracking_me |= src
-					target_pod.myhud.sensor_lock.icon_state = "master-caution-s" //master-caution
-					target_pod.myhud.sensor_lock.mouse_opacity = 1
-
+		// src.ship.tracking = create_screen("leave", "Leave Pod", 'icons/mob/hud_pod.dmi', "arrow", "SOUTH+1,WEST+1")
 		src.ship.myhud.tracking.icon_state = "dots"
 		track_target()
 
 	//nulls the tracking target, sets the hud object to turn off end center on the ship and updates the dilaogue
 	proc/end_tracking()
-		if (src.tracking_target)
-			var/obj/machinery/vehicle/target_pod = src.tracking_target
-			if (istype(target_pod))
-				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
-				if (istype(sensor))
-					sensor.whos_tracking_me -= src
-					if (islist(sensor.whos_tracking_me) && sensor.whos_tracking_me.len == 0)
-						target_pod.myhud.sensor_lock.icon_state = "off" //master-caution
-						target_pod.myhud.sensor_lock.mouse_opacity = 0
-
 		src.tracking_target = null
 		src.ship.myhud.tracking.dir = 1
 		src.ship.myhud.tracking.screen_loc = "CENTER,CENTER"
@@ -181,13 +163,13 @@
 				last_dir = src.ship.myhud.tracking.dir
 				src.ship.myhud.tracking.dir = get_dir(ship, src.tracking_target)
 				src.ship.myhud.tracking.icon_state = "dots"
-				
+
 				//Change if HuD position if the direction has changed since last tic
 				if (last_dir != src.ship.myhud.tracking.dir)
 					update_icon_position()
 
 			//If the target is out of seek range, move to top and change to lost state
-			else 
+			else
 				src.ship.myhud.tracking.dir = 1
 				src.ship.myhud.tracking.icon_state = "lost"
 				src.ship.myhud.tracking.screen_loc = "CENTER,CENTER+1"
@@ -195,7 +177,6 @@
 				//if we're twice as far out or off the z-level, lose the signal
 				if ((cur_dist > seekrange*2))
 					end_tracking()
-					for(var/mob/M in ship)
 					boutput(usr, "<span style=\"color:red\">Tracking signal lost.</span>")
 					playsound(src.loc, "sound/machines/whistlebeep.ogg", 50, 1)
 					break;
@@ -206,7 +187,7 @@
 	proc/obtain_tracking_target(var/obj/O)
 		if (!O)
 			boutput(usr, "<span style=\"color:blue\">NOTHING FOUND IN O...</span>")
-			return 
+			return
 		scanning = 1
 		src.tracking_target = O
 		boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint energy source...</span>")
@@ -222,6 +203,16 @@
 			boutput(usr, "<span style=\"color:blue\">Unable to locate target.</span>")
 
 		scanning = 0
+
+	//For use by clicking a pod to target them, instantly add them as your tracking target
+	proc/quick_obtain_target(var/obj/machinery/vehicle/O)
+		if (!O)
+			return 
+		src.tracking_target = O
+		boutput(usr, "<span style=\"color:blue\">Tracking target: [src.tracking_target.name]</span>")
+		spawn(10)
+			begin_tracking(0)
+		src.updateDialog()
 
 	proc/dir_name(var/direction)
 		switch (direction)
@@ -268,10 +259,10 @@
 		for (var/obj/machinery/vehicle/V in range(src.seekrange,ship.loc))
 			if(V != ship)
 				ships++
-				shiplist[V] = "[dir_name(get_dir(ship, V))]"
+				shiplist[V.name] = "[dir_name(get_dir(ship, V))]"
 		for (var/obj/critter/gunbot/drone/V in range(src.seekrange,ship.loc))
 			ships++
-			shiplist[V] ="[dir_name(get_dir(ship, V))]"
+			shiplist[V.name] ="[dir_name(get_dir(ship, V))]"
 		src.updateDialog()
 		sleep(10)
 		scanning = 0
