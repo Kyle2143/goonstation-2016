@@ -24,14 +24,6 @@
 		M.see_in_dark = initial(M.see_in_dark)
 		M.see_invisible = 0
 		end_tracking()
-
-		//stop the tracking for people who ar lookinug at you
-		for (var/obj/O in whos_tracking_me)
-			var/obj/machinery/vehicle/pod = O
-			if (istype(pod))
-				if (pod.sensors)
-					pod.sensors.tracking_target = null
-
 		scanning = 0
 
 	opencomputer(mob/user as mob)
@@ -97,7 +89,7 @@
 			if (istype(target_pod))
 				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
 				if (istype(sensor))
-					sensor.whos_tracking_me |= src
+					sensor.whos_tracking_me |= src.ship
 					target_pod.myhud.sensor_lock.icon_state = "master-caution-b" //master-caution
 					target_pod.myhud.sensor_lock.mouse_opacity = 1
 
@@ -111,7 +103,7 @@
 			if (istype(target_pod))
 				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
 				if (istype(sensor))
-					sensor.whos_tracking_me -= src
+					sensor.whos_tracking_me -= src.ship
 					if (islist(sensor.whos_tracking_me) && sensor.whos_tracking_me.len == 0)
 						target_pod.myhud.sensor_lock.icon_state = "off" //master-caution
 						target_pod.myhud.sensor_lock.mouse_opacity = 0
@@ -127,13 +119,15 @@
 	proc/track_target(var/gps_coord)
 		var/cur_dist = 0
 		var/same_z_level = 0
+		var/trackable_range = 0
 
 		while (src.tracking_target && src.ship.myhud && src.ship.myhud.tracking)
 			same_z_level = (src.ship.z == src.tracking_target.z)
 			cur_dist = get_dist(src.ship,src.tracking_target)
+			trackable_range = adjust_seekrange(src.tracking_target)
 			//change position and icon dir based on direction to target. And make sure it's using the dots.
 			//must be within range and be on the same z-level
-			if (same_z_level && (cur_dist <= seekrange || gps_coord))
+			if (same_z_level && (cur_dist <= trackable_range || gps_coord))
 				// src.dir = get_dir(ship, src.tracking_target)
 				src.ship.myhud.tracking.icon_state = "dots-s"
 				animate_tracking_hud(src.ship.myhud.tracking, src.tracking_target)
@@ -143,7 +137,7 @@
 				src.ship.myhud.tracking.icon_state = "lost"
 				//if we're off the z-level or tracking a ship and twice as far out: lose the signal
 				//If it's a static gps target from the coordinate picker, we can track from anywhere. Maybe unneeded
-				if (!same_z_level || ( !gps_coord && cur_dist > seekrange*2 ))
+				if (!same_z_level || ( !gps_coord && cur_dist > trackable_range*2 ))
 					end_tracking()
 					for(var/mob/M in ship)
 						boutput(M, "<span style=\"color:red\">Tracking signal lost.</span>")
@@ -154,6 +148,14 @@
 
 		if (src.tracking_target)
 			src.ship.myhud.tracking.icon_state = "off"
+
+	//If the engine is off or we're using 10% of power capacity, make it harder for people to track us.
+	//currently only using this for tracking. It doesn't effect the active sensor scan button.
+	proc/adjust_seekrange(var/obj/machinery/vehicle/pod)
+		if (istype(pod))
+			if (pod.powercapacity == 0 || (pod.powercurrent/pod.powercapacity) <= 0.1)
+				return src.seekrange/2
+		return src.seekrange
 
 	//Arguments: A should be the tracking HuD dots, target is the sensor's tracking_target
 	//Turns the sprite around
@@ -236,6 +238,15 @@
 		sleep(10)
 		scanning = 0
 		#undef DEFAULT_Z_VALUE
+
+	//stop the tracking for everyone who is currently tracking you.
+	proc/stop_tracking_me()
+		for (var/obj/O in whos_tracking_me)
+			var/obj/machinery/vehicle/pod = O
+			if (istype(pod))
+				if (pod.sensors)
+					pod.sensors.tracking_target = null
+
 
 	proc/dir_name(var/direction)
 		switch (direction)
