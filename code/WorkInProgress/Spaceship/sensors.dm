@@ -42,19 +42,12 @@
 		var/dat = "<B>[src] Console</B><BR><HR><BR>"
 		if(src.active)
 
-			dat += build_html_gps_form(src, false)
-			if (src.tracking_target)
-				var/display_text = src.tracking_target.name
-				if (isturf(src.tracking_target))
-					display_text += " at X:[src.tracking_target.x], Y:[src.tracking_target.y]"
-				dat += {"<BR>Currently Tracking: [display_text] 
-				<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a>"}
-
+			dat += build_html_gps_form(src, false, src.tracking_target)
 			dat += {"<HR><BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
-				for(var/obj/ship in shiplist)
-					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[ship]\">[ship.name]</a> "}
+				for(var/obj/V in shiplist)
+					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[V]\">[V.name] [dir_name(get_dir(src.ship, V))]</a> "}
 
 			dat += {"<HR>[lifeforms] Lifeforms Detected:</B><BR>"}
 			if(lifelist.len)
@@ -299,9 +292,17 @@
 		return
 
 //Sends topic call with "dest_cords" and "X", "Y", "Z" as params
-proc/build_html_gps_form(var/atom/A, var/show_Z=0)
+proc/build_html_gps_form(var/atom/A, var/show_Z=0, var/atom/target)
 //I wanted to use a button for this, but that breaks chui. all window.locations sets do. I'll settle for it with the dest coords
 //<button id='getCords' style='width:100%;' onClick=\"window.location.href = 'byond://?src=\ref[A];getcords=1';\">Get Local Coordinates</button><BR>
+	var/dat = ""
+	if (target)
+		var/display_text = target.name
+		if (isturf(target))
+			display_text += " at X:[target.x], Y:[target.y]"
+		dat += {"<BR>Currently Tracking: [display_text] 
+		<a href=\"byond://?src=\ref[A];stop_tracking=1\">Stop Tracking</a>"}
+
 	return {"
 		<div id=topDiv>
 			<center><A href='byond://?src=\ref[A];getcords=1' style='width:100%;'>Get Local Coordinates</A><BR></center>		
@@ -314,8 +315,8 @@ proc/build_html_gps_form(var/atom/A, var/show_Z=0)
 					Z Coordinate: <input class='inputs' id='idZ' type='number' name='Z' value='[show_Z ? "0" : "-1"]' pattern='[0-9]+' title='Numbers 0-9'><br>
 				</div>
 				<button class='button' onclick='send()'>Enter</button>
-
 		</div>
+		[dat]
 		<script>
 			function showInput() {
 			  var x = document.getElementById('destInput');
