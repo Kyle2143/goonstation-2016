@@ -39,7 +39,7 @@
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
 				for(var/obj/V in shiplist)
-					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[V]\">[V.name] [dir_name(get_dir(src.ship, V))]</a> "}
+					dat += {"<HR> | <a href=\"byond://?src=\ref[src];tracking_ship=\ref[V]\">[V.name]</a> [dir_name(get_dir(src.ship, V))]"}
 
 			dat += {"<HR>[lifeforms] Lifeforms Detected:</B><BR>"}
 			if(lifelist.len)
