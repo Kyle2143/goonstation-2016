@@ -105,7 +105,7 @@
 				var/obj/item/shipcomponent/sensor/sensor = target_pod.sensors
 				if (istype(sensor))
 					sensor.whos_tracking_me |= src
-					target_pod.myhud.sensor_lock.icon_state = "master-caution-s" //master-caution
+					target_pod.myhud.sensor_lock.icon_state = "master-caution-b" //master-caution
 					target_pod.myhud.sensor_lock.mouse_opacity = 1
 
 		src.ship.myhud.tracking.icon_state = "dots-s"
