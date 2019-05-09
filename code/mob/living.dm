@@ -260,7 +260,7 @@
 			if (ship.sensors)
 				if (ship.sensors.active)
 					var/obj/machinery/vehicle/target_pod = target
-					if (istype(target_pod))
+					if (istype(target_pod) && src != target_pod)
 						ship.sensors.quick_obtain_target(target_pod)
 				else
 					boutput(src, "<span style=\"color:red\">Sensors are inactive, unable to target craft!</span>")

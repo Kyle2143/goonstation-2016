@@ -42,12 +42,15 @@
 		var/dat = "<B>[src] Console</B><BR><HR><BR>"
 		if(src.active)
 
-			dat += build_html_gps_form(src)
+			dat += build_html_gps_form(src, false)
+			if (src.tracking_target)
+				var/display_text = src.tracking_target.name
+				if (isturf(src.tracking_target))
+					display_text += " at X:[src.tracking_target.x], Y:[src.tracking_target.y]"
+				dat += {"<BR>Currently Tracking: [display_text] 
+				<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a>"}
 
 			dat += {"<HR><BR><A href='?src=\ref[src];scan=1'>Scan Area</A>"}
-			if (src.tracking_target)
-				dat += {"<BR>Currently Tracking: [src.tracking_target.name] 
-				<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a>"}
 			dat += {"<HR><B>[ships] Ships Detected:</B><BR>"}
 			if(shiplist.len)
 				for(var/obj/ship in shiplist)
@@ -59,42 +62,11 @@
 					dat += {"[lifename] | "}
 		else
 			dat += {"<B><span style=\"color:red\">SYSTEM OFFLINE</span></B>"}
+		// user.Browse(dat, "window=ship_sensor")
 		user << browse(dat, "window=ship_sensor")
+
 		onclose(user, "ship_sensor")
 		return
-
-//Doing nothing with the Z-level value right now.
-	proc/obtain_target_from_coords(href_list)
-	//The default Z coordinate given. Just use current Z-Level where the object is. Pods won't
-		#define DEFAULT_Z_VALUE -1		
-		scanning = 1
-		if (href_list["dest_cords"])
-			tracking_target = null
-			var/x = text2num(href_list["x"])
-			var/y = text2num(href_list["y"])
-			var/z = text2num(href_list["z"])
-			if (!x || !y || !z)
-				boutput(usr, "<span style=\"color:red\">Bad Topc call, if you see this something has gone wrong. And it's probably YOUR FAULT!</span>")
-				return
-			//Using -1 as the default value
-			if (z == DEFAULT_Z_VALUE)
-				if (src.loc)
-					z = src.loc.z
-
-			boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint: <b>X</b>: [x], <b>Y</b>: [y], Z</b>: [z]</span>")
-			playsound(ship.loc, "sound/machines/signal.ogg", 50, 0)
-			sleep(10)
-			var/turf/T = locate(x,y,z) 
-
-			//Set located turf to be the tracking_target
-			if (isturf(T))
-				src.tracking_target = T
-				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y], Z</b>: [T.z]</span>")
-				scanning = 0		//remove this if we want to force the user to manually stop tracking before trying to track something else
-				begin_tracking(1)
-		sleep(10)
-		scanning = 0
-		#undef DEFAULT_Z_VALUE
 
 	Topic(href, href_list)
 		if(usr.stat || usr.restrained())
@@ -104,14 +76,16 @@
 			usr.machine = src
 			if (href_list["scan"] && !scanning)
 				scan(usr)
-
+			if(href_list["getcords"])
+				boutput(usr, "<span style=\"color:blue\">Located at: <b>X</b>: [src.ship.x], <b>Y</b>: [src.ship.y]</span>")
+				return
 			if (href_list["tracking_ship"] && !scanning)
+				end_tracking()
 				obtain_tracking_target(locate(href_list["tracking_ship"]))
 			if (href_list["stop_tracking"])
 				end_tracking()
-			if(href_list["getcords"])
-				boutput(usr, "<span style=\"color:blue\">Located at: <b>X</b>: [src.ship.x], <b>Y</b>: [src.ship.y]</span>")
 			if(href_list["dest_cords"] && !scanning)
+				end_tracking()
 				obtain_target_from_coords(href_list)
 
 			src.add_fingerprint(usr)
@@ -151,7 +125,7 @@
 
 		src.tracking_target = null
 		src.ship.myhud.tracking.dir = 1
-		animate(src.ship.myhud.tracking, transform = null, time = SENSOR_REFRESH_RATE, loop = 0)
+		animate(src.ship.myhud.tracking, transform = null, time = 10, loop = 0)
 
 		src.ship.myhud.tracking.icon_state = "off"
 		src.updateDialog()
@@ -159,11 +133,14 @@
 	//Tracking loop
 	proc/track_target(var/gps_coord)
 		var/cur_dist = 0
+		var/same_z_level = 0
 
 		while (src.tracking_target && src.ship.myhud && src.ship.myhud.tracking)
-			cur_dist = get_dist(src,src.tracking_target)
+			same_z_level = (src.ship.z == src.tracking_target.z)
+			cur_dist = get_dist(src.ship,src.tracking_target)
 			//change position and icon dir based on direction to target. And make sure it's using the dots.
-			if (cur_dist <= seekrange)
+			//must be within range and be on the same z-level
+			if (same_z_level && (cur_dist <= seekrange || gps_coord))
 				// src.dir = get_dir(ship, src.tracking_target)
 				src.ship.myhud.tracking.icon_state = "dots-s"
 				animate_tracking_hud(src.ship.myhud.tracking, src.tracking_target)
@@ -171,16 +148,16 @@
 			//If the target is out of seek range, move to top and change to lost state
 			else 
 				src.ship.myhud.tracking.icon_state = "lost"
-				//if we're twice as far out or off the z-level, lose the signal
-				//If it's a static gps target from the coordinate picker, we can track from 10x away
-				if ((cur_dist > seekrange*2) || (gps_coord && cur_dist > seekrange*10))
+				//if we're off the z-level or tracking a ship and twice as far out: lose the signal
+				//If it's a static gps target from the coordinate picker, we can track from anywhere. Maybe unneeded
+				if (!same_z_level || ( !gps_coord && cur_dist > seekrange*2 ))
 					end_tracking()
 					for(var/mob/M in ship)
 						boutput(M, "<span style=\"color:red\">Tracking signal lost.</span>")
 					playsound(src.loc, "sound/machines/whistlebeep.ogg", 50, 1)
 					break;
 
-			sleep(10)
+			sleep(SENSOR_REFRESH_RATE)
 
 		if (src.tracking_target)
 			src.ship.myhud.tracking.icon_state = "off"
@@ -216,6 +193,7 @@
 				begin_tracking(0)
 		else
 			boutput(usr, "<span style=\"color:blue\">Unable to locate target.</span>")
+			src.tracking_target = null
 		src.updateDialog()
 		scanning = 0
 
@@ -228,7 +206,43 @@
 		spawn(0)
 			begin_tracking(0)
 		src.updateDialog()
+		for(var/mob/M in ship)
+			if ((M.client && M.machine == src))
+				src.opencomputer(M)
 
+//Doing nothing with the Z-level value right now.
+	proc/obtain_target_from_coords(href_list)
+	//The default Z coordinate given. Just use current Z-Level where the object is. Pods won't
+		#define DEFAULT_Z_VALUE -1		
+		scanning = 1
+		if (href_list["dest_cords"])
+			tracking_target = null
+			var/x = text2num(href_list["x"])
+			var/y = text2num(href_list["y"])
+			var/z = text2num(href_list["z"])
+			if (!x || !y/* || !z*/)
+				boutput(usr, "<span style=\"color:red\">'0' is an invalid gps coordinate. Try again.</span>")
+				return
+			//Using -1 as the default value
+			if (z == DEFAULT_Z_VALUE)
+				if (src.loc)
+					z = src.loc.z
+
+			boutput(usr, "<span style=\"color:blue\">Attempting to pinpoint: <b>X</b>: [x], <b>Y</b>: [y], Z</b>: [z]</span>")
+			playsound(ship.loc, "sound/machines/signal.ogg", 50, 0)
+			sleep(10)
+			var/turf/T = locate(x,y,z) 
+
+			//Set located turf to be the tracking_target
+			if (isturf(T))
+				src.tracking_target = T
+				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y]</span>")
+				scanning = 0		//remove this if we want to force the user to manually stop tracking before trying to track something else
+				spawn(0)		//Doing this to redraw the scanner window after the topic call that uses this fires.
+					begin_tracking(1)
+		sleep(10)
+		scanning = 0
+		#undef DEFAULT_Z_VALUE
 
 	proc/dir_name(var/direction)
 		switch (direction)
@@ -286,20 +300,21 @@
 
 //Sends topic call with "dest_cords" and "X", "Y", "Z" as params
 proc/build_html_gps_form(var/atom/A, var/show_Z=0)
+//I wanted to use a button for this, but that breaks chui. all window.locations sets do. I'll settle for it with the dest coords
+//<button id='getCords' style='width:100%;' onClick=\"window.location.href = 'byond://?src=\ref[A];getcords=1';\">Get Local Coordinates</button><BR>
 	return {"
-		<A href='byond://?src=\ref[A];getcords=1'>Get Local Coordinates</A><BR>
 		<div id=topDiv>
-			<button id='getCords' style='width:100%;' onClick=\"window.location.href = 'byond://?src=\ref[A];getcords=1';\">Get Local Coordinates</button><BR>
-			<button id='dest' style='width:100%;' onClick='(showInput())' >Select Destination</button><BR>
+			<center><A href='byond://?src=\ref[A];getcords=1' style='width:100%;'>Get Local Coordinates</A><BR></center>		
+			<button class='button' id='dest' style='width:100%;' onClick='(showInput())' >Select Destination</button><BR>
 		</div>
 		<div style='display:none' id = 'destInput'>
-				X Coordinate: <input id='idX'  type='number' min='0' max='500' name='X' value='0'><br>
-				Y Coordinate: <input id='idY' type='number' min='0' max='500' name='Y' value='0'><br>
+				X Coordinate: <input class='inputs' id='idX' type='number' min='0' max='500' name='X' value='1' pattern='[0-9]+' title='Numbers 0-9'><br>
+				Y Coordinate: <input class='inputs' id='idY' type='number' min='0' max='500' name='Y' value='1' pattern='[0-9]+' title='Numbers 0-9'><br>
 				<div[show_Z ? "" : " style='display: none;'"]>
-					Z Coordinate: <input id='idZ' type='number' name='Z' value='[show_Z ? "0" : "-1"]'><br>
+					Z Coordinate: <input class='inputs' id='idZ' type='number' name='Z' value='[show_Z ? "0" : "-1"]' pattern='[0-9]+' title='Numbers 0-9'><br>
 				</div>
+				<button class='button' onclick='send()'>Enter</button>
 
-				<button onclick='send()'>Enter</button>
 		</div>
 		<script>
 			function showInput() {
@@ -316,10 +331,19 @@ proc/build_html_gps_form(var/atom/A, var/show_Z=0)
 				var y = document.getElementById('idY').value;
 				var z = document.getElementById('idZ').value;
 
-				window.location='byond://?src=\ref[A];dest_cords=1;x='+x+';y='+y+';z='+z;
-
+				if (!isNaN(x) && !isNaN(y) && !isNaN(z)){
+					window.location='byond://?src=\ref[A];dest_cords=1;x='+x+';y='+y+';z='+z;
+				}
 			}
 		</script>
+		<style>
+			.btn {
+				color: blue;
+				background: #4E565E;
+				border: solid #3B424A 2px;
+			}
+			[istype(A, /obj/item/device/gps) ? ".inputs { background: #4E565E; }" : ""]
+		</style>
 
 		"}
 
