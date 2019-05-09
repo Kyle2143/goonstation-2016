@@ -148,6 +148,7 @@
 
 		if (src.tracking_target)
 			src.ship.myhud.tracking.icon_state = "off"
+			end_tracking()
 
 	//If the engine is off or we're using 10% of power capacity, make it harder for people to track us.
 	//currently only using this for tracking. It doesn't effect the active sensor scan button.
