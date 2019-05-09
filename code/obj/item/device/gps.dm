@@ -43,11 +43,7 @@
 		user.machine = src
 		var/HTML = "<span style='font-size:80%;text-align:right'><A href='byond://?src=\ref[src];refresh=6'>(Refresh)</A></span><br>"
 		HTML += "Each GPS is coined with a unique four digit number followed by a four letter identifier.<br>This GPS is assigned <b>[serial]-[identifier]</b>.<hr>"
-		// HTML += "<A href='byond://?src=\ref[src];getcords=1'>Get Local Coordinates</A><BR>"
-		HTML += build_html_gps_form(src, false)
-		if (src.tracking_target)
-			HTML += {"<BR>Currently Tracking: [src.tracking_target.name]
-			<a href=\"byond://?src=\ref[src];stop_tracking=1\">Stop Tracking</a><BR>"}
+		HTML += build_html_gps_form(src, false, src.tracking_target)
 		HTML += "<HR>"
 		if (allowtrack == 0)
 			HTML += "<A href='byond://?src=\ref[src];track1=2'>Enable Tracking</A><BR>"
@@ -104,6 +100,7 @@
 			usr.machine = src
 			if(href_list["getcords"])
 				boutput(usr, "<span style=\"color:blue\">Located at: <b>X</b>: [usr.x], <b>Y</b>: [usr.y]</span>")
+				return
 			if(href_list["track1"])
 				boutput(usr, "<span style=\"color:blue\">Tracking enabled.</span>")
 				src.allowtrack = 1
@@ -177,11 +174,16 @@
 			if (!x || !y)
 				boutput(usr, "<span style=\"color:red\">Bad Topc call, if you see this something has gone wrong. And it's probably YOUR FAULT!</span>")
 				return
+			var/z = src.z
+			if (src.loc)
+				z = src.loc.z
+
 			var/turf/T = locate(x,y,z) 
 			//Set located turf to be the tracking_target
 			if (isturf(T))
 				src.tracking_target = T
-				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y], Z</b>: [T.z]</span>")
+				boutput(usr, "<span style=\"color:blue\">Now tracking: <b>X</b>: [T.x], <b>Y</b>: [T.y]</span>")
+
 				begin_tracking()
 			else
 				boutput(usr, "<span style=\"color:red\">Invalid GPS coordinates.</span>")
