@@ -14,7 +14,7 @@
 	var/see_invisible = 2
 	var/scanning = 0
 	var/atom/tracking_target = null
-	var/const/SENSOR_REFRESH_RATE = 5
+	var/const/SENSOR_REFRESH_RATE = 10
 	icon_state = "sensor"
 
 	mob_deactivate(mob/M as mob)
@@ -147,7 +147,6 @@
 			sleep(SENSOR_REFRESH_RATE)
 
 		if (src.tracking_target)
-			src.ship.myhud.tracking.icon_state = "off"
 			end_tracking()
 
 	//If the engine is off or we're using 10% of power capacity, make it harder for people to track us.
